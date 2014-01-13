@@ -128,9 +128,12 @@ namespace NijieDownloader.Library
             {
                 image.Tags = new List<string>();
                 var tagNames = doc.DocumentNode.SelectNodes("//div[@id='view-tag']//span[@class='tag_name']");
-                foreach (var tag in tagNames)
+                if (tagNames != null)
                 {
-                    image.Tags.Add(tag.InnerText);
+                    foreach (var tag in tagNames)
+                    {
+                        image.Tags.Add(tag.InnerText);
+                    }
                 }
             }
 
@@ -195,6 +198,8 @@ namespace NijieDownloader.Library
 
         public void Download(string url, string referer, string filename)
         {
+            if(System.IO.File.Exists(filename))
+                return;
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
             client.DownloadFile(url, filename);
