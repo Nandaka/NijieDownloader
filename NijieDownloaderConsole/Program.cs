@@ -18,9 +18,7 @@ namespace NijieDownloaderConsole
             string password = "bugmenot";
             string rootPath = @"D:\Temp\Nijie\";
 
-            NijieLoginInfo info = bot.PrepareLoginInfo(username, password);
-
-            var result = bot.DoLogin(info);
+            var result = bot.Login(username, password);
             Console.WriteLine("DoLogin: " + result);
             //{
             //    var image = bot.ParseImage(70240);

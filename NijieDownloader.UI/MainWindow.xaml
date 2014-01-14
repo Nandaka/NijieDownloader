@@ -1,0 +1,28 @@
+﻿<mui:ModernWindow x:Class="NijieDownloader.UI.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+  IsTitleVisible="True"
+  Title="Nijie Downloader" Height="600" Width="800"
+  ContentSource="/Settings/LoginInfo.xaml">
+    <mui:ModernWindow.TitleLinks>
+        <mui:Link x:Name="tlLogin" DisplayName="Login" Source="/Settings/LoginInfo.xaml" />
+    </mui:ModernWindow.TitleLinks>
+    
+    <mui:ModernWindow.MenuLinkGroups>
+        <mui:LinkGroup DisplayName="Main" >
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Process Member" Source="/MemberPage.xaml" />
+                <mui:Link DisplayName="link 2" />
+                <mui:Link DisplayName="link 3" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+        <mui:LinkGroup DisplayName="Settings" >
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Login" Source="/Settings/LoginInfo.xaml" />
+                <mui:Link DisplayName="Network" Source="/Settings/Network.xaml" />
+                <mui:Link DisplayName="Download" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
+    </mui:ModernWindow.MenuLinkGroups>
+</mui:ModernWindow>

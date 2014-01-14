@@ -8,10 +8,11 @@ using NijieDownloader.Library.Model;
 using HtmlAgilityPack;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
 
 namespace NijieDownloader.Library
 {
-    public class Nijie
+    public partial class Nijie
     {
         private Regex re_date = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}");
         private Regex re_image = new Regex(@"id=(\d+)");
@@ -24,48 +25,6 @@ namespace NijieDownloader.Library
             Debug.WriteLineIf(proxy == null, "No Proxy");
         }
 
-        public NijieLoginInfo PrepareLoginInfo(string userName, string password)
-        {
-            ExtendedWebClient client = new ExtendedWebClient();
-            NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = false };
-
-            HtmlDocument doc = getPage(NijieConstants.NIJIE_LOGIN_URL);
-
-            var tickets = doc.DocumentNode.SelectNodes("//input[@name='ticket']");
-            if (tickets != null && tickets.Count > 0)
-                info.Ticket = tickets[0].Attributes["value"].Value;
-
-            var returnUrls = doc.DocumentNode.SelectNodes("//input[@name='url']");
-            if (returnUrls != null && returnUrls.Count > 0)
-                info.ReturnUrl = returnUrls[0].Attributes["value"].Value;
-
-            return info;
-        }
-
-        public bool DoLogin(NijieLoginInfo info)
-        {
-            ExtendedWebClient client = new ExtendedWebClient();
-            NameValueCollection loginInfo = new NameValueCollection();
-            loginInfo.Add("email", info.UserName);
-            loginInfo.Add("password", info.Password);
-            if (info.RememberLogin)
-                loginInfo.Add("save", "on");
-            loginInfo.Add("ticket", info.Ticket);
-            loginInfo.Add("url", info.ReturnUrl);
-
-            var result = client.UploadValues(NijieConstants.NIJIE_LOGIN_URL2, "POST", loginInfo);
-            //String data = Encoding.UTF8.GetString(result);
-
-            var location = client.Response.ResponseUri.ToString();
-            if (!String.IsNullOrWhiteSpace(location))
-            {
-                if (location == "http://nijie.info/index.php")
-                    return true;
-            }
-
-            return false;
-        }
-
 
         public NijieImage ParseImage(int imageId, string referer = NijieConstants.NIJIE_INDEX)
         {
@@ -74,7 +33,7 @@ namespace NijieDownloader.Library
             return ParseImage(image);
         }
 
-        public NijieImage ParseImage(NijieImage image, NijieMember member=null)
+        public NijieImage ParseImage(NijieImage image, NijieMember member = null)
         {
             HtmlDocument doc = getPage(image.ViewUrl);
             image.Member = member;
@@ -165,7 +124,7 @@ namespace NijieDownloader.Library
                     {
                         NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
 
-                        var thumb = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//img");
+                        var thumb = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//a/img");
                         image.Title = thumb.Attributes["alt"].Value;
                         image.ThumbImageUrl = thumb.Attributes["src"].Value;
                         image.Referer = member.MemberUrl;
@@ -198,7 +157,7 @@ namespace NijieDownloader.Library
 
         public void Download(string url, string referer, string filename)
         {
-            if(System.IO.File.Exists(filename))
+            if (System.IO.File.Exists(filename))
                 return;
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;

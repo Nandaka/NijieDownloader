@@ -46,6 +46,7 @@
     <Compile Include="Model\NijieImage.cs" />
     <Compile Include="Model\NijieLoginInfo.cs" />
     <Compile Include="Model\NijieMember.cs" />
+    <Compile Include="Nijie.Login.cs" />
     <Compile Include="NijieConstants.cs" />
     <Compile Include="Nijie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
