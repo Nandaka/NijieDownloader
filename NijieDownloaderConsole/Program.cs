@@ -86,8 +86,8 @@ namespace NijieDownloaderConsole
                         for (int i = 0; i < imageData.ImageUrls.Count; ++i)
                         {
                             Console.WriteLine("Downloading: " + imageData.ImageUrls[i]);
-                            var pagefilename = filename + "_p" + i + "." + Helper.ParseExtension(imageData.ImageUrls[i]);
-                            pagefilename = Helper.SanitizeFilename(pagefilename);
+                            var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(imageData.ImageUrls[i]);
+                            pagefilename = Util.SanitizeFilename(pagefilename);
                             bot.Download(imageData.ImageUrls[i], imageData.Referer, rootPath + pagefilename);
                             Console.WriteLine("Saving to: " + rootPath + pagefilename);
                         }
@@ -95,8 +95,8 @@ namespace NijieDownloaderConsole
                     else
                     {
                         Console.WriteLine("Downloading: " + imageData.BigImageUrl);
-                        filename = filename + "." + Helper.ParseExtension(imageData.BigImageUrl);
-                        filename = Helper.SanitizeFilename(filename);
+                        filename = filename + "." + Util.ParseExtension(imageData.BigImageUrl);
+                        filename = Util.SanitizeFilename(filename);
                         bot.Download(imageData.BigImageUrl, imageData.Referer, rootPath + filename);
                         Console.WriteLine("Saving to: " + rootPath + filename);
                     }

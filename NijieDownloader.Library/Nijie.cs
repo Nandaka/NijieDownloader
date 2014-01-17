@@ -124,13 +124,18 @@ namespace NijieDownloader.Library
                     {
                         NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
 
-                        var thumb = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//a/img");
+                        var div = new HtmlDocument();
+                        div.LoadHtml(imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']").InnerHtml);
+
+                        //var thumb = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//a/img");
+                        var thumb = div.DocumentNode.SelectSingleNode("//a/img");
                         image.Title = thumb.Attributes["alt"].Value;
                         image.ThumbImageUrl = thumb.Attributes["src"].Value;
+
                         image.Referer = member.MemberUrl;
                         image.IsManga = false;
-
-                        var icon = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']/div[@class='thumbnail-icon']/img");
+                        
+                        var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
                         if (icon != null)
                         {
                             if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
@@ -162,6 +167,13 @@ namespace NijieDownloader.Library
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
             client.DownloadFile(url, filename);
+        }
+
+        public byte[] DownloadData(string url, string referer)
+        {
+            ExtendedWebClient client = new ExtendedWebClient();
+            client.Referer = referer;
+            return client.DownloadData(url);
         }
     }
 }

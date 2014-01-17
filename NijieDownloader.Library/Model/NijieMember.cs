@@ -22,7 +22,6 @@ namespace NijieDownloader.Library.Model
         
         public List<NijieImage> Images { get; set; }
 
-
         public NijieMember(int memberId)
         {
             this.MemberId = memberId;

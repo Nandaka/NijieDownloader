@@ -153,7 +153,7 @@ namespace Nandaka.Common
                 }
                 if (Properties.Settings.Default.PadUserAgent)
                 {
-                    return Helper.PadUserAgent(userAgent);
+                    return Util.PadUserAgent(userAgent);
                 }
                 else
                 {

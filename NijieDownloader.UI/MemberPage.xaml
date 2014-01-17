@@ -3,25 +3,33 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:model="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
-      xmlns:nh="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
+      xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+      xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
 	Title="Member Page">
     <Page.Resources>
-        <nh:WebImgConverter x:Key="ImageToSourceConverter"/>
-        <DataTemplate DataType="{x:Type model:NijieImage}">
-            <StackPanel>
-                <TextBlock Text="{Binding Path=ImageId}" Height="25"/>
-                <TextBlock Text="{Binding Path=Title}" Height="25"/>
-                <Image Source="{Binding Path=ThumbImageUrl, 
-                        Converter={StaticResource ImageToSourceConverter}, 
-                        IsAsync=true}" Height="128" Width="128"/>
+        <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
+        <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <DataTemplate DataType="{x:Type vd:NijieImageViewModel}">
+            <StackPanel MaxWidth="130" MaxHeight="210" MouseDown="StackPanel_MouseDown">
+                <TextBlock Text="{Binding Path=Image.ImageId}" Height="25"/>
+                <TextBlock Text="{Binding Path=Image.Title}" Height="25"/>
+                <Grid>
+                    <Image Source="{Binding Path=ThumbImage, IsAsync=true}" 
+                           Height="128" Width="128" 
+                           Name="imgThumb" />
+                    <Image Source="{StaticResource ResourceKey=ComicIcon}" 
+                           VerticalAlignment="Top" HorizontalAlignment="Left"
+                           Height="30" Width="30"
+                           Visibility="{Binding Path=Image.IsManga, 
+                           Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+                <TextBlock Text="{Binding Path=Status}" Height="25"/>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
-    <Grid Style="{StaticResource ContentRoot}">
-        
+    <Grid Style="{StaticResource ContentRoot}"  x:Name="root">
         <StackPanel MinWidth="600">
             <TextBlock Text="Process Member" Style="{StaticResource Heading2}" />
             <Grid>
@@ -39,27 +47,27 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Member ID" HorizontalAlignment="Left"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Name="txtMemberID" Height="25"/>
-
+                <TextBox Grid.Row="0" Grid.Column="1" Name="txtMemberID" Height="25" Text="17296"/>
+                <Image Grid.Row="0" Grid.Column="2" Grid.RowSpan="3"
+                       Source="{Binding Path=AvatarImage, IsAsync=true}" 
+                       Name="imgAvatar" />
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Member Name"  HorizontalAlignment="Left"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Name="txtMemberName" Height="25" IsReadOnly="True"/>
+                <TextBox Grid.Row="1" Grid.Column="1" 
+                         Name="txtMemberName" Height="25" IsReadOnly="True" 
+                         Text="{Binding Path=Member.UserName}"/>
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Page" HorizontalAlignment="Left" />
                 <TextBox Grid.Row="2" Grid.Column="1" Name="txtPage" Height="25" Text="1"/>
 
                 <Button Grid.Row="3" Grid.Column="1" Width="120" Name="btnFetch" Click="btnFetch_Click">Fetch Images</Button>
-                <Grid Grid.Row="4" Grid.ColumnSpan="3">
-                <ScrollViewer VerticalScrollBarVisibility="Visible" >
-                <ListBox Name="lbxImages" 
-                                 ItemsSource="{Binding Path=Images}">
+                <ListBox Name="lbxImages" Grid.Row="4" Grid.ColumnSpan="3"
+                         ItemsSource="{Binding Path=Images}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel IsItemsHost="True"/>
+                            <UniformGrid IsItemsHost="True" Columns="8"/>
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
-                </ScrollViewer>
-                </Grid>
                 <TextBlock Grid.Row="5" Grid.ColumnSpan="2" Name="lblStatus"  HorizontalAlignment="Left" />
             </Grid>
         </StackPanel>

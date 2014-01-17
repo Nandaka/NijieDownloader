@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using NijieDownloader.Library;
 using Nandaka.Common;
+using FirstFloor.ModernUI.Windows.Navigation;
 
 namespace NijieDownloader.UI
 {
@@ -51,10 +52,12 @@ namespace NijieDownloader.UI
 
                 Properties.Settings.Default.Save();
 
-                MemberPage memberPage = new MemberPage();
-
-                NavigationCommands.GoToPage.Execute("/MemberPage.xaml", null);
-
+                var uri = new Uri("/MemberPage.xaml", UriKind.RelativeOrAbsolute);
+                var frame = NavigationHelper.FindFrame(null, this);
+                if (frame != null)
+                {
+                    frame.Source = uri;
+                }
             }
             else
             {

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Nandaka.Common
 {
-    public class Helper
+    public class Util
     {
         /// <summary>
         /// Pad user agent with current date/time.
@@ -50,6 +50,19 @@ namespace Nandaka.Common
             if (dots.Length > 0)
             {
                 url = dots[0];
+            }
+
+            return url;
+        }
+
+        public static string FixUrl(string url, bool useHttps=false) 
+        {
+            if (!url.StartsWith("http"))
+            {
+                if(useHttps)
+                    url = "https:" + url;
+                else
+                    url = "http:" + url;
             }
 
             return url;
