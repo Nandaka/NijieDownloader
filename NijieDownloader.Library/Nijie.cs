@@ -111,30 +111,40 @@ namespace NijieDownloader.Library
                 member.AvatarUrl = profileDiv.Attributes["src"].Value;
             }
 
+            //var imagesDiv = doc.DocumentNode.SelectNodes("//div[@id='main-left-none']/div/div[@class='nijie']");
+            var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
+            member.Images = parseImages(imagesDiv, member.MemberUrl);
+
+            return member;
+        }
+
+        private List<NijieImage> parseImages(string html, string referer)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            var images = doc.DocumentNode.SelectNodes("//div[@class='nijie']");
             // parse images
-            var images = doc.DocumentNode.SelectNodes("//div[@id='main-left-none']/div/div[@class='nijie']");
+            var list = new List<NijieImage>();
             if (images != null)
             {
-                member.Images = new List<NijieImage>();
                 foreach (var imageDiv in images)
                 {
-                    var imageId = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//a").Attributes["href"].Value;
+                    var imageId = imageDiv.SelectSingleNode("//div[@class='nijie']//a").Attributes["href"].Value;
                     var res = re_image.Match(imageId);
                     if (res.Success)
                     {
                         NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
 
                         var div = new HtmlDocument();
-                        div.LoadHtml(imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']").InnerHtml);
+                        div.LoadHtml(imageDiv.SelectSingleNode("//div[@class='nijie']").InnerHtml);
 
-                        //var thumb = imageDiv.SelectSingleNode("//div[@id='main-left-none']/div/div[@class='nijie']//a/img");
                         var thumb = div.DocumentNode.SelectSingleNode("//a/img");
                         image.Title = thumb.Attributes["alt"].Value;
                         image.ThumbImageUrl = thumb.Attributes["src"].Value;
 
-                        image.Referer = member.MemberUrl;
+                        image.Referer = referer;
                         image.IsManga = false;
-                        
+
                         var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
                         if (icon != null)
                         {
@@ -142,13 +152,12 @@ namespace NijieDownloader.Library
                                 image.IsManga = true;
                         }
 
-                        member.Images.Add(image);
+                        list.Add(image);
                     }
                     imageDiv.Remove();
                 }
             }
-
-            return member;
+            return list;
         }
 
         private HtmlDocument getPage(string url)

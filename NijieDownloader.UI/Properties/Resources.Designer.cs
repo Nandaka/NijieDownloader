@@ -67,6 +67,13 @@ namespace NijieDownloader.UI.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap no_avatar {
+            get {
+                object obj = ResourceManager.GetObject("no_avatar", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap thumbnail_comic {
             get {
                 object obj = ResourceManager.GetObject("thumbnail_comic", resourceCulture);

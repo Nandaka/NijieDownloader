@@ -31,6 +31,8 @@ namespace NijieDownloader.UI.Settings
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             Nandaka.Common.Properties.Settings.Default.Save();
+            var proxy = ExtendedWebClient.GlobalProxy;
+            if (proxy != null) proxy.ToString();
         }
     }
 }

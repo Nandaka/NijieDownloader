@@ -22,26 +22,13 @@ namespace NijieDownloader.UI
     /// <summary>
     /// Interaction logic for Page1.xaml
     /// </summary>
-    public partial class MemberPage : Page
+    public partial class SearchPage : Page
     {
-        public NijieMemberViewModel ViewData { get; set; }
+        public NijieSearchViewModel ViewData { get; set; }
 
-        public MemberPage()
+        public SearchPage()
         {
             InitializeComponent();
-        }
-
-
-        private void btnFetch_Click(object sender, RoutedEventArgs e)
-        {
-            var result = MainWindow.Bot.ParseMember(Int32.Parse(txtMemberID.Text));
-            ViewData = new NijieMemberViewModel(result);
-            this.DataContext = ViewData;
-
-            //txtMemberName.Text = result.UserName;
-            //lblStatus.Text = "Total Images: " + result.Images.Count;
-            //Images = result.Images;
-            //lbxImages.DataContext = this;
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -66,6 +53,33 @@ namespace NijieDownloader.UI
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             lbxImages.MaxHeight = e.NewSize.Height - 280;
-        }        
+        }
+
+        private void doSearch(string query, int page)
+        {
+            var result = MainWindow.Bot.Search(query, page);
+            ViewData = new NijieSearchViewModel(result);
+            this.DataContext = ViewData;
+        }
+
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            int page = Int32.Parse(txtPage.Text) - 1;
+            if (page < 1) page = 1;
+            doSearch(txtQuery.Text, page);
+        }
+
+        private void btnFetch_Click(object sender, RoutedEventArgs e)
+        {
+            int page = 1;
+            Int32.TryParse(txtPage.Text, out page);
+            doSearch(txtQuery.Text, page);
+        }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            var page = Int32.Parse(txtPage.Text) + 1;            
+            doSearch(txtQuery.Text, page);
+        }  
     }
 }

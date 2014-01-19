@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\NijieSearch.cs" />
+    <Compile Include="Nijie.Search.cs" />
     <Compile Include="Model\NijieImage.cs" />
     <Compile Include="Model\NijieLoginInfo.cs" />
     <Compile Include="Model\NijieMember.cs" />

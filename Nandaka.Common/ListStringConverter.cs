@@ -15,6 +15,9 @@ namespace Nandaka.Common
             if (targetType != typeof(string))
                 throw new InvalidOperationException("The target must be a String");
 
+            var temp = value as List<string>;
+            if (temp == null || temp.Count == 0) return "";
+
             var delimiter = ", ";
             if (parameter != null && parameter.GetType() == typeof(string))
             {

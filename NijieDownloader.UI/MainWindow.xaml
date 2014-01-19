@@ -14,7 +14,7 @@
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Process Member" Source="/MemberPage.xaml" />
                 <mui:Link DisplayName="Process Image" Source="/ImagePage.xaml"/>
-                <mui:Link DisplayName="Search" Source="/MemberPage.xaml"/>
+                <mui:Link DisplayName="Search" Source="/SearchPage.xaml"/>
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" >

@@ -44,10 +44,12 @@ namespace NijieDownloader.UI
 
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
-            var pair = e.Fragment.Split('=');
-            
-            txtImageID.Text = pair[1];
-            LoadImage(Int32.Parse(txtImageID.Text));
+            if (!String.IsNullOrWhiteSpace(e.Fragment))
+            {
+                var pair = e.Fragment.Split('=');
+                txtImageID.Text = pair[1];
+                LoadImage(Int32.Parse(txtImageID.Text));
+            }
         }
 
         public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
@@ -64,5 +66,6 @@ namespace NijieDownloader.UI
         {
             
         }
+
     }
 }

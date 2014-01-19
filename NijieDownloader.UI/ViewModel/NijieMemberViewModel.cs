@@ -28,7 +28,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 if (_avatarImage == null)
                 {
-                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
+                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/no_avatar.jpg"));
                     loading.Freeze();
                     MainWindow.LoadImage(Member.AvatarUrl, Member.MemberUrl,
                         new Action<BitmapImage, string>((image, status) =>
