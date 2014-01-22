@@ -15,13 +15,14 @@
                 <mui:Link DisplayName="Process Member" Source="/MemberPage.xaml" />
                 <mui:Link DisplayName="Process Image" Source="/ImagePage.xaml"/>
                 <mui:Link DisplayName="Search" Source="/SearchPage.xaml"/>
+                <mui:Link DisplayName="Batch Download" Source="/BatchDownloadPage.xaml"/>
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" >
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Login" Source="/Settings/LoginInfo.xaml" />
                 <mui:Link DisplayName="Network" Source="/Settings/Network.xaml" />
-                <mui:Link DisplayName="Download" Source="/Settings/Network.xaml" />
+                <mui:Link DisplayName="Download" Source="/Settings/Download.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
     </mui:ModernWindow.MenuLinkGroups>

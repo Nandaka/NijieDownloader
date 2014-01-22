@@ -37,11 +37,6 @@ namespace NijieDownloader.UI
             var result = MainWindow.Bot.ParseMember(Int32.Parse(txtMemberID.Text));
             ViewData = new NijieMemberViewModel(result);
             this.DataContext = ViewData;
-
-            //txtMemberName.Text = result.UserName;
-            //lblStatus.Text = "Total Images: " + result.Images.Count;
-            //Images = result.Images;
-            //lbxImages.DataContext = this;
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
@@ -65,7 +60,20 @@ namespace NijieDownloader.UI
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            lbxImages.MaxHeight = e.NewSize.Height - 280;
+            lbxImages.MaxHeight = e.NewSize.Height;
+        }
+
+        private void btnAddToBatch_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtMemberID.Text))
+            {
+                var uri = new Uri("/BatchDownloadPage.xaml#type=member&memberId=" + txtMemberID.Text, UriKind.RelativeOrAbsolute);
+                var frame = NavigationHelper.FindFrame(null, this);
+                if (frame != null)
+                {
+                    frame.Source = uri;
+                }
+            }
         }        
     }
 }

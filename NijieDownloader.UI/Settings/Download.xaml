@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="NijieDownloader.UI.Settings.Download"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             xmlns:np="clr-namespace:NijieDownloader.UI.Properties"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid Style="{StaticResource ContentRoot}">
+        <ScrollViewer>
+            <StackPanel MinWidth="200">
+                <TextBlock Text="Network" Style="{StaticResource Heading2}" />
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30" />
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="300" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Root Directory" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Filename Format" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}"/>
+                    
+                    <Button Grid.Row="3" Grid.Column="1" Width="100" Name="btnSave" Click="btnSave_Click">Save</Button>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

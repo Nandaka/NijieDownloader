@@ -8,5 +8,11 @@
     <Setting Name="Password" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="RootDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\Temp\Nijie</Value>
+    </Setting>
+    <Setting Name="FilenameFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{memberId} - {imageId}{page} - {tags}</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

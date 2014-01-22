@@ -5,6 +5,7 @@ using System.Text;
 using NijieDownloader.Library.Model;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -22,8 +23,8 @@ namespace NijieDownloader.UI.ViewModel
         }
 
 
-        private List<NijieImageViewModel> _images;
-        public List<NijieImageViewModel> Images
+        private ObservableCollection<NijieImageViewModel> _images;
+        public ObservableCollection<NijieImageViewModel> Images
         {
             get
             {
@@ -49,7 +50,7 @@ namespace NijieDownloader.UI.ViewModel
         public NijieSearchViewModel(NijieSearch search)
         {
             this.Search = search;
-            _images  = new List<NijieImageViewModel>();
+            _images = new ObservableCollection<NijieImageViewModel>();
             foreach (var image in search.Images)
             {
                 var temp = new NijieImageViewModel(image);

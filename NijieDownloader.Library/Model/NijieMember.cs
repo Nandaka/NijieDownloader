@@ -24,6 +24,8 @@ namespace NijieDownloader.Library.Model
 
         public int Page { get; set; }
 
+        public string Status { get; set; }
+
         public NijieMember(int memberId)
         {
             this.MemberId = memberId;

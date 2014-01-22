@@ -30,68 +30,82 @@
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
-    <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
-        <Grid Style="{StaticResource ContentRoot}"  x:Name="root">
-            <StackPanel MinWidth="600">
-                <TextBlock Text="Process Member" Style="{StaticResource Heading2}" />
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="30"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="155" />
-                        <ColumnDefinition Width="100" />
-                        <ColumnDefinition Width="300" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="5" Height="150" Width="150"
-                       Name="imgAvatar" StretchDirection="DownOnly" >
-                        <Image.Source>
-                            <PriorityBinding>
-                                <Binding Path="AvatarImage" IsAsync="true"/>
-                                <Binding Source="{StaticResource AvatarIcon}"/>
-                            </PriorityBinding>
-                        </Image.Source>
-                    </Image>
+    <Grid Style="{StaticResource ContentRoot}"  x:Name="root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Process Member" Style="{StaticResource Heading2}" />
+        <DockPanel Grid.Row="1" >
+            <Grid DockPanel.Dock="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="300" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Member ID" Margin="10,0,0,10"/>
+                    <TextBox Name="txtMemberID" Height="25" Width="100" Text="17296" Margin="10,0,0,10"/>
+                    <Button Width="120" Name="btnFetch" Margin="10,0,0,10" Click="btnFetch_Click">Fetch Images</Button>
+                    <Button Width="120" Name="btnAddToBatch" Margin="10,0,0,10" Click="btnAddToBatch_Click">Add to Batch</Button>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="100" Name="btnPrev" Margin="10,0,0,10">Previous</Button>
+                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="10,0,0,10"/>
+                    <Button Width="100" Name="btnNext" Margin="10,0,0,10">Next</Button>
+                </StackPanel>
+            </Grid>
 
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Member ID" HorizontalAlignment="Left"/>
-                    <TextBox Grid.Row="0" Grid.Column="2" Name="txtMemberID" Height="25" Text="17296"/>
-
-                    <TextBlock Grid.Row="1" Grid.Column="1" Text="Member Name"  HorizontalAlignment="Left"/>
-                    <TextBox Grid.Row="1" Grid.Column="2" 
-                         Name="txtMemberName" Height="25" IsReadOnly="True" 
-                         Text="{Binding Path=Member.UserName}"/>
-
-                    <TextBlock Grid.Row="2" Grid.Column="1" Text="Page" HorizontalAlignment="Left" />
-                    <TextBox Grid.Row="2" Grid.Column="2" Name="txtPage" Height="25" Text="1"/>
-
-                    <TextBlock Grid.Row="3" Grid.Column="1" Text="Member Url" HorizontalAlignment="Left" />
-                    <TextBlock Grid.Row="3" Grid.Column="2" Name="txtUrl" Height="25">
-                    <Hyperlink NavigateUri="{Binding Path=Member.MemberUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                        <Label Content="{Binding Path=Member.MemberUrl}" />
-                    </Hyperlink>
-                    </TextBlock>
-
-                    <Button Grid.Row="4" Grid.Column="2" Width="120" Name="btnFetch" Click="btnFetch_Click">Fetch Images</Button>
-
-                    <ListBox Name="lbxImages" Grid.Row="5" Grid.ColumnSpan="4"
-                         ItemsSource="{Binding Path=Images}">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid IsItemsHost="True" Columns="8"/>
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-
-                    <TextBlock Grid.Row="6" Grid.ColumnSpan="3" Name="lblStatus"  HorizontalAlignment="Left" />
-                </Grid>
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
+                <TextBlock Text="Status :" HorizontalAlignment="Left"/>
+                <TextBlock Name="lblStatus" HorizontalAlignment="Left" Text="{Binding Path=Member.Status}"/>
             </StackPanel>
-        </Grid>
-    </ScrollViewer>
+
+
+            <Grid DockPanel.Dock="Left">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <Image Grid.Row="0" Width="150" Name="imgAvatar" 
+                           StretchDirection="DownOnly" 
+                           HorizontalAlignment="Center">
+                    <Image.Source>
+                        <PriorityBinding>
+                            <Binding Path="AvatarImage" IsAsync="true"/>
+                            <Binding Source="{StaticResource AvatarIcon}"/>
+                        </PriorityBinding>
+                    </Image.Source>
+                </Image>
+                <TextBlock Grid.Row="1" Text="Member Name"   HorizontalAlignment="Center"/>
+                <TextBlock Grid.Row="2" Name="txtMemberName" Height="25"
+                             HorizontalAlignment="Center" Text="{Binding Path=Member.UserName}" />
+
+                <TextBlock Grid.Row="3" Text="Member Url" HorizontalAlignment="Center" />
+                <TextBlock Grid.Row="4" Name="txtUrl" Height="25" HorizontalAlignment="Center" TextWrapping="Wrap">
+                        <Hyperlink NavigateUri="{Binding Path=Member.MemberUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                            <Label Content="{Binding Path=Member.MemberUrl}" />
+                        </Hyperlink>
+                </TextBlock>
+            </Grid>
+
+
+            <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
+                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid IsItemsHost="True" Columns="8"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+            </ScrollViewer>
+        </DockPanel>
+
+    </Grid>
 </Page>

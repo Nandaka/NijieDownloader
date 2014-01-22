@@ -46,5 +46,29 @@ namespace NijieDownloader.UI.Properties {
                 this["Password"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\Temp\\Nijie")]
+        public string RootDirectory {
+            get {
+                return ((string)(this["RootDirectory"]));
+            }
+            set {
+                this["RootDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        public string FilenameFormat {
+            get {
+                return ((string)(this["FilenameFormat"]));
+            }
+            set {
+                this["FilenameFormat"] = value;
+            }
+        }
     }
 }

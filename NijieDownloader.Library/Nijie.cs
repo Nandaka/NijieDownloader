@@ -115,6 +115,8 @@ namespace NijieDownloader.Library
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
             member.Images = parseImages(imagesDiv, member.MemberUrl);
 
+            member.Status = String.Format("Completed, found {0} images", member.Images.Count);
+
             return member;
         }
 
