@@ -80,6 +80,19 @@ namespace NijieDownloader.UI
         {
             var page = Int32.Parse(txtPage.Text) + 1;            
             doSearch(txtQuery.Text, page);
+        }
+
+        private void btnAddBatchJob_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(txtQuery.Text))
+            {
+                var uri = new Uri("/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text, UriKind.RelativeOrAbsolute);
+                var frame = NavigationHelper.FindFrame(null, this);
+                if (frame != null)
+                {
+                    frame.Source = uri;
+                }
+            }
         }  
     }
 }

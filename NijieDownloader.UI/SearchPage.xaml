@@ -66,12 +66,13 @@
                     <TextBlock Grid.Row="3" Grid.Column="1" Text="Result" HorizontalAlignment="Left" />
                     <TextBlock Grid.Row="3" Grid.Column="2" Name="txtResultCount" Height="25" Grid.ColumnSpan="3" Text="{Binding Path=Images.Count}"/>
 
-                    <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" 
-                                Grid.ColumnSpan="2"
+                    <StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="0" 
+                                Grid.ColumnSpan="4"
                                 HorizontalAlignment="Center">
                         <Button Width="120" Name="btnPrev" Click="btnPrev_Click" IsEnabled="{Binding Path=Search.IsPrevAvailable}" >Previous</Button>
                         <Button Width="120" Name="btnFetch" Click="btnFetch_Click">Search</Button>
                         <Button Width="120" Name="btnNext" Click="btnNext_Click" IsEnabled="{Binding Path=Search.IsNextAvailable}">Next</Button>
+                        <Button Width="120" Name="btnAddBatchJob" Click="btnAddBatchJob_Click">Add To Batch</Button>
                     </StackPanel>
 
                     <ListBox Name="lbxImages" Grid.Row="5" Grid.ColumnSpan="4"

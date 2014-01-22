@@ -9,6 +9,7 @@ using HtmlAgilityPack;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.IO;
 
 namespace NijieDownloader.Library
 {
@@ -24,18 +25,32 @@ namespace NijieDownloader.Library
             var proxy = ExtendedWebClient.GlobalProxy;
             Debug.WriteLineIf(proxy == null, "No Proxy");
         }
-
-
+        
         public NijieImage ParseImage(int imageId, string referer = NijieConstants.NIJIE_INDEX)
         {
             NijieImage image = new NijieImage(imageId);
             image.Referer = referer;
             return ParseImage(image);
         }
-
+        
         public NijieImage ParseImage(NijieImage image, NijieMember member = null)
         {
             HtmlDocument doc = getPage(image.ViewUrl);
+
+            if (member == null)
+            {
+                var memberUrl = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a").Attributes["href"].Value;
+                var split = memberUrl.Split('?');
+                int memberId = Int32.Parse(split[1].Replace("id=", ""));
+
+                member = new NijieMember(memberId);
+                var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
+                if (profileDiv != null)
+                {
+                    member.UserName = profileDiv.Attributes["alt"].Value;
+                    member.AvatarUrl = profileDiv.Attributes["src"].Value;
+                }
+            }
             image.Member = member;
 
             var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery']/p/a");
@@ -114,6 +129,8 @@ namespace NijieDownloader.Library
             //var imagesDiv = doc.DocumentNode.SelectNodes("//div[@id='main-left-none']/div/div[@class='nijie']");
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
             member.Images = parseImages(imagesDiv, member.MemberUrl);
+            foreach (var image in member.Images)
+                image.Member = member;
 
             member.Status = String.Format("Completed, found {0} images", member.Images.Count);
 
@@ -177,7 +194,9 @@ namespace NijieDownloader.Library
                 return;
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
-            client.DownloadFile(url, filename);
+            var tempFilename = filename + ".!nijie";
+            client.DownloadFile(url, tempFilename);
+            File.Move(tempFilename, filename);
         }
 
         public byte[] DownloadData(string url, string referer)

@@ -41,7 +41,7 @@ namespace NijieDownloader.UI.ViewModel
                     case ViewModel.JobType.Member:
                         return "Member ID: " + MemberId;
                     case ViewModel.JobType.Tags:
-                        return "Search Tags: " + SearchTag;
+                        return "Search Tags: " + SearchTag + " Start StartPage: " + StartPage;
                 }
                 return "N/A";
             }
@@ -88,6 +88,19 @@ namespace NijieDownloader.UI.ViewModel
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+        private int _startPage = 1;
+        public int StartPage
+        {
+            get
+            { return _startPage; }
+
+            set
+            {
+                _startPage = value;
+                onPropertyChanged("StartPage");
             }
         }
     }

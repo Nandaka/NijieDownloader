@@ -26,7 +26,7 @@
                     <TextBox Grid.Row="0" Grid.Column="1" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" />
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Filename Format" />
                     <TextBox Grid.Row="1" Grid.Column="1" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}"/>
-                    
+                    <CheckBox Grid.Row="2" Grid.Column="1" Width="100" Content="Overwrite" HorizontalAlignment="Left" IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>
                     <Button Grid.Row="3" Grid.Column="1" Width="100" Name="btnSave" Click="btnSave_Click">Save</Button>
                 </Grid>
             </StackPanel>

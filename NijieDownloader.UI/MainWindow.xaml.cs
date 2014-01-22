@@ -103,17 +103,31 @@ namespace NijieDownloader.UI
 
         private static void doSearchJob(JobDownloadViewModel job)
         {
-            
+            int page = job.StartPage;
+            bool flag = true;
+            while (flag)
+            {
+                job.Message = "Parsing search page: " + page;
+                var searchPage = Bot.Search(job.SearchTag, page);
+
+                foreach (var image in searchPage.Images)
+                {
+                    processImage(job, null, image);
+                }
+
+                ++page;
+                flag = searchPage.IsNextAvailable;
+            }
         }
 
-        private static string makeFilename(NijieMember member, NijieImage image, int currPage=0)
+        private static string makeFilename(NijieImage image, int currPage = 0)
         {
             var filename = Properties.Settings.Default.FilenameFormat;
 
             // {memberId} - {imageId}{page}{maxPage} - {tags}
-            filename = filename.Replace("{memberId}", member.MemberId.ToString());
+            filename = filename.Replace("{memberId}", image.Member.MemberId.ToString());
             filename = filename.Replace("{imageId}", image.ImageId.ToString());
-            
+
             if (image.IsManga)
             {
                 filename = filename.Replace("{page}", currPage.ToString());
@@ -125,7 +139,7 @@ namespace NijieDownloader.UI
                 filename = filename.Replace("{maxPage}", "");
             }
 
-            if(image.Tags != null || image.Tags.Count > 0)
+            if (image.Tags != null || image.Tags.Count > 0)
                 filename = filename.Replace("{tags}", String.Join(" ", image.Tags));
             else
                 filename = filename.Replace("{tags}", "");
@@ -135,35 +149,50 @@ namespace NijieDownloader.UI
 
         private static void doMemberJob(JobDownloadViewModel job)
         {
-            // get the page
             job.Message = "Parsing member page";
             var memberPage = Bot.ParseMember(job.MemberId);
-            var rootPath = Properties.Settings.Default.RootDirectory;
 
             foreach (var imageTemp in memberPage.Images)
             {
-                var image = Bot.ParseImage(imageTemp.ImageId, memberPage.MemberUrl);
-                if (image.IsManga)
+                processImage(job, memberPage, imageTemp);
+            }
+        }
+
+        private static void processImage(JobDownloadViewModel job, NijieMember memberPage, NijieImage imageTemp)
+        {
+            var rootPath = Properties.Settings.Default.RootDirectory;
+            var image = Bot.ParseImage(imageTemp, memberPage);
+            if (image.IsManga)
+            {
+                for (int i = 0; i < image.ImageUrls.Count; ++i)
                 {
-                    for (int i = 0; i < image.ImageUrls.Count; ++i)
+                    var filename = makeFilename(image, i);
+                    job.Message = "Downloading: " + image.ImageUrls[i];
+                    var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
+                    pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
+
+                    var download = false;
+
+                    if (!File.Exists(pagefilename) || Properties.Settings.Default.Overwrite)
+                        download = true;
+                    else
+                        job.Message = "Skipped, file exists: " + pagefilename;
+
+                    if (download)
                     {
-                        var filename = makeFilename(memberPage, image, i);
-                        job.Message = "Downloading: " + image.ImageUrls[i];
-                        var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
-                        pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
                         Bot.Download(image.ImageUrls[i], image.Referer, pagefilename);
                         job.Message = "Saving to: " + pagefilename;
                     }
                 }
-                else
-                {
-                    var filename = makeFilename(memberPage, image);
-                    job.Message = "Downloading: " + image.BigImageUrl;
-                    filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
-                    filename = rootPath + "\\" + Util.SanitizeFilename(filename);
-                    Bot.Download(image.BigImageUrl, image.ViewUrl, filename);
-                    job.Message = "Saving to: " + filename;
-                }
+            }
+            else
+            {
+                var filename = makeFilename(image);
+                job.Message = "Downloading: " + image.BigImageUrl;
+                filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
+                filename = rootPath + "\\" + Util.SanitizeFilename(filename);
+                Bot.Download(image.BigImageUrl, image.ViewUrl, filename);
+                job.Message = "Saving to: " + filename;
             }
         }
     }
