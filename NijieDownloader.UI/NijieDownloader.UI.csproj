@@ -67,6 +67,7 @@
     <Compile Include="BatchDownloadPage.xaml.cs">
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EnumHelper.cs" />
     <Compile Include="SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
@@ -83,6 +84,7 @@
     <Compile Include="ViewModel\NijieSearchViewModel.cs" />
     <Compile Include="ViewModel\NijieImageViewModel.cs" />
     <Compile Include="ViewModel\NijieMemberViewModel.cs" />
+    <Compile Include="ZoomBorder.cs" />
     <Page Include="BatchDownloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -14,10 +14,10 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public NijieSearch Search(string query, int page)
+        public NijieSearch Search(string query, int page, int sort)
         {
             if (page < 1) page = 1;
-            NijieSearch search = new NijieSearch(query, page);
+            NijieSearch search = new NijieSearch(query, page, sort);
             HtmlDocument doc = getPage(search.QueryUrl);
 
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;

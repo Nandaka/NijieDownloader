@@ -103,6 +103,19 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("StartPage");
             }
         }
+
+        private int _sort;
+        public int Sort
+        {
+            get
+            {
+                return _sort;
+            }
+            set{
+                _sort = value;
+                onPropertyChanged("Sort");
+            }
+        }
     }
 
     public enum JobType{

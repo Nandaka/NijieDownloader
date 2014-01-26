@@ -56,7 +56,39 @@ namespace NijieDownloader.UI.ViewModel
                 var temp = new NijieImageViewModel(image);
                 _images.Add(temp);
             }
+            this.SelectedSort = (SearchSortType) search.Sort;
+        }
 
+        public NijieSearchViewModel(string query)
+        {
+            this.Search = new NijieSearch(query);
+        }
+
+        public IEnumerable<ValueDescription> SortList
+        {
+            get
+            {
+                return EnumHelper.GetAllValuesAndDescriptions<SearchSortType>();
+            }
+        }
+
+        private SearchSortType _selectedSort;
+
+        public SearchSortType SelectedSort
+        {
+            get
+            {
+                return _selectedSort;
+            }
+            set
+            {
+                if (_selectedSort != value)
+                {
+                    _selectedSort = value;
+                    Search.Sort = (int) value;
+                    onPropertyChanged("SelectedSort");
+                }
+            }
         }
     }
 }

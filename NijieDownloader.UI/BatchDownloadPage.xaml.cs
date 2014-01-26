@@ -49,13 +49,14 @@ namespace NijieDownloader.UI
             ViewData.Add(job);
         }
 
-        private void addJobForSearch(string tags, int page)
+        private void addJobForSearch(string tags, int page, int sort)
         {
             var job = new JobDownloadViewModel();
             job.JobType = JobType.Tags;
             job.SearchTag = tags;
             job.Status = Status.Added;
             job.StartPage = page;
+            job.Sort = sort;
             ViewData.Add(job);
         }
 
@@ -74,7 +75,8 @@ namespace NijieDownloader.UI
                 {
                     var tags = query.Get("tags");
                     var page = query.Get("page");
-                    addJobForSearch(tags, Int32.Parse(page));
+                    var sort = query.Get("sort");
+                    addJobForSearch(tags, Int32.Parse(page), Int32.Parse(sort));
                 }
             }
         }

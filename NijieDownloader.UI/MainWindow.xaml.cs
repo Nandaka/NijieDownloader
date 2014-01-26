@@ -36,6 +36,7 @@ namespace NijieDownloader.UI
 
         public const string IMAGE_LOADING = "Loading";
         public const string IMAGE_LOADED = "Done";
+        public const string IMAGE_ERROR = "Error";
 
         public MainWindow()
         {
@@ -63,18 +64,25 @@ namespace NijieDownloader.UI
         {
             Factory.StartNew(() =>
             {
-                url = Util.FixUrl(url);
-                referer = Util.FixUrl(referer);
-                var result = MainWindow.Bot.DownloadData(url, referer);
-                using (var ms = new MemoryStream(result))
+                try
                 {
-                    var t = new BitmapImage();
-                    t.BeginInit();
-                    t.CacheOption = BitmapCacheOption.OnLoad;
-                    t.StreamSource = ms;
-                    t.EndInit();
-                    t.Freeze();
-                    action(t, IMAGE_LOADED);
+                    url = Util.FixUrl(url);
+                    referer = Util.FixUrl(referer);
+                    var result = MainWindow.Bot.DownloadData(url, referer);
+                    using (var ms = new MemoryStream(result))
+                    {
+                        var t = new BitmapImage();
+                        t.BeginInit();
+                        t.CacheOption = BitmapCacheOption.OnLoad;
+                        t.StreamSource = ms;
+                        t.EndInit();
+                        t.Freeze();
+                        action(t, IMAGE_LOADED);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    action(null, IMAGE_ERROR);
                 }
             }
             );
@@ -104,11 +112,12 @@ namespace NijieDownloader.UI
         private static void doSearchJob(JobDownloadViewModel job)
         {
             int page = job.StartPage;
+            int sort = job.Sort;
             bool flag = true;
             while (flag)
             {
                 job.Message = "Parsing search page: " + page;
-                var searchPage = Bot.Search(job.SearchTag, page);
+                var searchPage = Bot.Search(job.SearchTag, page, sort);
 
                 foreach (var image in searchPage.Images)
                 {

@@ -1,12 +1,13 @@
 ﻿<Page x:Class="NijieDownloader.UI.ImagePage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
-             mc:Ignorable="d" 
-             xmlns:h="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
-             d:DesignHeight="600" d:DesignWidth="800">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+    mc:Ignorable="d" 
+    xmlns:h="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
+    xmlns:local="clr-namespace:NijieDownloader.UI"
+    d:DesignHeight="600" d:DesignWidth="800">
     <Page.Resources>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
         <h:ListToStringConverter x:Key="ListToStringConverter"/>
@@ -25,7 +26,7 @@
 
                 <StackPanel Orientation="Vertical" Grid.Column="0">
                     <TextBlock Text="Image ID"/>
-                    <TextBox Name="txtImageID" Height="25"/>
+                    <TextBox Name="txtImageID" Height="25" Text="15880"/>
 
                     <TextBlock Text="Title" />
                     <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
@@ -40,15 +41,16 @@
                     <TextBox Name="txtTags" TextWrapping="Wrap"
                                  Text="{Binding Path=Image.Tags, Converter={StaticResource ListToStringConverter}}"/>
 
+                    <TextBlock Text="Is Manga" />
+                    <TextBox Name="txtIsManga" Text="{Binding Path=Image.IsManga}"/>
+                    
                     <Button Name="btnFetch" Click="btnFetch_Click">Fetch Image</Button>
                 </StackPanel>
-                
-                <ScrollViewer Grid.Column="1" Name="pnlImage">
-                    <Image 
-                       Source="{Binding Path=BigImage, IsAsync=true}" 
-                       Name="imgBigImage" StretchDirection="DownOnly"/>
 
-                </ScrollViewer>
+                <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent" Grid.Column="1">
+                    <Image Name="imgBigImage" 
+                       Source="{Binding Path=BigImage, IsAsync=true}" />
+                </local:ZoomBorder>
             </Grid>
         </StackPanel>
     </Grid>

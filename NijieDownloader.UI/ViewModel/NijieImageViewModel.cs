@@ -42,14 +42,29 @@ namespace NijieDownloader.UI.ViewModel
                     this.Status = MainWindow.IMAGE_LOADING;
                     var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
                     loading.Freeze();
-                    MainWindow.LoadImage(Image.BigImageUrl, Image.Referer,
-                        new Action<BitmapImage, string>((image, status) =>
-                        {
-                            this.BigImage = null;
-                            this.BigImage = image;
-                            this.Status = status;
-                        }
-                    ));
+
+                    if (Image.IsManga)
+                    {
+                        MainWindow.LoadImage(Image.ImageUrls[0], Image.Referer,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                this.BigImage = null;
+                                this.BigImage = image;
+                                this.Status = status;
+                            }
+                        ));
+                    }
+                    else
+                    {
+                        MainWindow.LoadImage(Image.BigImageUrl, Image.Referer,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                this.BigImage = null;
+                                this.BigImage = image;
+                                this.Status = status;
+                            }
+                        ));
+                    }
                     return loading;
                 }
                 return _bigImage;

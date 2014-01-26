@@ -41,13 +41,16 @@ namespace NijieDownloader.UI
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+            if (e.ClickCount >= 2)
             {
-                var uri = new Uri("/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
-                var frame = NavigationHelper.FindFrame(null, this);
-                if (frame != null)
+                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
                 {
-                    frame.Source = uri;
+                    var uri = new Uri("/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
+                    var frame = NavigationHelper.FindFrame(null, this);
+                    if (frame != null)
+                    {
+                        frame.Source = uri;
+                    }
                 }
             }
         }

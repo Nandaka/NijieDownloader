@@ -7,10 +7,11 @@ namespace NijieDownloader.Library.Model
 {
     public class NijieSearch
     {
-        public NijieSearch(string query, int page=1)
+        public NijieSearch(string query, int page = 1, int sort = 0)
         {
             this.Query = query;
             this.Page = page;
+            this.Sort = sort;
         }
 
         public string Query { get; set; }
@@ -18,7 +19,14 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return "http://nijie.info/search.php?word=" + this.Query + "&p=" + this.Page + "&mode=" + "&illust_type=" + "&sort=";
+                var url = String.Format(@"http://nijie.info/search.php?type={0}&word={1}&p={2}&mode={3}&illust_type={4}&sort={5}"
+                    , ""
+                    , this.Query
+                    , this.Page
+                    , ""
+                    , ""
+                    , this.Sort);
+                return url;
             }
             private set { }
         }
@@ -41,5 +49,7 @@ namespace NijieDownloader.Library.Model
         public bool IsNextAvailable { get; set; }
         public bool IsPrevAvailable { get; set; }
 
+
+        public int Sort { get; set; }
     }
 }

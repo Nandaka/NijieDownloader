@@ -16,6 +16,7 @@ using NijieDownloader.Library.Model;
 using FirstFloor.ModernUI.Windows.Navigation;
 using NijieDownloader.UI.ViewModel;
 using System.Diagnostics;
+using System.ComponentModel;
 
 namespace NijieDownloader.UI
 {
@@ -29,17 +30,22 @@ namespace NijieDownloader.UI
         public SearchPage()
         {
             InitializeComponent();
+            this.ViewData = new NijieSearchViewModel(txtQuery.Text);
+            this.DataContext = ViewData;
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+            if (e.ClickCount >= 2)
             {
-                var uri = new Uri("/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
-                var frame = NavigationHelper.FindFrame(null, this);
-                if (frame != null)
+                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
                 {
-                    frame.Source = uri;
+                    var uri = new Uri("/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
+                    var frame = NavigationHelper.FindFrame(null, this);
+                    if (frame != null)
+                    {
+                        frame.Source = uri;
+                    }
                 }
             }
         }
@@ -55,9 +61,9 @@ namespace NijieDownloader.UI
             lbxImages.MaxHeight = e.NewSize.Height - 280;
         }
 
-        private void doSearch(string query, int page)
+        private void doSearch(string query, int page, int sort)
         {
-            var result = MainWindow.Bot.Search(query, page);
+            var result = MainWindow.Bot.Search(query, page, sort);
             ViewData = new NijieSearchViewModel(result);
             this.DataContext = ViewData;
         }
@@ -65,34 +71,49 @@ namespace NijieDownloader.UI
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
             int page = Int32.Parse(txtPage.Text) - 1;
+            int sort = (int) cbxSort.SelectedValue;
             if (page < 1) page = 1;
-            doSearch(txtQuery.Text, page);
+            doSearch(txtQuery.Text, page, sort);
         }
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
         {
             int page = 1;
             Int32.TryParse(txtPage.Text, out page);
-            doSearch(txtQuery.Text, page);
+            int sort = (int)cbxSort.SelectedValue;
+            doSearch(txtQuery.Text, page, sort);
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            var page = Int32.Parse(txtPage.Text) + 1;            
-            doSearch(txtQuery.Text, page);
+            var page = Int32.Parse(txtPage.Text) + 1;
+            int sort = (int)cbxSort.SelectedValue;
+            doSearch(txtQuery.Text, page, sort);
         }
 
         private void btnAddBatchJob_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtQuery.Text))
             {
-                var uri = new Uri("/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text, UriKind.RelativeOrAbsolute);
+                var uri = new Uri("/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text + "&sort=" + cbxSort.SelectedValue, UriKind.RelativeOrAbsolute);
                 var frame = NavigationHelper.FindFrame(null, this);
                 if (frame != null)
                 {
                     frame.Source = uri;
                 }
             }
-        }  
+        }
+    }
+
+    public enum SearchSortType
+    {
+        [Description("Latest Post")]
+        LATEST = 0,
+        [Description("Popularity")]
+        POPULARITY = 1,
+        [Description("Overtake? Post")]
+        OVERTAKE = 2,
+        [Description("Oldest Post")]
+        OLDEST = 3
     }
 }
