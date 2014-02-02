@@ -120,38 +120,37 @@ namespace NijieDownloader.UI
 
         private static void doSearchJob(JobDownloadViewModel job)
         {
-            int page = job.StartPage;
+            job.CurrentPage = job.StartPage;
             int endPage = job.EndPage;
             int sort = job.Sort;
             int limit = job.Limit;
             bool flag = true;
 
-            int count = 0;
+            job.DownloadCount = 0;
 
             while (flag)
             {
-                job.Message = "Parsing search page: " + page;
-                var searchPage = Bot.Search(job.SearchTag, page, sort);
+                job.Message = "Parsing search page: " + job.CurrentPage;
+                var searchPage = Bot.Search(job.SearchTag, job.CurrentPage, sort);
 
                 foreach (var image in searchPage.Images)
                 {
                     processImage(job, null, image);
-                    ++count;
-                    if (count > limit)
+                    ++job.DownloadCount;
+                    if (job.DownloadCount > limit && limit != 0)
                     {
                         job.Message = "Image limit reached: " + limit;
-                        flag = false;
-                        break;
+                        return;
                     }
                 }
 
-                ++page;
-                if (page > endPage)
+                ++job.CurrentPage;
+                if (job.CurrentPage > endPage && endPage != 0)
                 {
                     job.Message = "Page limit reached: " + endPage;
-                    break;
+                    return;
                 }
-                else if (count < limit)
+                else if (job.DownloadCount < limit)
                 {
                     flag = searchPage.IsNextAvailable;
                 }

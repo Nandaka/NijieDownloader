@@ -67,7 +67,10 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
-                return _message;
+                if (JobType == JobType.Tags || JobType == JobType.Member)
+                    return String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
+                else
+                    return _message;
             }
             set
             {
@@ -140,6 +143,34 @@ namespace NijieDownloader.UI.ViewModel
             set{
                 _sort = value;
                 onPropertyChanged("Sort");
+            }
+        }
+
+        private int _downloadCount;
+        public int DownloadCount
+        {
+            get
+            {
+                return _downloadCount;
+            }
+            set
+            {
+                _downloadCount = value;
+                onPropertyChanged("DownloadCount");
+            }
+        }
+
+        private int _currentPage;
+        public int CurrentPage
+        {
+            get
+            {
+                return _currentPage;
+            }
+            set
+            {
+                _currentPage = value;
+                onPropertyChanged("CurrentPage");
             }
         }
     }
