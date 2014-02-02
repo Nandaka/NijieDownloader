@@ -16,6 +16,8 @@ namespace NijieDownloader.UI.ViewModel
         public NijieImageViewModel(NijieImage image)
         {
             this.Image = image;
+            _page = 0;
+            _status = "N/A";
         }
 
         private NijieImage _image;
@@ -37,6 +39,12 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
+                if (Image.IsFriendOnly)
+                {
+                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/friends.png"));
+                    loading.Freeze();
+                    return loading;
+                }
                 if (_bigImage == null || this.Status != MainWindow.IMAGE_LOADED)
                 {
                     this.Status = MainWindow.IMAGE_LOADING;
@@ -45,25 +53,11 @@ namespace NijieDownloader.UI.ViewModel
 
                     if (Image.IsManga)
                     {
-                        MainWindow.LoadImage(Image.ImageUrls[0], Image.Referer,
-                            new Action<BitmapImage, string>((image, status) =>
-                            {
-                                this.BigImage = null;
-                                this.BigImage = image;
-                                this.Status = status;
-                            }
-                        ));
+                        LoadBigImage(Image.ImageUrls[Page]);
                     }
                     else
                     {
-                        MainWindow.LoadImage(Image.BigImageUrl, Image.Referer,
-                            new Action<BitmapImage, string>((image, status) =>
-                            {
-                                this.BigImage = null;
-                                this.BigImage = image;
-                                this.Status = status;
-                            }
-                        ));
+                        LoadBigImage(Image.BigImageUrl);
                     }
                     return loading;
                 }
@@ -124,6 +118,50 @@ namespace NijieDownloader.UI.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
+        }
+
+        private int _page = 0;
+        public int Page
+        {
+            get { return _page; }
+            set
+            {
+                _page = value;
+                onPropertyChanged("Page");
+            }
+        }
+
+        public void Prev()
+        {
+            if (this.Page > 0)
+            {
+                --this.Page;
+                this.Status = MainWindow.IMAGE_LOADING;
+                LoadBigImage(Image.ImageUrls[this.Page]);
+
+            }
+        }
+
+        public void Next()
+        {
+            if (this.Page < Image.ImageUrls.Count - 1)
+            {
+                ++this.Page;
+                this.Status = MainWindow.IMAGE_LOADING;
+                LoadBigImage(Image.ImageUrls[this.Page]);
+            }
+        }
+
+        private void LoadBigImage(string url)
+        {
+            MainWindow.LoadImage(url, Image.Referer,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                this.BigImage = null;
+                                this.BigImage = image;
+                                this.Status = status;
+                            }
+                        ));
         }
     }
 }

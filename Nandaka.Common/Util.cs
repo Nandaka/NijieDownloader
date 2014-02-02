@@ -39,6 +39,18 @@ namespace Nandaka.Common
             return input;
         }
 
+        public static void CreateSubDir(string filename)
+        {
+            if (filename.Contains(@"\"))
+            {
+                string dir = filename.Substring(0, filename.LastIndexOf(@"\"));
+                if (!Directory.Exists(dir))
+                {
+                    var result = Directory.CreateDirectory(dir);
+                }
+            }
+        }
+
         public static string ParseExtension(string url)
         {
             var dots = url.Split('.');

@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
 
 namespace NijieDownloader.Library
 {
@@ -35,7 +36,14 @@ namespace NijieDownloader.Library
         
         public NijieImage ParseImage(NijieImage image, NijieMember member = null)
         {
-            HtmlDocument doc = getPage(image.ViewUrl);
+            var result = getPage(image.ViewUrl);
+            HtmlDocument doc = result.Item1;
+            if (result.Item2.ResponseUri.ToString() != image.ViewUrl)
+            {
+                image.IsFriendOnly = true;
+                return image;
+                //throw new Exception("Mismatch response url, possibly locked image");
+            }
 
             if (member == null)
             {
@@ -79,6 +87,13 @@ namespace NijieDownloader.Library
             var titleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/p");
             if (titleDiv != null)
                 image.Title = titleDiv.InnerText;
+            if (String.IsNullOrWhiteSpace(image.Title))
+            {
+                var titleDiv2 = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/h2");
+                if (titleDiv2 != null)
+                    image.Title = titleDiv2.InnerText;
+
+            }
 
             var descDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-honbun']");
             if (descDiv != null)
@@ -117,7 +132,7 @@ namespace NijieDownloader.Library
         public NijieMember ParseMember(int memberId)
         {
             NijieMember member = new NijieMember(memberId);
-            HtmlDocument doc = getPage(member.MemberUrl);
+            HtmlDocument doc = getPage(member.MemberUrl).Item1;
 
             var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
             if (profileDiv != null)
@@ -157,13 +172,21 @@ namespace NijieDownloader.Library
                         var div = new HtmlDocument();
                         div.LoadHtml(imageDiv.SelectSingleNode("//div[@class='nijie']").InnerHtml);
 
+                        var link = div.DocumentNode.SelectSingleNode("//a");
+                        image.Title = link.Attributes["title"].Value;
+
                         var thumb = div.DocumentNode.SelectSingleNode("//a/img");
-                        image.Title = thumb.Attributes["alt"].Value;
                         image.ThumbImageUrl = thumb.Attributes["src"].Value;
+                        // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
+                        image.IsFriendOnly = false;
+                        if (image.ThumbImageUrl.EndsWith("friends.png"))
+                        {
+                            image.IsFriendOnly = true;
+                        }
 
                         image.Referer = referer;
-                        image.IsManga = false;
 
+                        image.IsManga = false;
                         var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
                         if (icon != null)
                         {
@@ -179,13 +202,14 @@ namespace NijieDownloader.Library
             return list;
         }
 
-        private HtmlDocument getPage(string url)
+        private Tuple<HtmlDocument, WebResponse> getPage(string url)
         {
             ExtendedWebClient client = new ExtendedWebClient();
             var imagePage = client.DownloadData(url);
+
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(Encoding.UTF8.GetString(imagePage));
-            return doc;
+            return new Tuple<HtmlDocument, WebResponse>(doc, client.Response);
         }
 
         public void Download(string url, string referer, string filename)
@@ -195,6 +219,7 @@ namespace NijieDownloader.Library
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
             var tempFilename = filename + ".!nijie";
+            Util.CreateSubDir(tempFilename);
             client.DownloadFile(url, tempFilename);
             File.Move(tempFilename, filename);
         }

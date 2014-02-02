@@ -16,15 +16,17 @@ using NijieDownloader.UI.ViewModel;
 using System.Collections.ObjectModel;
 using FirstFloor.ModernUI.Windows;
 using System.Web;
+using FirstFloor.ModernUI.Windows.Controls;
 
 namespace NijieDownloader.UI
 {
     /// <summary>
     /// Interaction logic for BatchDownloadPage.xaml
     /// </summary>
-    public partial class BatchDownloadPage : UserControl, IContent
+    public partial class BatchDownloadPage : Page, IContent
     {
         public ObservableCollection<JobDownloadViewModel> ViewData { get; set; }
+        public JobDownloadViewModel NewJob { get; set; }
 
         public BatchDownloadPage()
         {
@@ -36,28 +38,41 @@ namespace NijieDownloader.UI
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Add logic to add Job
-            addJobForMember(647);
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
+            this.NewJob = new JobDownloadViewModel();
+            pnlAddJob.DataContext = this.NewJob;
         }
 
         private void addJobForMember(int memberId)
         {
-            var job = new JobDownloadViewModel();
-            job.JobType = JobType.Member;
-            job.MemberId = memberId;
-            job.Status = Status.Added;
-            ViewData.Add(job);
+            this.NewJob = new JobDownloadViewModel();
+            this.NewJob.JobType = JobType.Member;
+            this.NewJob.MemberId = memberId;
+            this.NewJob.Status = Status.Added;
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;            
+            pnlAddJob.DataContext = this.NewJob;
         }
 
         private void addJobForSearch(string tags, int page, int sort)
         {
-            var job = new JobDownloadViewModel();
-            job.JobType = JobType.Tags;
-            job.SearchTag = tags;
-            job.Status = Status.Added;
-            job.StartPage = page;
-            job.Sort = sort;
-            ViewData.Add(job);
+            this.NewJob = new JobDownloadViewModel();
+            this.NewJob.JobType = JobType.Tags;
+            this.NewJob.SearchTag = tags;
+            this.NewJob.Status = Status.Added;
+            this.NewJob.StartPage = page;
+            this.NewJob.Sort = sort; 
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
+            pnlAddJob.DataContext = this.NewJob;
+        }
+
+        private void addJobForImage(int p)
+        {
+            this.NewJob = new JobDownloadViewModel();
+            this.NewJob.JobType = JobType.Image;
+            this.NewJob.ImageId = p;
+            this.NewJob.Status = Status.Added;
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
+            pnlAddJob.DataContext = this.NewJob;
         }
 
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
@@ -76,11 +91,16 @@ namespace NijieDownloader.UI
                     var tags = query.Get("tags");
                     var page = query.Get("page");
                     var sort = query.Get("sort");
-                    addJobForSearch(tags, Int32.Parse(page), Int32.Parse(sort));
+                    addJobForSearch(tags, Int32.Parse(page), (int)Enum.Parse(typeof(SearchSortType), sort));
+                }
+                else if (query.Get("type").Equals("image"))
+                {
+                    var imageId = query.Get("imageId");
+                    addJobForImage(Int32.Parse(imageId));
                 }
             }
         }
-
+        
         public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
         }
@@ -100,6 +120,59 @@ namespace NijieDownloader.UI
                 if (job.Status == Status.Added)
                 {
                     MainWindow.DoJob(job);
+                }
+            }
+        }
+
+        private void btnJobOk_Click(object sender, RoutedEventArgs e)
+        {
+            var ok = true;
+            if (NewJob.JobType == JobType.Tags)
+            {
+                if (String.IsNullOrWhiteSpace(NewJob.SearchTag))
+                {
+                    ModernDialog.ShowMessage("Query String cannot be empty!", "Error", MessageBoxButton.OK);
+                    ok = false;
+                }
+            }
+            else if (NewJob.JobType == JobType.Image)
+            {
+                if (NewJob.ImageId <= 0)
+                {
+                    ok = false;
+                }
+            }
+            else if (NewJob.JobType == JobType.Member)
+            {
+                if (NewJob.MemberId <= 0)
+                {
+                    ok = false;
+                }
+            }
+
+            if (ok)
+            {
+                ViewData.Add(NewJob);
+                pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
+
+            }
+
+        }
+
+        private void btnJobCancel_Click(object sender, RoutedEventArgs e)
+        {
+            pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
+            pnlAddJob.DataContext = null;
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < ViewData.Count; ++i)
+            {
+                if (ViewData[i].IsSelected)
+                {
+                    ViewData.RemoveAt(i);
+                    --i;
                 }
             }
         }

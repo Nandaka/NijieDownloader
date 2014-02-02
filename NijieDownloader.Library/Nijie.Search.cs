@@ -18,7 +18,7 @@ namespace NijieDownloader.Library
         {
             if (page < 1) page = 1;
             NijieSearch search = new NijieSearch(query, page, sort);
-            HtmlDocument doc = getPage(search.QueryUrl);
+            HtmlDocument doc = getPage(search.QueryUrl).Item1;
 
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;
             search.Images = parseImages(imagesDiv, search.QueryUrl);
@@ -28,12 +28,20 @@ namespace NijieDownloader.Library
 
             search.IsNextAvailable = false;
             var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//p");
-            foreach(var btn in topNav) {
-                if (btn.InnerText.Contains("次へ"))
+            if (topNav != null)
+            {
+                foreach (var btn in topNav)
                 {
-                    search.IsNextAvailable = true;
-                    break;
+                    if (btn.InnerText.Contains("次へ"))
+                    {
+                        search.IsNextAvailable = true;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                search.IsNextAvailable = false;
             }
 
             return search;

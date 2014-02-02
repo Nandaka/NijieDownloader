@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FirstFloor.ModernUI.Windows;
 using NijieDownloader.UI.ViewModel;
+using FirstFloor.ModernUI.Windows.Navigation;
 
 namespace NijieDownloader.UI
 {
@@ -27,7 +28,6 @@ namespace NijieDownloader.UI
         public ImagePage()
         {
             InitializeComponent();
-
         }
 
         private void LoadImage(int imageId)
@@ -65,6 +65,44 @@ namespace NijieDownloader.UI
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
             
+        }
+
+        private void btnAddBatch_Click(object sender, RoutedEventArgs e)
+        {
+            var uri = new Uri("/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text, UriKind.RelativeOrAbsolute);
+            var frame = NavigationHelper.FindFrame(null, this);
+            if (frame != null)
+            {
+                frame.Source = uri;
+            }
+        }
+        
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            var uri = new Uri("/SearchPage.xaml#query=" + e.Uri.OriginalString, UriKind.RelativeOrAbsolute);
+            var frame = NavigationHelper.FindFrame(null, this);
+            if (frame != null)
+            {
+                frame.Source = uri;
+            }
+
+            e.Handled = true;
+        }
+
+        private void btnPrev_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewData != null)
+            {
+                ViewData.Prev();
+            }
+        }
+
+        private void btnNext_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewData != null)
+            {
+                ViewData.Next();
+            }
         }
     }
 }

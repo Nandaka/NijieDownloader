@@ -34,7 +34,9 @@ namespace NijieDownloader.UI
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
         {
-            var result = MainWindow.Bot.ParseMember(Int32.Parse(txtMemberID.Text));
+            int memberId = 0;
+            Int32.TryParse(txtMemberID.Text, out memberId);
+            var result = MainWindow.Bot.ParseMember(memberId);
             ViewData = new NijieMemberViewModel(result);
             this.DataContext = ViewData;
         }

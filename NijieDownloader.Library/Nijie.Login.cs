@@ -48,7 +48,7 @@ namespace NijieDownloader.Library
             ExtendedWebClient client = new ExtendedWebClient();
             NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = false };
 
-            HtmlDocument doc = getPage(NijieConstants.NIJIE_LOGIN_URL);
+            HtmlDocument doc = getPage(NijieConstants.NIJIE_LOGIN_URL).Item1;
 
             var tickets = doc.DocumentNode.SelectNodes("//input[@name='ticket']");
             if (tickets != null && tickets.Count > 0)

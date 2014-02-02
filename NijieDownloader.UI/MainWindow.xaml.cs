@@ -102,6 +102,9 @@ namespace NijieDownloader.UI
                     case JobType.Tags:
                         doSearchJob(job);
                         break;
+                    case JobType.Image:
+                        doImageJob(job);
+                        break;
                 }
 
                 job.Status = Status.Completed;
@@ -109,11 +112,22 @@ namespace NijieDownloader.UI
             );
         }
 
+        private static void doImageJob(JobDownloadViewModel job)
+        {
+            NijieImage image = new NijieImage(job.ImageId);
+            processImage(job, null, image);
+        }
+
         private static void doSearchJob(JobDownloadViewModel job)
         {
             int page = job.StartPage;
+            int endPage = job.EndPage;
             int sort = job.Sort;
+            int limit = job.Limit;
             bool flag = true;
+
+            int count = 0;
+
             while (flag)
             {
                 job.Message = "Parsing search page: " + page;
@@ -122,10 +136,25 @@ namespace NijieDownloader.UI
                 foreach (var image in searchPage.Images)
                 {
                     processImage(job, null, image);
+                    ++count;
+                    if (count > limit)
+                    {
+                        job.Message = "Image limit reached: " + limit;
+                        flag = false;
+                        break;
+                    }
                 }
 
                 ++page;
-                flag = searchPage.IsNextAvailable;
+                if (page > endPage)
+                {
+                    job.Message = "Page limit reached: " + endPage;
+                    break;
+                }
+                else if (count < limit)
+                {
+                    flag = searchPage.IsNextAvailable;
+                }
             }
         }
 

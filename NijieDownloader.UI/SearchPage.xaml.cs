@@ -17,13 +17,14 @@ using FirstFloor.ModernUI.Windows.Navigation;
 using NijieDownloader.UI.ViewModel;
 using System.Diagnostics;
 using System.ComponentModel;
+using FirstFloor.ModernUI.Windows;
 
 namespace NijieDownloader.UI
 {
     /// <summary>
     /// Interaction logic for Page1.xaml
     /// </summary>
-    public partial class SearchPage : Page
+    public partial class SearchPage : Page, IContent
     {
         public NijieSearchViewModel ViewData { get; set; }
 
@@ -101,6 +102,35 @@ namespace NijieDownloader.UI
                 {
                     frame.Source = uri;
                 }
+            }
+        }
+
+        public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
+        {
+            ProcessNavigation(e.Fragment);
+        }
+
+        public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
+        {
+        }
+
+        public void OnNavigatedTo(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
+        {
+        }
+
+        public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+        }
+
+        private void ProcessNavigation(string fragment)
+        {
+            if (!String.IsNullOrWhiteSpace(fragment))
+            {
+                var uri = new Uri("http://localhost/?" + fragment);
+                var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                ViewData = new NijieSearchViewModel(query.Get("query"));
+
+                this.DataContext = ViewData;
             }
         }
     }

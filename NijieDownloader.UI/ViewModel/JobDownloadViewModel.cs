@@ -37,11 +37,11 @@ namespace NijieDownloader.UI.ViewModel
                 switch (JobType)
                 {
                     case ViewModel.JobType.Image:
-                        return "Image ID: " + ImageId;
+                        return String.Format("Image ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", ImageId, StartPage, EndPage, Limit);
                     case ViewModel.JobType.Member:
-                        return "Member ID: " + MemberId;
+                        return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
                     case ViewModel.JobType.Tags:
-                        return "Search Tags: " + SearchTag + " Start StartPage: " + StartPage;
+                        return String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
                 }
                 return "N/A";
             }
@@ -101,6 +101,32 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _startPage = value;
                 onPropertyChanged("StartPage");
+            }
+        }
+
+        private int _endPage = 0;
+        public int EndPage
+        {
+            get
+            { return _endPage; }
+
+            set
+            {
+                _endPage = value;
+                onPropertyChanged("EndPage");
+            }
+        }
+
+        private int _limit = 0;
+        public int Limit
+        {
+            get
+            { return _limit; }
+
+            set
+            {
+                _limit = value;
+                onPropertyChanged("Limit");
             }
         }
 

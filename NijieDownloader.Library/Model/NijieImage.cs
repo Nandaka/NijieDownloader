@@ -32,6 +32,7 @@ namespace NijieDownloader.Library.Model
         public NijieMember Member { get; set; }
 
         public string Referer { get; set; }
+        public bool IsFriendOnly { get; set; }
 
         public NijieImage(int imageId)
         {

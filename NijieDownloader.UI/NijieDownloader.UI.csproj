@@ -68,6 +68,7 @@
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnumHelper.cs" />
+    <Compile Include="JobTypeToVisibilityConverter.cs" />
     <Compile Include="SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
@@ -176,6 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\no_avatar.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\friends.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
