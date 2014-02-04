@@ -25,6 +25,7 @@
                            Height="30" Width="30"
                            Visibility="{Binding Path=Image.IsManga, 
                            Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                    <CheckBox IsChecked="{Binding Path=IsSelected}" Margin="100,100,0,0"/>
                 </Grid>
                 <TextBlock Text="{Binding Path=Status}" Height="25"/>
             </StackPanel>
@@ -37,23 +38,21 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Process Member" Style="{StaticResource Heading2}" />
         <DockPanel Grid.Row="1" >
-            <Grid DockPanel.Dock="Top">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="300" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <TextBlock Text="Member ID" Margin="10,0,0,10"/>
-                    <TextBox Name="txtMemberID" Height="25" Width="100" Text="17296" Margin="10,0,0,10"/>
-                    <Button Width="120" Name="btnFetch" Margin="10,0,0,10" Click="btnFetch_Click">Fetch Images</Button>
-                    <Button Width="120" Name="btnAddToBatch" Margin="10,0,0,10" Click="btnAddToBatch_Click">Add to Batch</Button>
+            <DockPanel DockPanel.Dock="Top">
+
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <TextBlock Text="Member ID" Margin="5,5,5,0"/>
+                    <TextBox Name="txtMemberID" Height="25" Width="100" Text="17296" Margin="5,5,5,5"/>
+                    <Button Width="120" Name="btnFetch" Margin="5,5,5,5" Click="btnFetch_Click">Fetch Images</Button>
+                    <Button Width="120" Name="btnAddToBatch" Margin="5,5,5,5" Click="btnAddToBatch_Click">Add to Batch</Button>
+                    <Button Width="150" Name="btnAddImagesBatch" Margin="5,5,5,5" Click="btnAddImagesBatch_Click">Add Selected Images</Button>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Width="100" Name="btnPrev" Margin="10,0,0,10">Previous</Button>
-                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="10,0,0,10"/>
-                    <Button Width="100" Name="btnNext" Margin="10,0,0,10">Next</Button>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="50" Name="btnPrev" Margin="5,5,5,5">&lt;</Button>
+                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="5,5,5,5"/>
+                    <Button Width="50" Name="btnNext" Margin="5,5,5,5">&gt;</Button>
                 </StackPanel>
-            </Grid>
+            </DockPanel>
 
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
                 <TextBlock Text="Status :" HorizontalAlignment="Left"/>

@@ -171,5 +171,16 @@ namespace NijieDownloader.UI.ViewModel
                             }
                         ));
         }
+
+        private bool _isSelected;
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                _isSelected = value;
+                onPropertyChanged("IsSelected");
+            }
+        }
     }
 }

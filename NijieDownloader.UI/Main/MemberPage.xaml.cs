@@ -25,7 +25,7 @@ namespace NijieDownloader.UI
     /// <summary>
     /// Interaction logic for Page1.xaml
     /// </summary>
-    public partial class MemberPage : Page
+    public partial class MemberPage : Page, IContent
     {
         public NijieMemberViewModel ViewData { get; set; }
 
@@ -84,5 +84,49 @@ namespace NijieDownloader.UI
             }
         }
 
+        private void btnAddImagesBatch_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = from l in ViewData.Images
+                           where l.IsSelected == true
+                           select l.Image.ImageId.ToString();
+
+            var join = String.Join(",", selected.ToList<String>());
+            if (!String.IsNullOrWhiteSpace(join))
+            {
+                var uri = new Uri("/Main/BatchDownloadPage.xaml#type=image&imageId=" + join, UriKind.RelativeOrAbsolute);
+                var frame = NavigationHelper.FindFrame(null, this);
+                if (frame != null)
+                {
+                    frame.Source = uri;
+                }
+            }
+        }
+
+
+        public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
+        {
+            if (!String.IsNullOrWhiteSpace(e.Fragment))
+            {
+                var pair = e.Fragment.Split('=');
+                txtMemberID.Text = pair[1];
+                int memberId = 0;
+                Int32.TryParse(txtMemberID.Text, out memberId);
+                var result = MainWindow.Bot.ParseMember(memberId);
+                ViewData = new NijieMemberViewModel(result);
+                this.DataContext = ViewData;
+            }
+        }
+
+        public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
+        {
+        }
+
+        public void OnNavigatedTo(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
+        {
+        }
+
+        public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
+        {
+        }
     }
 }

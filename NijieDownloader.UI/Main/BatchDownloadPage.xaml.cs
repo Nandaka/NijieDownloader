@@ -71,8 +71,8 @@ namespace NijieDownloader.UI
             this.NewJob.JobType = JobType.Image;
             this.NewJob.ImageId = p;
             this.NewJob.Status = Status.Added;
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
-            pnlAddJob.DataContext = this.NewJob;
+            ViewData.Add(NewJob);
+            pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
         }
 
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
@@ -95,8 +95,11 @@ namespace NijieDownloader.UI
                 }
                 else if (query.Get("type").Equals("image"))
                 {
-                    var imageId = query.Get("imageId");
-                    addJobForImage(Int32.Parse(imageId));
+                    var imageIds = query.Get("imageId");
+                    var ids = imageIds.Split(',');
+                    foreach(var imageId in ids) {
+                        addJobForImage(Int32.Parse(imageId));
+                    }
                 }
             }
         }

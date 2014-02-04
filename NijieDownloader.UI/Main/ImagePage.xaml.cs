@@ -93,7 +93,7 @@ namespace NijieDownloader.UI
 
             e.Handled = true;
         }
-
+        
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
             if (ViewData != null)
@@ -114,5 +114,18 @@ namespace NijieDownloader.UI
         {
             imgBigImage.Height = MainWindow.GetWindow(imgBigImage).Height - 60;
         }
+
+        private void lblMember_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var uri = new Uri("/Main/MemberPage.xaml#memberId=" + lblMember.Content, UriKind.RelativeOrAbsolute);
+            var frame = NavigationHelper.FindFrame(null, this);
+            if (frame != null)
+            {
+                frame.Source = uri;
+            }
+
+            e.Handled = true;
+        }
+        
     }
 }

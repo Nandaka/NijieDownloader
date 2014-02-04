@@ -33,6 +33,13 @@
                             <TextBlock Text="Image ID" Margin="5,5,5,0"/>
                             <TextBox Name="txtImageID" Height="25" Text="{Binding Path=Image.ImageId}"/>
 
+                            <TextBlock Text="Member ID" Margin="5,5,5,0"/>
+                            <TextBlock Margin="5,5,5,5">
+                                <Hyperlink NavigateUri="{Binding Path=Image.Member.MemberId}">
+                                    <Label Name="lblMember"  Content="{Binding Path=Image.Member.MemberId}" MouseDoubleClick="lblMember_MouseDoubleClick" />
+                                </Hyperlink>
+                            </TextBlock>
+
                             <TextBlock Text="Title" Margin="5,5,5,0" />
                             <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
 
@@ -53,9 +60,9 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Margin="5,0,0,5">
-                                    <Hyperlink NavigateUri="{Binding}" RequestNavigate="Hyperlink_RequestNavigate">
-                                        <Label Content="{Binding}" />
-                                    </Hyperlink>
+                                            <Hyperlink NavigateUri="{Binding}" RequestNavigate="Hyperlink_RequestNavigate">
+                                                <Label Content="{Binding}" />
+                                            </Hyperlink>
                                         </TextBlock>
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>

@@ -37,7 +37,7 @@ namespace NijieDownloader.UI.ViewModel
                 switch (JobType)
                 {
                     case ViewModel.JobType.Image:
-                        return String.Format("Image ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", ImageId, StartPage, EndPage, Limit);
+                        return String.Format("Image ID: {0}", ImageId);
                     case ViewModel.JobType.Member:
                         return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
                     case ViewModel.JobType.Tags:
