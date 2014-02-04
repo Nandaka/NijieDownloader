@@ -132,6 +132,8 @@ namespace Nandaka.Common
             {
                 if (!String.IsNullOrWhiteSpace(value))
                 {
+                    //value = Util.RemoveControlCharacters(value);
+                    value = Uri.EscapeUriString(value);
                     this.referer = value;
                     this.Headers.Add("Referer", this.referer);
                 }

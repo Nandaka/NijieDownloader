@@ -226,9 +226,13 @@ namespace NijieDownloader.Library
 
         public byte[] DownloadData(string url, string referer)
         {
+            try{
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
             return client.DownloadData(url);
+            }catch(Exception ex) {
+                throw;
+            }
         }
     }
 }

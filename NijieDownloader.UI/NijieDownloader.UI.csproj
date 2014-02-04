@@ -18,7 +18,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -46,6 +46,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,15 +65,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BatchDownloadPage.xaml.cs">
+    <Compile Include="Main\BatchDownloadPage.xaml.cs">
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="EnumHelper.cs" />
     <Compile Include="JobTypeToVisibilityConverter.cs" />
-    <Compile Include="SearchPage.xaml.cs">
+    <Compile Include="Main\SearchPage.xaml.cs">
       <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImagePage.xaml.cs">
+    <Compile Include="Main\ImagePage.xaml.cs">
       <DependentUpon>ImagePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Settings\Download.xaml.cs">
@@ -86,15 +87,15 @@
     <Compile Include="ViewModel\NijieImageViewModel.cs" />
     <Compile Include="ViewModel\NijieMemberViewModel.cs" />
     <Compile Include="ZoomBorder.cs" />
-    <Page Include="BatchDownloadPage.xaml">
+    <Page Include="Main\BatchDownloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SearchPage.xaml">
+    <Page Include="Main\SearchPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ImagePage.xaml">
+    <Page Include="Main\ImagePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -121,7 +122,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MemberPage.xaml">
+    <Page Include="Main\MemberPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -131,7 +132,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MemberPage.xaml.cs">
+    <Compile Include="Main\MemberPage.xaml.cs">
       <DependentUpon>MemberPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">

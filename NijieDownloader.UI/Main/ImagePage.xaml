@@ -1,0 +1,85 @@
+﻿<Page x:Class="NijieDownloader.UI.ImagePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+      mc:Ignorable="d" 
+      xmlns:h="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
+      xmlns:local="clr-namespace:NijieDownloader.UI"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      d:DesignHeight="600" d:DesignWidth="800">
+    <Page.Resources>
+        <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
+        <h:ListToStringConverter x:Key="ListToStringConverter"/>
+        <local:IsMangaToVisibilityConverter x:Key="isMangaToVisibilityConverter" />
+    </Page.Resources>
+
+    <Grid Style="{StaticResource ContentRoot}">
+        <StackPanel>
+            <TextBlock Text="Process Image" Style="{StaticResource Heading2}" />
+            <DockPanel>
+                <Grid SizeChanged="Grid_SizeChanged">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer>
+                        <StackPanel Orientation="Vertical" Grid.Column="0">
+                            <TextBlock Text="Image ID" Margin="5,5,5,0"/>
+                            <TextBox Name="txtImageID" Height="25" Text="{Binding Path=Image.ImageId}"/>
+
+                            <TextBlock Text="Title" Margin="5,5,5,0" />
+                            <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
+
+                            <TextBlock Text="Description" Margin="5,5,5,0" />
+                            <TextBox Name="txtDescription" Height="25" Text="{Binding Path=Image.Description}"/>
+
+                            <TextBlock Text="Work Date" Margin="5,5,5,0" />
+                            <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=Image.WorkDate}"/>
+
+                            <TextBlock Text="Tags" Margin="5,5,5,0" />
+
+                            <ListBox ItemsSource="{Binding Path=Image.Tags}">
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel IsItemsHost="True" Width="150"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Margin="5,0,0,5">
+                                    <Hyperlink NavigateUri="{Binding}" RequestNavigate="Hyperlink_RequestNavigate">
+                                        <Label Content="{Binding}" />
+                                    </Hyperlink>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel  Margin="5,5,5,0" Orientation="Horizontal" 
+                                     Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
+                                <Button Name="btnPrev" Content="&lt;" Click="btnPrev_Click" />
+                                <TextBlock Text="{Binding Path=Page, FallbackValue={x:Static system:String.Empty}}" Margin="5,5,5,0" />
+                                <Button Name="btnNext" Content="&gt;" Click="btnNext_Click" />
+                            </StackPanel>
+
+                            <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" >Fetch Image</Button>
+                            <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
+                            <TextBlock Text="{Binding Path=Status}" />
+                        </StackPanel>
+                    </ScrollViewer>
+                    <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent" Grid.Column="1" 
+                                      BorderBrush="Black" BorderThickness="1" >
+                        <Image Name="imgBigImage" 
+                               Source="{Binding Path=BigImage, IsAsync=true}" />
+                    </local:ZoomBorder>
+                </Grid>
+            </DockPanel>
+        </StackPanel>
+    </Grid>
+</Page>

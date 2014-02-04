@@ -13,6 +13,13 @@ namespace NijieDownloader.UI.ViewModel
     public class NijieImageViewModel : INotifyPropertyChanged
     {
 
+        public NijieImageViewModel(int imageId)
+        {
+            this.Image = new NijieImage(imageId);
+            _page = 0;
+            _status = "N/A";
+        }
+
         public NijieImageViewModel(NijieImage image)
         {
             this.Image = image;
@@ -75,7 +82,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
-                if (_thumbImage == null || this.Status != MainWindow.IMAGE_LOADED)
+                if (_thumbImage == null && !(this.Status == MainWindow.IMAGE_LOADED || this.Status == MainWindow.IMAGE_ERROR))
                 {
                     this.Status = MainWindow.IMAGE_LOADING;
                     var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
@@ -154,6 +161,7 @@ namespace NijieDownloader.UI.ViewModel
 
         private void LoadBigImage(string url)
         {
+            if (String.IsNullOrWhiteSpace(url)) return;
             MainWindow.LoadImage(url, Image.Referer,
                             new Action<BitmapImage, string>((image, status) =>
                             {

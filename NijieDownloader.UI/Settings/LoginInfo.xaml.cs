@@ -22,7 +22,7 @@ namespace NijieDownloader.UI
     /// <summary>
     /// Interaction logic for LoginInfo.xaml
     /// </summary>
-    public partial class LoginInfo : UserControl
+    public partial class LoginInfo : Page
     {
         public LoginInfo()
         {
@@ -52,7 +52,7 @@ namespace NijieDownloader.UI
 
                 Properties.Settings.Default.Save();
 
-                var uri = new Uri("/MemberPage.xaml", UriKind.RelativeOrAbsolute);
+                var uri = new Uri("/Main/MemberPage.xaml", UriKind.RelativeOrAbsolute);
                 var frame = NavigationHelper.FindFrame(null, this);
                 if (frame != null)
                 {

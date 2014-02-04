@@ -1,0 +1,101 @@
+﻿<Page x:Class="NijieDownloader.UI.BatchDownloadPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:vm="clr-namespace:NijieDownloader.UI.ViewModel"
+      xmlns:local="clr-namespace:NijieDownloader.UI"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" d:DesignWidth="800">
+    <Page.Resources>
+        <ObjectDataProvider x:Key="jobTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vm:JobType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="sortTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="local:SearchSortType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <local:JobTypeToVisibilityConverter x:Key="jobTypeToVisibilityConverter" />
+    </Page.Resources>
+    <Grid Style="{StaticResource ContentRoot}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Text="Process Member" Style="{StaticResource Heading2}" />
+        <DockPanel Grid.Row="1" >
+            <StackPanel DockPanel.Dock="Top"  Orientation="Vertical">
+                <StackPanel Orientation="Horizontal">
+                    <Button Name="btnAdd" Margin="10,0,0,10" Content="Add" Click="btnAdd_Click" />
+                    <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete" Click="btnDelete_Click" />
+                    <Button Name="btnStart" Margin="10,0,0,10" Content="Start" Click="btnStart_Click" />
+                    <Button Name="btnPause" Margin="10,0,0,10" Content="Pause" />
+                    <Button Name="btnStop" Margin="10,0,0,10" Content="Stop" />
+                </StackPanel>
+                <Grid Name="pnlAddJob" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" />
+                    <ComboBox Grid.Row="0" Grid.Column="1" Name="cbxJobType" SelectedItem="{Binding Path=JobType}"
+                             ItemsSource="{Binding Source={StaticResource jobTypeEnum}}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="txtQuery" Text="{Binding Path=SearchTag}" 
+                             Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtMemberId" Text="{Binding Path=MemberId}" 
+                             Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Member}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtImage" Text="{Binding Path=ImageId}" 
+                             Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Image}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Start Page" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Name="txtStartPage" Text="{Binding Path=StartPage}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="End Page" />
+                    <TextBox Grid.Row="2" Grid.Column="3" Name="txtEndPage" Text="{Binding Path=EndPage}" />
+
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Limit" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Name="txtLimit" Text="{Binding Path=Limit}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="Sort Type" />
+                    <ComboBox Grid.Row="3" Grid.Column="3" Name="cbxSortType" SelectedIndex="{Binding Path=Sort}"
+                             ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" />
+                    
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Name="btnJobOk" Content="OK" Click="btnJobOk_Click" />
+                        <Button Name="btnJobCancel" Content="Cancel" Click="btnJobCancel_Click" />
+                    </StackPanel>
+                    
+                </Grid>
+            </StackPanel>
+            <ScrollViewer>
+                <DataGrid AutoGenerateColumns="False" Name="dgvJobList" ItemsSource="{Binding Path=ViewData}" 
+                          AlternatingRowBackground="Gainsboro"  AlternationCount="2" ColumnWidth="Auto"
+                          IsSynchronizedWithCurrentItem="True" CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridCheckBoxColumn Header="#" Width="30" Binding="{Binding Path=IsSelected}" />
+                        <DataGridTextColumn Header="Type" Width="100" Binding="{Binding Path=JobType}" />
+                        <DataGridTextColumn Header="Name" Width=".4*" Binding="{Binding Path=Name}"/>
+                        <DataGridTextColumn Header="Message" Width=".6*" Binding="{Binding Path=Message}" />
+                        <DataGridTextColumn Header="Status" Width="100" Binding="{Binding Path=Status}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </ScrollViewer>
+
+        </DockPanel>
+    </Grid>
+</Page>

@@ -20,6 +20,9 @@ using System.Threading.Tasks;
 using System.IO;
 using NijieDownloader.UI.ViewModel;
 using NijieDownloader.Library.Model;
+using System.Runtime.Caching;
+using System.Diagnostics;
+using System.Collections.Specialized;
 
 namespace NijieDownloader.UI
 {
@@ -38,6 +41,8 @@ namespace NijieDownloader.UI
         public const string IMAGE_LOADED = "Done";
         public const string IMAGE_ERROR = "Error";
 
+        private static ObjectCache cache;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -46,6 +51,11 @@ namespace NijieDownloader.UI
             Factory = new TaskFactory(lcts);
             JobFactory = new TaskFactory(lctsJob);
 
+            var config = new NameValueCollection();
+            config.Add("pollingInterval", "00:05:00");
+            config.Add("physicalMemoryLimitPercentage", "0");
+            config.Add("cacheMemoryLimitMegabytes", "50");
+            cache = new MemoryCache("CustomCache", config);
         }
 
         void Nijie_LoggingEventHandler(object sender, EventArgs e)
@@ -62,30 +72,44 @@ namespace NijieDownloader.UI
 
         public static void LoadImage(string url, string referer, Action<BitmapImage, string> action)
         {
-            Factory.StartNew(() =>
+            url = Util.FixUrl(url);
+            referer = Util.FixUrl(referer);
+            if (!cache.Contains(url))
             {
-                try
+
+                Factory.StartNew(() =>
                 {
-                    url = Util.FixUrl(url);
-                    referer = Util.FixUrl(referer);
-                    var result = MainWindow.Bot.DownloadData(url, referer);
-                    using (var ms = new MemoryStream(result))
+                    try
                     {
-                        var t = new BitmapImage();
-                        t.BeginInit();
-                        t.CacheOption = BitmapCacheOption.OnLoad;
-                        t.StreamSource = ms;
-                        t.EndInit();
-                        t.Freeze();
-                        action(t, IMAGE_LOADED);
+                        var result = MainWindow.Bot.DownloadData(url, referer);
+                        using (var ms = new MemoryStream(result))
+                        {
+                            var t = new BitmapImage();
+                            t.BeginInit();
+                            t.CacheOption = BitmapCacheOption.OnLoad;
+                            t.StreamSource = ms;
+                            t.EndInit();
+                            t.Freeze();
+                            action(t, IMAGE_LOADED);
+
+                            CacheItemPolicy policy = new CacheItemPolicy();
+                            policy.SlidingExpiration = new TimeSpan(1, 0, 0);
+                            //cache.Add(url, t, policy);
+                            cache.Set(url, t, policy);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        action(null, IMAGE_ERROR);
+                        Debug.WriteLine("Error when loading image: {0}", ex.Message);
                     }
                 }
-                catch (Exception ex)
-                {
-                    action(null, IMAGE_ERROR);
-                }
+                );
             }
-            );
+            else
+            {
+                action((BitmapImage)cache.Get(url), IMAGE_LOADED);
+            }
         }
 
         public static void DoJob(JobDownloadViewModel job)
