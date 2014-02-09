@@ -14,7 +14,10 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public static event EventHandler LoggingEventHandler;
+        public static event NijieEventHandler LoggingEventHandler;
+
+        public delegate void NijieEventHandler(object sender, bool result);
+
         private static bool _isLoggedIn;
         public static bool IsLoggedIn {
             get
@@ -26,7 +29,7 @@ namespace NijieDownloader.Library
                 Nijie._isLoggedIn = value;
                 if (LoggingEventHandler != null)
                 {
-                    LoggingEventHandler(null, null);
+                    LoggingEventHandler(null, value);
                 }
             }
         }
@@ -37,10 +40,28 @@ namespace NijieDownloader.Library
             return DoLogin(info);
         }
 
-        public void LoginAsync(string userName, string password, Action<bool> callback)
+        public void Logout()
+        {
+            ExtendedWebClient.ClearCookie();
+            IsLoggedIn = false;
+        }
+
+        public void LoginAsync(string userName, string password, Action<bool, string> callback)
         {
             var task = Task.Factory.StartNew<bool>(() => Login(userName, password));
-            task.ContinueWith(x => callback(x.Result), TaskScheduler.FromCurrentSynchronizationContext());
+            task.ContinueWith(x => {
+                try
+                {
+                    if(x.Result)
+                        callback(x.Result, "Login Success.");
+                    else
+                        callback(x.Result, "Invalid username or password.");
+                }
+                catch (AggregateException ex)
+                {
+                    callback(false, "Error: " + ex.InnerException.Message);
+                }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
         }
         
         private NijieLoginInfo PrepareLoginInfo(string userName, string password)

@@ -18,6 +18,7 @@ using NijieDownloader.UI.ViewModel;
 using System.Diagnostics;
 using System.ComponentModel;
 using FirstFloor.ModernUI.Windows;
+using NijieDownloader.Library;
 
 namespace NijieDownloader.UI
 {
@@ -31,6 +32,9 @@ namespace NijieDownloader.UI
         public SearchPage()
         {
             InitializeComponent();
+#if DEBUG
+            txtQuery.Text = "無修正";
+#endif
             this.ViewData = new NijieSearchViewModel(txtQuery.Text);
             this.DataContext = ViewData;
         }
@@ -59,14 +63,25 @@ namespace NijieDownloader.UI
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            lbxImages.MaxHeight = e.NewSize.Height - 280;
+            var h = e.NewSize.Height - 280;
+            if (h > 0)
+                lbxImages.MaxHeight = h;
+            else
+                lbxImages.MaxHeight = 1;
         }
 
         private void doSearch(string query, int page, int sort)
         {
-            var result = MainWindow.Bot.Search(query, page, sort);
-            ViewData = new NijieSearchViewModel(result);
-            this.DataContext = ViewData;
+            try
+            {
+                var result = MainWindow.Bot.Search(query, page, sort);
+                ViewData = new NijieSearchViewModel(result);
+                this.DataContext = ViewData;
+            }
+            catch (NijieException ne)
+            {
+                ViewData.Status = "Error: " + ne.Message;
+            }
         }
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)

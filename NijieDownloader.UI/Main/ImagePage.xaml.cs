@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using FirstFloor.ModernUI.Windows;
 using NijieDownloader.UI.ViewModel;
 using FirstFloor.ModernUI.Windows.Navigation;
+using NijieDownloader.Library;
 
 namespace NijieDownloader.UI
 {
@@ -29,7 +30,9 @@ namespace NijieDownloader.UI
         {
             InitializeComponent();
 #if DEBUG
-            ViewData = new NijieImageViewModel(15880);
+            //ViewData = new NijieImageViewModel(15880);
+            ViewData = new NijieImageViewModel(67940);
+            
             this.DataContext = ViewData;
             //txtImageID.Text = "15880";
 #endif
@@ -37,9 +40,17 @@ namespace NijieDownloader.UI
 
         private void LoadImage(int imageId)
         {
-            var result = MainWindow.Bot.ParseImage(imageId);
-            ViewData = new NijieImageViewModel(result);
-            this.DataContext = ViewData;
+            try
+            {
+                var result = MainWindow.Bot.ParseImage(imageId);
+                ViewData = new NijieImageViewModel(result);
+                this.DataContext = ViewData;
+            }
+            catch (NijieException ne)
+            {
+                if (ViewData == null) ViewData = new NijieImageViewModel(imageId); 
+                ViewData.Status = "Error: " + ne.Message;
+            }
         }
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
@@ -98,7 +109,8 @@ namespace NijieDownloader.UI
         {
             if (ViewData != null)
             {
-                ViewData.Prev();
+                lbxMangaThumb.SelectedIndex = ViewData.Prev();
+                
             }
         }
 
@@ -106,13 +118,16 @@ namespace NijieDownloader.UI
         {
             if (ViewData != null)
             {
-                ViewData.Next();
+                lbxMangaThumb.SelectedIndex = ViewData.Next();
             }
         }
 
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            imgBigImage.Height = MainWindow.GetWindow(imgBigImage).Height - 60;
+            var h = MainWindow.GetWindow(imgBigImage).Height - 60;
+            if (h <= 0) h = 1;
+            imgBigImage.Height = h;
+            lbxMangaThumb.Height = h;
         }
 
         private void lblMember_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -125,6 +140,11 @@ namespace NijieDownloader.UI
             }
 
             e.Handled = true;
+        }
+
+        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
         }
         
     }

@@ -23,6 +23,7 @@ using NijieDownloader.Library.Model;
 using System.Runtime.Caching;
 using System.Diagnostics;
 using System.Collections.Specialized;
+using System.Threading;
 
 namespace NijieDownloader.UI
 {
@@ -47,20 +48,20 @@ namespace NijieDownloader.UI
         {
             InitializeComponent();
             Bot = new Nijie();
-            Nijie.LoggingEventHandler += new EventHandler(Nijie_LoggingEventHandler);
+            Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
             Factory = new TaskFactory(lcts);
             JobFactory = new TaskFactory(lctsJob);
 
             var config = new NameValueCollection();
             config.Add("pollingInterval", "00:05:00");
             config.Add("physicalMemoryLimitPercentage", "0");
-            config.Add("cacheMemoryLimitMegabytes", "50");
+            config.Add("cacheMemoryLimitMegabytes", "100");
             cache = new MemoryCache("CustomCache", config);
         }
 
-        void Nijie_LoggingEventHandler(object sender, EventArgs e)
+        void Nijie_LoggingEventHandler(object sender, bool e)
         {
-            if (Nijie.IsLoggedIn)
+            if (e)
             {
                 tlLogin.DisplayName = "Logout";
             }
@@ -72,6 +73,7 @@ namespace NijieDownloader.UI
 
         public static void LoadImage(string url, string referer, Action<BitmapImage, string> action)
         {
+            if (String.IsNullOrWhiteSpace(url)) return;
             url = Util.FixUrl(url);
             referer = Util.FixUrl(referer);
             if (!cache.Contains(url))
@@ -130,54 +132,70 @@ namespace NijieDownloader.UI
                         doImageJob(job);
                         break;
                 }
-
-                job.Status = Status.Completed;
+                if (job.Status != Status.Error)
+                    job.Status = Status.Completed;
             }
             );
         }
 
         private static void doImageJob(JobDownloadViewModel job)
         {
-            NijieImage image = new NijieImage(job.ImageId);
-            processImage(job, null, image);
+            try
+            {
+                NijieImage image = new NijieImage(job.ImageId);
+                processImage(job, null, image);
+            }
+            catch (NijieException ne)
+            {
+                job.Status = Status.Error;
+                job.Message = ne.Message;
+            }
         }
 
         private static void doSearchJob(JobDownloadViewModel job)
         {
-            job.CurrentPage = job.StartPage;
-            int endPage = job.EndPage;
-            int sort = job.Sort;
-            int limit = job.Limit;
-            bool flag = true;
-
-            job.DownloadCount = 0;
-
-            while (flag)
+            try
             {
-                job.Message = "Parsing search page: " + job.CurrentPage;
-                var searchPage = Bot.Search(job.SearchTag, job.CurrentPage, sort);
+                job.CurrentPage = job.StartPage;
+                int endPage = job.EndPage;
+                int sort = job.Sort;
+                int limit = job.Limit;
+                bool flag = true;
 
-                foreach (var image in searchPage.Images)
+                job.DownloadCount = 0;
+
+                while (flag)
                 {
-                    processImage(job, null, image);
-                    ++job.DownloadCount;
-                    if (job.DownloadCount > limit && limit != 0)
+                    job.Message = "Parsing search page: " + job.CurrentPage;
+                    var searchPage = Bot.Search(job.SearchTag, job.CurrentPage, sort);
+
+                    foreach (var image in searchPage.Images)
                     {
-                        job.Message = "Image limit reached: " + limit;
+                        processImage(job, null, image);
+                        ++job.DownloadCount;
+                        if (job.DownloadCount > limit && limit != 0)
+                        {
+                            job.Message = "Image limit reached: " + limit;
+                            return;
+                        }
+                    }
+
+                    ++job.CurrentPage;
+                    if (job.CurrentPage > endPage && endPage != 0)
+                    {
+                        job.Message = "Page limit reached: " + endPage;
                         return;
                     }
+                    else if (job.DownloadCount < limit)
+                    {
+                        flag = searchPage.IsNextAvailable;
+                    }
                 }
-
-                ++job.CurrentPage;
-                if (job.CurrentPage > endPage && endPage != 0)
-                {
-                    job.Message = "Page limit reached: " + endPage;
-                    return;
-                }
-                else if (job.DownloadCount < limit)
-                {
-                    flag = searchPage.IsNextAvailable;
-                }
+            }
+            catch (NijieException ne)
+            {
+                job.Status = Status.Error;
+                job.Message = ne.Message;
             }
         }
 
@@ -210,50 +228,88 @@ namespace NijieDownloader.UI
 
         private static void doMemberJob(JobDownloadViewModel job)
         {
-            job.Message = "Parsing member page";
-            var memberPage = Bot.ParseMember(job.MemberId);
-
-            foreach (var imageTemp in memberPage.Images)
+            try
             {
-                processImage(job, memberPage, imageTemp);
+                job.Message = "Parsing member page";
+                var memberPage = Bot.ParseMember(job.MemberId);
+
+                foreach (var imageTemp in memberPage.Images)
+                {
+                    processImage(job, memberPage, imageTemp);
+                    ++job.DownloadCount;
+                }
+            }
+            catch (NijieException ne)
+            {
+                job.Status = Status.Error;
+                job.Message = ne.Message;
             }
         }
 
         private static void processImage(JobDownloadViewModel job, NijieMember memberPage, NijieImage imageTemp)
         {
-            var rootPath = Properties.Settings.Default.RootDirectory;
-            var image = Bot.ParseImage(imageTemp, memberPage);
-            if (image.IsManga)
+            try
             {
-                for (int i = 0; i < image.ImageUrls.Count; ++i)
+                var rootPath = Properties.Settings.Default.RootDirectory;
+                var image = Bot.ParseImage(imageTemp, memberPage);
+                if (image.IsManga)
                 {
-                    var filename = makeFilename(image, i);
-                    job.Message = "Downloading: " + image.ImageUrls[i];
-                    var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
-                    pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
-
-                    var download = false;
-
-                    if (!File.Exists(pagefilename) || Properties.Settings.Default.Overwrite)
-                        download = true;
-                    else
-                        job.Message = "Skipped, file exists: " + pagefilename;
-
-                    if (download)
+                    for (int i = 0; i < image.ImageUrls.Count; ++i)
                     {
-                        Bot.Download(image.ImageUrls[i], image.Referer, pagefilename);
-                        job.Message = "Saving to: " + pagefilename;
+                        var filename = makeFilename(image, i);
+                        job.Message = "Downloading: " + image.ImageUrls[i];
+                        var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
+                        pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
+
+                        var download = false;
+
+                        if (!File.Exists(pagefilename) || Properties.Settings.Default.Overwrite)
+                            download = true;
+                        else
+                            job.Message = "Skipped, file exists: " + pagefilename;
+
+                        if (download)
+                        {
+                            dowloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);                            
+                        }
                     }
                 }
+                else
+                {
+                    var filename = makeFilename(image);
+                    job.Message = "Downloading: " + image.BigImageUrl;
+                    filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
+                    filename = rootPath + "\\" + Util.SanitizeFilename(filename);
+                    dowloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                }
             }
-            else
+            catch (NijieException ne)
             {
-                var filename = makeFilename(image);
-                job.Message = "Downloading: " + image.BigImageUrl;
-                filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
-                filename = rootPath + "\\" + Util.SanitizeFilename(filename);
-                Bot.Download(image.BigImageUrl, image.ViewUrl, filename);
-                job.Message = "Saving to: " + filename;
+                job.Status = Status.Error;
+                job.Message = ne.Message;
+            }
+        }
+
+        private static void dowloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        {
+            int retry = 0;
+            while (retry < 3)
+            {
+                try
+                {
+                    Bot.Download(url, referer, filename);
+                    job.Message = "Saving to: " + filename;
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    ++retry;
+                    for (int i = 0; i < 60; ++i)
+                    {
+                        job.Message = ex.Message + " retry: " + retry + " wait: " + i;
+                        Thread.Sleep(1000);
+                    }
+                }
             }
         }
     }

@@ -19,7 +19,7 @@
         <StackPanel>
             <TextBlock Text="Process Image" Style="{StaticResource Heading2}" />
             <DockPanel>
-                <Grid SizeChanged="Grid_SizeChanged">
+                <Grid SizeChanged="Grid_SizeChanged" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
@@ -71,20 +71,40 @@
                             <StackPanel  Margin="5,5,5,0" Orientation="Horizontal" 
                                      Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
                                 <Button Name="btnPrev" Content="&lt;" Click="btnPrev_Click" />
-                                <TextBlock Text="{Binding Path=Page, FallbackValue={x:Static system:String.Empty}}" Margin="5,5,5,0" />
+                                <TextBlock Text="{Binding Path=Page, FallbackValue=0}" Margin="5,5,5,0" />
+                                <TextBlock Text="of" Margin="0,5,0,0"/>
+                                <TextBlock Text="{Binding Path=Image.ImageUrls.Count, FallbackValue=0}" Margin="5,5,5,0" />
                                 <Button Name="btnNext" Content="&gt;" Click="btnNext_Click" />
                             </StackPanel>
 
                             <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" >Fetch Image</Button>
                             <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
                             <TextBlock Text="{Binding Path=Status}" />
+                            <TextBlock Text="{Binding ElementName=page, Path=Height}" />
                         </StackPanel>
                     </ScrollViewer>
-                    <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent" Grid.Column="1" 
-                                      BorderBrush="Black" BorderThickness="1" >
-                        <Image Name="imgBigImage" 
-                               Source="{Binding Path=BigImage, IsAsync=true}" />
-                    </local:ZoomBorder>
+                    <DockPanel Grid.Column="1" >
+                        <ListBox DockPanel.Dock="Right" Name="lbxMangaThumb"
+                                 Visibility="{Binding Path=Image.IsManga, FallbackValue=Visible, Converter={StaticResource isMangaToVisibilityConverter}}"
+                                 ItemsSource="{Binding Path=MangaImage}" SelectionChanged="ListBox_SelectionChanged" MinWidth="100">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <Image Source="{Binding}" Height="100" Width="100" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel IsItemsHost="True" Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                        </ListBox>
+                        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent"
+                                          BorderBrush="Black" BorderThickness="1" >
+                            <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}" />
+                        </local:ZoomBorder>
+                    </DockPanel>
                 </Grid>
             </DockPanel>
         </StackPanel>

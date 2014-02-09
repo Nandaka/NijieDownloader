@@ -16,12 +16,13 @@ namespace NijieDownloader.Library
     {
         public NijieSearch Search(string query, int page, int sort)
         {
+            canOperate();
             if (page < 1) page = 1;
             NijieSearch search = new NijieSearch(query, page, sort);
             HtmlDocument doc = getPage(search.QueryUrl).Item1;
 
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;
-            search.Images = parseImages(imagesDiv, search.QueryUrl);
+            search.Images = ParseImages(imagesDiv, search.QueryUrl);
 
             if (page <= 1) search.IsPrevAvailable = false;
             else search.IsPrevAvailable = true;

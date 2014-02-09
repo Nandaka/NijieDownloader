@@ -7,6 +7,9 @@ using System.Windows.Media.Imaging;
 using System.ComponentModel;
 using System.IO;
 using Nandaka.Common;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -41,6 +44,31 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private ObservableCollection<BitmapImage> _mangaImage;
+        public ObservableCollection<BitmapImage> MangaImage
+        {
+            get
+            {
+                if (Image != null && Image.IsManga && _mangaImage == null)
+                {
+                    _mangaImage = new ObservableCollection<BitmapImage>();
+                    for(int i = 0; i< Image.ImageUrls.Count; ++i)
+                    {
+                        var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
+                        loading.Freeze();
+                        _mangaImage.Add(loading);
+                        LoadMangaImage(Image.ImageUrls[i], i);
+                    }
+                }
+                return _mangaImage;
+            }
+            set
+            {
+                _mangaImage = value;
+                onPropertyChanged("MangaImage");
+            }
+        }
+
         private BitmapImage _bigImage;
         public BitmapImage BigImage
         {
@@ -60,7 +88,7 @@ namespace NijieDownloader.UI.ViewModel
 
                     if (Image.IsManga)
                     {
-                        LoadBigImage(Image.ImageUrls[Page]);
+                        //LoadBigImage(Image.ImageUrls[Page]);
                     }
                     else
                     {
@@ -138,7 +166,7 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public void Prev()
+        public int Prev()
         {
             if (this.Page > 0)
             {
@@ -147,9 +175,10 @@ namespace NijieDownloader.UI.ViewModel
                 LoadBigImage(Image.ImageUrls[this.Page]);
 
             }
+            return this.Page;
         }
 
-        public void Next()
+        public int Next()
         {
             if (this.Page < Image.ImageUrls.Count - 1)
             {
@@ -157,6 +186,18 @@ namespace NijieDownloader.UI.ViewModel
                 this.Status = MainWindow.IMAGE_LOADING;
                 LoadBigImage(Image.ImageUrls[this.Page]);
             }
+            return this.Page;
+        }
+
+        public int JumpTo(int page)
+        {
+            if (page >= 0 && page < Image.ImageUrls.Count)
+            {
+                this.Page = page;
+                this.Status = MainWindow.IMAGE_LOADING;
+                LoadBigImage(Image.ImageUrls[this.Page]);
+            }
+            return this.Page;
         }
 
         private void LoadBigImage(string url)
@@ -168,6 +209,24 @@ namespace NijieDownloader.UI.ViewModel
                                 this.BigImage = null;
                                 this.BigImage = image;
                                 this.Status = status;
+                            }
+                        ));
+        }
+
+
+        private void LoadMangaImage(string url, int i)
+        {
+            if (String.IsNullOrWhiteSpace(url)) return;
+            MainWindow.LoadImage(url, Image.Referer,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                Application.Current.Dispatcher.BeginInvoke(
+                                          DispatcherPriority.Background, new Action(() =>
+                                          {
+                                              this.MangaImage[i] = null;
+                                              this.MangaImage[i] = image;
+                                              this.Status = "Manga [" + i + "]: " + status;
+                                          }));
                             }
                         ));
         }

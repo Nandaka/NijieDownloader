@@ -69,6 +69,7 @@ namespace Nandaka.Common
 
         public static string FixUrl(string url, bool useHttps=false) 
         {
+            if (String.IsNullOrWhiteSpace(url)) return url;
             if (!url.StartsWith("http"))
             {
                 if(useHttps)

@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\NijieSearch.cs" />
+    <Compile Include="Nijie.Image.cs" />
     <Compile Include="Nijie.Search.cs" />
     <Compile Include="Model\NijieImage.cs" />
     <Compile Include="Model\NijieLoginInfo.cs" />
@@ -51,6 +52,7 @@
     <Compile Include="Nijie.Login.cs" />
     <Compile Include="NijieConstants.cs" />
     <Compile Include="Nijie.cs" />
+    <Compile Include="NijieException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

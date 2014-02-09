@@ -31,13 +31,16 @@ namespace NijieDownloader.UI.ViewModel
                 {
                     var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/no_avatar.jpg"));
                     loading.Freeze();
-                    MainWindow.LoadImage(Member.AvatarUrl, Member.MemberUrl,
-                        new Action<BitmapImage, string>((image, status) =>
-                        {
-                            this.AvatarImage = null;
-                            this.AvatarImage = image;
-                        }
-                    ));
+                    if (Member != null)
+                    {
+                        MainWindow.LoadImage(Member.AvatarUrl, Member.MemberUrl,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                this.AvatarImage = null;
+                                this.AvatarImage = image;
+                            }
+                        ));
+                    }
                     _avatarImage = loading;
                 }
                 return _avatarImage;
@@ -76,13 +79,26 @@ namespace NijieDownloader.UI.ViewModel
         public NijieMemberViewModel(NijieMember member)
         {
             this.Member = member;
-            _images = new ObservableCollection<NijieImageViewModel>();
-            foreach (var image in member.Images)
+            if (member != null && member.Images != null)
             {
-                var temp = new NijieImageViewModel(image);
-                _images.Add(temp);
+                _images = new ObservableCollection<NijieImageViewModel>();
+                foreach (var image in member.Images)
+                {
+                    var temp = new NijieImageViewModel(image);
+                    _images.Add(temp);
+                }
             }
+        }
 
+        private string _status;
+        public string Status
+        {
+            get { return _status; }
+            set
+            {
+                _status = value;
+                onPropertyChanged("Status");
+            }
         }
     }
 }

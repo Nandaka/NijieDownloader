@@ -32,16 +32,27 @@ namespace NijieDownloader.UI
         public MemberPage()
         {
             InitializeComponent();
+#if DEBUG
+            txtMemberID.Text = "17296";
+#endif
         }
-
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
         {
             int memberId = 0;
             Int32.TryParse(txtMemberID.Text, out memberId);
-            var result = MainWindow.Bot.ParseMember(memberId);
-            ViewData = new NijieMemberViewModel(result);
-            this.DataContext = ViewData;
+            try
+            {
+                var result = MainWindow.Bot.ParseMember(memberId);
+                ViewData = new NijieMemberViewModel(result);
+                this.DataContext = ViewData;
+            }
+            catch (NijieException ne)
+            {
+                ViewData = new NijieMemberViewModel(new NijieMember(memberId) { Status = "Error: " + ne.Message });
+                ViewData.Status = "Error: " + ne.Message;
+                this.DataContext = ViewData;
+            }
         }
 
         private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)

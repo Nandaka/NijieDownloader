@@ -42,7 +42,7 @@
 
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                     <TextBlock Text="Member ID" Margin="5,5,5,0"/>
-                    <TextBox Name="txtMemberID" Height="25" Width="100" Text="17296" Margin="5,5,5,5"/>
+                    <TextBox Name="txtMemberID" Height="25" Width="100" Text="" Margin="5,5,5,5"/>
                     <Button Width="120" Name="btnFetch" Margin="5,5,5,5" Click="btnFetch_Click">Fetch Images</Button>
                     <Button Width="120" Name="btnAddToBatch" Margin="5,5,5,5" Click="btnAddToBatch_Click">Add to Batch</Button>
                     <Button Width="150" Name="btnAddImagesBatch" Margin="5,5,5,5" Click="btnAddImagesBatch_Click">Add Selected Images</Button>
@@ -56,7 +56,14 @@
 
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
                 <TextBlock Text="Status :" HorizontalAlignment="Left"/>
-                <TextBlock Name="lblStatus" HorizontalAlignment="Left" Text="{Binding Path=Member.Status}"/>
+                <TextBlock Name="lblStatus" HorizontalAlignment="Left" >
+                    <TextBlock.Text>
+                        <PriorityBinding>
+                            <Binding Path="Member.Status" />
+                            <Binding Path="Status" />
+                        </PriorityBinding>
+                    </TextBlock.Text>
+                </TextBlock>
             </StackPanel>
 
 

@@ -124,6 +124,11 @@ namespace Nandaka.Common
             private set { cookieJar = value; }
         }
 
+        public static void ClearCookie()
+        {
+            if (cookieJar != null) cookieJar = null;
+        }
+
         private string referer;
         public string Referer
         {

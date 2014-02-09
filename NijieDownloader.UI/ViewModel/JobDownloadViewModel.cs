@@ -187,6 +187,7 @@ namespace NijieDownloader.UI.ViewModel
         Queued,
         Running,
         Completed,
-        Canceling
+        Canceling,
+        Error
     }
 }
