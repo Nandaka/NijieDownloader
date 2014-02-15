@@ -10,9 +10,9 @@ using System.Windows;
 [assembly: AssemblyTitle("NijieDownloader.UI")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Nandaka")]
 [assembly: AssemblyProduct("NijieDownloader.UI")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2014")]
+[assembly: AssemblyCopyright("Copyright © Nandaka 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
