@@ -242,6 +242,7 @@ namespace NijieDownloader.Library
 
                         var thumb = div.DocumentNode.SelectSingleNode("//a/img");
                         image.ThumbImageUrl = thumb.Attributes["src"].Value;
+
                         // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
                         image.IsFriendOnly = false;
                         if (image.ThumbImageUrl.EndsWith("friends.png"))
@@ -257,6 +258,14 @@ namespace NijieDownloader.Library
                         {
                             if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
                                 image.IsManga = true;
+                        }
+
+                        image.IsAnimated = false;
+                        var animeIcon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                        if (animeIcon != null)
+                        {
+                            if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
+                                image.IsAnimated = true;
                         }
 
                         list.Add(image);

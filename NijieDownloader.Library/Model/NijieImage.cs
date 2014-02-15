@@ -36,6 +36,7 @@ namespace NijieDownloader.Library.Model
 
         public int NuitaCount { get; set; }
         public int GoodCount { get; set; }
+        public bool IsAnimated { get; set; }
 
         public NijieImage(int imageId)
         {
