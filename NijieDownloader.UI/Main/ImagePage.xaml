@@ -43,6 +43,15 @@
                             <TextBlock Text="Title" Margin="5,5,5,0" />
                             <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
 
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Good" Margin="5,5,5,0" />
+                                <TextBlock Height="25" Margin="5,5,5,0"  Text="{Binding Path=Image.GoodCount}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="抜いた" Margin="5,5,5,0" />
+                                <TextBlock Height="25" Margin="5,5,5,0" Text="{Binding Path=Image.NuitaCount}"/>
+                            </StackPanel>
+
                             <TextBlock Text="Description" Margin="5,5,5,0" />
                             <TextBox Name="txtDescription" Height="25" Text="{Binding Path=Image.Description}"/>
 
@@ -67,7 +76,6 @@
                                     </DataTemplate>
                                 </ListBox.ItemTemplate>
                             </ListBox>
-
                             <StackPanel  Margin="5,5,5,0" Orientation="Horizontal" 
                                      Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
                                 <Button Name="btnPrev" Content="&lt;" Click="btnPrev_Click" />

@@ -52,7 +52,7 @@ namespace NijieDownloader.UI.ViewModel
                 if (Image != null && Image.IsManga && _mangaImage == null)
                 {
                     _mangaImage = new ObservableCollection<BitmapImage>();
-                    for(int i = 0; i< Image.ImageUrls.Count; ++i)
+                    for (int i = 0; i < Image.ImageUrls.Count; ++i)
                     {
                         var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
                         loading.Freeze();

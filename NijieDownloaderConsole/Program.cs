@@ -10,7 +10,7 @@ namespace NijieDownloaderConsole
 {
     class Program
     {
-        private static Nijie bot = new Nijie();
+        private static Nijie bot = new Nijie(null);
 
         static void Main(string[] args)
         {

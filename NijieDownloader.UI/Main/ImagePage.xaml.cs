@@ -32,7 +32,7 @@ namespace NijieDownloader.UI
 #if DEBUG
             //ViewData = new NijieImageViewModel(15880);
             ViewData = new NijieImageViewModel(67940);
-            
+
             this.DataContext = ViewData;
             //txtImageID.Text = "15880";
 #endif
@@ -48,7 +48,7 @@ namespace NijieDownloader.UI
             }
             catch (NijieException ne)
             {
-                if (ViewData == null) ViewData = new NijieImageViewModel(imageId); 
+                if (ViewData == null) ViewData = new NijieImageViewModel(imageId);
                 ViewData.Status = "Error: " + ne.Message;
             }
         }
@@ -70,29 +70,29 @@ namespace NijieDownloader.UI
 
         public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
-            
+
         }
 
         public void OnNavigatedTo(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
-            
+
         }
 
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
-            
+
         }
 
         private void btnAddBatch_Click(object sender, RoutedEventArgs e)
         {
-            var uri = new Uri("/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text, UriKind.RelativeOrAbsolute);
+            var uri = new Uri("/Main/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text, UriKind.RelativeOrAbsolute);
             var frame = NavigationHelper.FindFrame(null, this);
             if (frame != null)
             {
                 frame.Source = uri;
             }
         }
-        
+
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             var uri = new Uri("/Main/SearchPage.xaml#query=" + e.Uri.OriginalString, UriKind.RelativeOrAbsolute);
@@ -104,13 +104,12 @@ namespace NijieDownloader.UI
 
             e.Handled = true;
         }
-        
+
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
             if (ViewData != null)
             {
                 lbxMangaThumb.SelectedIndex = ViewData.Prev();
-                
             }
         }
 
@@ -146,6 +145,6 @@ namespace NijieDownloader.UI
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
         }
-        
+
     }
 }

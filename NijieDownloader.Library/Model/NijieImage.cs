@@ -34,6 +34,9 @@ namespace NijieDownloader.Library.Model
         public string Referer { get; set; }
         public bool IsFriendOnly { get; set; }
 
+        public int NuitaCount { get; set; }
+        public int GoodCount { get; set; }
+
         public NijieImage(int imageId)
         {
             this.ImageId = imageId;

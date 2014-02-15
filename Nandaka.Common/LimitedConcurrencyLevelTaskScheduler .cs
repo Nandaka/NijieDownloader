@@ -28,10 +28,13 @@ namespace Nandaka.Common
         private int _delegatesQueuedOrRunning = 0;
 
         // Creates a new instance with the specified degree of parallelism.  
-        public LimitedConcurrencyLevelTaskScheduler(int maxDegreeOfParallelism)
+        public LimitedConcurrencyLevelTaskScheduler(int maxDegreeOfParallelism, int hardLimit)
         {
             if (maxDegreeOfParallelism < 1) throw new ArgumentOutOfRangeException("maxDegreeOfParallelism");
-            _maxDegreeOfParallelism = maxDegreeOfParallelism;
+            if (maxDegreeOfParallelism > 0 && maxDegreeOfParallelism <= hardLimit)
+                _maxDegreeOfParallelism = maxDegreeOfParallelism;
+            else
+                _maxDegreeOfParallelism = 2;
         }
 
         // Queues a task to the scheduler.  

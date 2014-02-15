@@ -19,97 +19,171 @@ namespace NijieDownloader.Library
 
         public NijieImage ParseImage(NijieImage image, NijieMember member = null)
         {
-            canOperate();
-            var result = getPage(image.ViewUrl);
-            HtmlDocument doc = result.Item1;
-            if (result.Item2.ResponseUri.ToString() != image.ViewUrl)
+            HtmlDocument doc = null;
+            try
             {
-                image.IsFriendOnly = true;
+                canOperate();
+                var result = getPage(image.ViewUrl);
+                doc = result.Item1;
+                if (result.Item2.ResponseUri.ToString() != image.ViewUrl)
+                {
+                    Log.Debug(String.Format("Redirection for Image {0}: {1} ==> {2}, possibly locked.", image.ImageId, image.ViewUrl, result.Item2.ResponseUri));
+                    image.IsFriendOnly = true;
+                    return image;
+                }
+
+                if (member == null)
+                {
+                    var memberUrl = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a").Attributes["href"].Value;
+                    var split = memberUrl.Split('?');
+                    int memberId = Int32.Parse(split[1].Replace("id=", ""));
+
+                    member = new NijieMember(memberId);
+                    var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
+                    if (profileDiv != null)
+                    {
+                        member.UserName = profileDiv.Attributes["alt"].Value;
+                        member.AvatarUrl = profileDiv.Attributes["src"].Value;
+                    }
+                }
+                image.Member = member;
+
+                var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery']/p/a");
+                if (bigImageLinks != null)
+                {
+                    image.BigImageUrl = bigImageLinks[0].Attributes["href"].Value;
+                    if (bigImageLinks.Count > 1)
+                    {
+                        image.IsManga = true;
+                        image.ImageUrls = new List<string>();
+                        foreach (var bigImage in bigImageLinks)
+                        {
+                            image.ImageUrls.Add(bigImage.Attributes["href"].Value);
+                        }
+                    }
+                    else
+                    {
+                        image.IsManga = false;
+                    }
+                }
+
+                var mediumImageLink = doc.DocumentNode.SelectSingleNode("//img[@id='view_img']");
+                if (mediumImageLink != null)
+                    image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
+
+                var titleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/p");
+                if (titleDiv != null)
+                    image.Title = titleDiv.InnerText;
+                if (String.IsNullOrWhiteSpace(image.Title))
+                {
+                    var titleDiv2 = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/h2");
+                    if (titleDiv2 != null)
+                        image.Title = titleDiv2.InnerText;
+                }
+
+                var descDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-honbun']");
+                if (descDiv != null)
+                {
+                    var ps = descDiv.SelectNodes("//div[@id='view-honbun']/p");
+                    if (ps != null && ps.Count > 1)
+                    {
+                        var dateStr = ps[0].InnerText;
+                        var dateCheck = re_date.Match(dateStr);
+                        if (dateCheck.Success)
+                        {
+                            image.WorkDate = DateTime.Parse(dateCheck.Groups[0].Value, new System.Globalization.CultureInfo("ja-JP", true));
+                        }
+
+                        image.Description = ps[1].InnerText;
+                    }
+                }
+
+                var tagsDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-tag']");
+                if (tagsDiv != null)
+                {
+                    image.Tags = new List<string>();
+                    var tagNames = doc.DocumentNode.SelectNodes("//div[@id='view-tag']//span[@class='tag_name']");
+                    if (tagNames != null)
+                    {
+                        foreach (var tag in tagNames)
+                        {
+                            image.Tags.Add(tag.InnerText);
+                        }
+                    }
+                }
+
+                var goodDiv = doc.DocumentNode.SelectSingleNode("//li[@id='good_cnt']");
+                if(goodDiv != null) {
+                    int good = -1;
+                    Int32.TryParse(goodDiv.InnerText, out good);
+                    image.GoodCount = good;
+                }
+
+                var nuitaDiv = doc.DocumentNode.SelectSingleNode("//li[@id='nuita_cnt']");
+                if(nuitaDiv != null) {
+                    int nuita = -1;
+                    Int32.TryParse(nuitaDiv.InnerText, out nuita);
+                    image.NuitaCount = nuita;
+                }
+
+                // check if image urls is using popups
+                if (image.BigImageUrl.Contains("view_popup.php"))
+                {
+                    image = ParseBigImage(image);
+                }
+
                 return image;
             }
-
-            if (member == null)
+            catch (Exception ex)
             {
-                var memberUrl = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a").Attributes["href"].Value;
-                var split = memberUrl.Split('?');
-                int memberId = Int32.Parse(split[1].Replace("id=", ""));
-
-                member = new NijieMember(memberId);
-                var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
-                if (profileDiv != null)
+                if (doc != null)
                 {
-                    member.UserName = profileDiv.Attributes["alt"].Value;
-                    member.AvatarUrl = profileDiv.Attributes["src"].Value;
+                    var filename = "Dump for Image " + image.ImageId + ".html";
+                    Log.Debug("Dumping image page to: " + filename);
+                    doc.Save(filename);
                 }
+                Log.Error("Error when processing image: " + image.ImageId, ex);
+                throw;
             }
-            image.Member = member;
+        }
 
-            var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery']/p/a");
-            if (bigImageLinks != null)
+        public NijieImage ParseBigImage(NijieImage image)
+        {
+            HtmlDocument doc = null;
+            try
             {
-                image.BigImageUrl = bigImageLinks[0].Attributes["href"].Value;
-                if (bigImageLinks.Count > 1)
+                canOperate();
+                var url = "http://nijie.info/view_popup.php?id=" + image.ImageId;
+                var result = getPage(url);
+                doc = result.Item1;
+
+                var images = doc.DocumentNode.SelectNodes("//img[@class='lazy']");
+                if (image.IsManga)
                 {
-                    image.IsManga = true;
-                    image.ImageUrls = new List<string>();
-                    foreach (var bigImage in bigImageLinks)
+                    image.ImageUrls.Clear();
+                    foreach (var item in images)
                     {
-                        image.ImageUrls.Add(bigImage.Attributes["href"].Value);
+                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
                     }
                 }
                 else
                 {
-                    image.IsManga = false;
+                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(images[0].Attributes["data-original"].Value);
                 }
+                    
+                return image;
             }
-
-            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//img[@id='view_img']");
-            if (mediumImageLink != null)
-                image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
-
-            var titleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/p");
-            if (titleDiv != null)
-                image.Title = titleDiv.InnerText;
-            if (String.IsNullOrWhiteSpace(image.Title))
+            catch (Exception ex)
             {
-                var titleDiv2 = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/h2");
-                if (titleDiv2 != null)
-                    image.Title = titleDiv2.InnerText;
-
-            }
-
-            var descDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-honbun']");
-            if (descDiv != null)
-            {
-                var ps = descDiv.SelectNodes("//div[@id='view-honbun']/p");
-                if (ps != null && ps.Count > 1)
+                if (doc != null)
                 {
-                    var dateStr = ps[0].InnerText;
-                    var dateCheck = re_date.Match(dateStr);
-                    if (dateCheck.Success)
-                    {
-                        image.WorkDate = DateTime.Parse(dateCheck.Groups[0].Value, new System.Globalization.CultureInfo("ja-JP", true));
-                    }
-
-                    image.Description = ps[1].InnerText;
+                    var filename = "Dump for Big Image " + image.ImageId + ".html";
+                    Log.Debug("Dumping big image page to: " + filename);
+                    doc.Save(filename);
                 }
+                Log.Error("Failed to process big image: " + image.ImageId, ex);
+                throw;
             }
-
-            var tagsDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-tag']");
-            if (tagsDiv != null)
-            {
-                image.Tags = new List<string>();
-                var tagNames = doc.DocumentNode.SelectNodes("//div[@id='view-tag']//span[@class='tag_name']");
-                if (tagNames != null)
-                {
-                    foreach (var tag in tagNames)
-                    {
-                        image.Tags.Add(tag.InnerText);
-                    }
-                }
-            }
-
-            return image;
         }
 
         public NijieMember ParseMember(int memberId)
