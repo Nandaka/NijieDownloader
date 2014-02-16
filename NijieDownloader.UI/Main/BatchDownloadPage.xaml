@@ -54,7 +54,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" />
                     <ComboBox Grid.Row="0" Grid.Column="1" Name="cbxJobType" SelectedItem="{Binding Path=JobType}"
-                             ItemsSource="{Binding Source={StaticResource jobTypeEnum}}"/>
+                             ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" SelectionChanged="cbxJobType_SelectionChanged" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
                     <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="txtQuery" Text="{Binding Path=SearchTag}" 
@@ -64,17 +64,26 @@
                     <TextBox Grid.Row="1" Grid.Column="1" Name="txtImage" Text="{Binding Path=ImageId}" 
                              Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Image}"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Start Page" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Name="txtStartPage" Text="{Binding Path=StartPage}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="2" Text="End Page" />
-                    <TextBox Grid.Row="2" Grid.Column="3" Name="txtEndPage" Text="{Binding Path=EndPage}" />
+                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Name="pnlStart" Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Start Page" MinWidth="100" />
+                            <TextBox Name="txtStartPage" MinWidth="150" Text="{Binding Path=StartPage}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="End Page" MinWidth="100" />
+                            <TextBox Name="txtEndPage" MinWidth="150" Text="{Binding Path=EndPage}" />
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Name="pnlLimit"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <TextBlock MinWidth="100" Text="Limit" />
+                        <TextBox MinWidth="150" Name="txtLimit" Text="{Binding Path=Limit}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Name="pnlSort"  Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
+                        <TextBlock Text="Sort Type" MinWidth="100"/>
+                        <ComboBox Name="cbxSortType" SelectedIndex="{Binding Path=Sort}" MinWidth="150" 
+                                  ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" />
+                    </StackPanel>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Limit" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Name="txtLimit" Text="{Binding Path=Limit}"/>
-                    <TextBlock Grid.Row="3" Grid.Column="2" Text="Sort Type" />
-                    <ComboBox Grid.Row="3" Grid.Column="3" Name="cbxSortType" SelectedIndex="{Binding Path=Sort}"
-                             ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" />
-                    
                     <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnJobOk" Content="OK" Click="btnJobOk_Click" />
                         <Button Name="btnJobCancel" Content="Cancel" Click="btnJobCancel_Click" />

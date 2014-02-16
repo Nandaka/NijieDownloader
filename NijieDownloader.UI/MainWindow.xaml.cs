@@ -26,6 +26,7 @@ using System.Collections.Specialized;
 using System.Threading;
 using log4net;
 using System.Reflection;
+using FirstFloor.ModernUI.Windows.Navigation;
 
 namespace NijieDownloader.UI
 {
@@ -397,6 +398,18 @@ namespace NijieDownloader.UI
         private void ModernWindow_Closed(object sender, EventArgs e)
         {
             Log.Info(AppName + " closed.");
+        }
+
+        public static bool NavigateTo(Page page, string url)
+        {
+            var uri = new Uri(url, UriKind.RelativeOrAbsolute);
+            var frame = NavigationHelper.FindFrame(null, page);
+            if (frame != null)
+            {
+                frame.Source = uri;
+            }
+
+            return true;
         }
     }
 }

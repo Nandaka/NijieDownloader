@@ -43,5 +43,4 @@ namespace NijieDownloader.Library.Model
             this.ImageId = imageId;
         }
     }
-
 }

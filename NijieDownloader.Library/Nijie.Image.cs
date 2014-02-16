@@ -32,6 +32,8 @@ namespace NijieDownloader.Library
                     return image;
                 }
 
+                checkErrorMessage(doc);
+
                 if (member == null)
                 {
                     var memberUrl = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a").Attributes["href"].Value;
@@ -113,14 +115,16 @@ namespace NijieDownloader.Library
                 }
 
                 var goodDiv = doc.DocumentNode.SelectSingleNode("//li[@id='good_cnt']");
-                if(goodDiv != null) {
+                if (goodDiv != null)
+                {
                     int good = -1;
                     Int32.TryParse(goodDiv.InnerText, out good);
                     image.GoodCount = good;
                 }
 
                 var nuitaDiv = doc.DocumentNode.SelectSingleNode("//li[@id='nuita_cnt']");
-                if(nuitaDiv != null) {
+                if (nuitaDiv != null)
+                {
                     int nuita = -1;
                     Int32.TryParse(nuitaDiv.InnerText, out nuita);
                     image.NuitaCount = nuita;
@@ -134,6 +138,10 @@ namespace NijieDownloader.Library
 
                 return image;
             }
+            catch (NijieException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 if (doc != null)
@@ -142,8 +150,27 @@ namespace NijieDownloader.Library
                     Log.Debug("Dumping image page to: " + filename);
                     doc.Save(filename);
                 }
-                Log.Error("Error when processing image: " + image.ImageId, ex);
-                throw;
+
+                throw new NijieException("Error when processing image: " + image.ImageId, ex, NijieException.IMAGE_UNKNOWN_ERROR);
+            }
+        }
+
+        private void checkErrorMessage(HtmlDocument doc)
+        {
+            var error = doc.DocumentNode.SelectSingleNode("//div[@id='main']/div[@class='main-center']/div[@class='center padding45']/p[@class='bold size24']");
+            if (error != null)
+            {
+                var errorDetails = doc.DocumentNode.SelectSingleNode("//div[@id='main']/div[@class='main-center']/div[@class='center padding45']/p[@class='bold p-top15 black size16']");
+                if (errorDetails != null)
+                {
+                    if (errorDetails.InnerText == @"イラストが見つかりませんでした。")
+                    {
+                        throw new NijieException("Server Message: Cannot find Image(s).", NijieException.IMAGE_NOT_FOUND);
+                    }
+                    throw new NijieException(errorDetails.InnerText, NijieException.IMAGE_UNKNOWN_ERROR);
+                }
+
+                throw new NijieException(error.InnerText, NijieException.IMAGE_UNKNOWN_ERROR);
             }
         }
 

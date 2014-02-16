@@ -31,7 +31,7 @@
                            Visibility="{Binding Path=Image.IsAnimated, 
                            Converter={StaticResource BooleanToVisibilityConverter}}"/>
                 </Grid>
-                <TextBlock Text="{Binding Path=Status}" Height="25"/>
+                <TextBlock Text="{Binding Path=ImageStatus}" Height="25"/>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>

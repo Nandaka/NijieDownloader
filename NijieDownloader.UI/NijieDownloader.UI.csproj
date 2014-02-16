@@ -31,7 +31,7 @@
     <ErrorReportUrl>https://github.com/Nandaka/NijieDownloader/issues</ErrorReportUrl>
     <ProductName>Nijie Downloader</ProductName>
     <PublisherName>Nandaka</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -251,6 +251,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="nijie_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\error_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

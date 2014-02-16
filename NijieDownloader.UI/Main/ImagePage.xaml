@@ -36,7 +36,7 @@
                             <TextBlock Text="Member ID" Margin="5,5,5,0"/>
                             <TextBlock Margin="5,5,5,5">
                                 <Hyperlink NavigateUri="{Binding Path=Image.Member.MemberId}">
-                                    <Label Name="lblMember"  Content="{Binding Path=Image.Member.MemberId}" MouseDoubleClick="lblMember_MouseDoubleClick" />
+                                    <Label Name="lblMember"  Content="{Binding Path=Image.Member.MemberId}" MouseDown="lblMember_MouseDown" />
                                 </Hyperlink>
                             </TextBlock>
 
@@ -53,7 +53,7 @@
                             </StackPanel>
 
                             <TextBlock Text="Description" Margin="5,5,5,0" />
-                            <TextBox Name="txtDescription" Height="25" Text="{Binding Path=Image.Description}"/>
+                            <TextBox Name="txtDescription" Height="25" Text="{Binding Path=Image.Description}" TextWrapping="Wrap"/>
 
                             <TextBlock Text="Work Date" Margin="5,5,5,0" />
                             <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=Image.WorkDate}"/>
@@ -87,7 +87,8 @@
 
                             <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" >Fetch Image</Button>
                             <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
-                            <TextBlock Text="{Binding Path=Status}" />
+                            <TextBlock Text="{Binding Path=ImageStatus}" />
+                            <TextBlock Text="{Binding Path=Message}" TextWrapping="Wrap" />                            
                             <TextBlock Text="{Binding ElementName=page, Path=Height}" />
                         </StackPanel>
                     </ScrollViewer>

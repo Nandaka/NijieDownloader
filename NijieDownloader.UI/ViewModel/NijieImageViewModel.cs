@@ -14,8 +14,7 @@ using System.Windows.Threading;
 namespace NijieDownloader.UI.ViewModel
 {
     public class NijieImageViewModel : INotifyPropertyChanged
-    {
-
+    {        
         public NijieImageViewModel(int imageId)
         {
             this.Image = new NijieImage(imageId);
@@ -54,9 +53,7 @@ namespace NijieDownloader.UI.ViewModel
                     _mangaImage = new ObservableCollection<BitmapImage>();
                     for (int i = 0; i < Image.ImageUrls.Count; ++i)
                     {
-                        var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
-                        loading.Freeze();
-                        _mangaImage.Add(loading);
+                        _mangaImage.Add(NijieImageViewModelHelper.LoadingImage);
                         LoadMangaImage(Image.ImageUrls[i], i);
                     }
                 }
@@ -76,25 +73,16 @@ namespace NijieDownloader.UI.ViewModel
             {
                 if (Image.IsFriendOnly)
                 {
-                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/friends.png"));
-                    loading.Freeze();
-                    return loading;
+                    this.ImageStatus = MainWindow.IMAGE_LOADED;
+                    return NijieImageViewModelHelper.FriendOnly;
                 }
-                if (_bigImage == null || this.Status != MainWindow.IMAGE_LOADED)
+                if (_bigImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
                 {
-                    this.Status = MainWindow.IMAGE_LOADING;
-                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
-                    loading.Freeze();
-
-                    if (Image.IsManga)
-                    {
-                        //LoadBigImage(Image.ImageUrls[Page]);
-                    }
-                    else
+                    if (!Image.IsManga)
                     {
                         LoadBigImage(Image.BigImageUrl);
                     }
-                    return loading;
+                    return NijieImageViewModelHelper.LoadingImage;
                 }
                 return _bigImage;
             }
@@ -110,20 +98,20 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
-                if (_thumbImage == null && !(this.Status == MainWindow.IMAGE_LOADED || this.Status == MainWindow.IMAGE_ERROR))
+                if (_thumbImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
                 {
-                    this.Status = MainWindow.IMAGE_LOADING;
-                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
-                    loading.Freeze();
+                    this.ImageStatus = MainWindow.IMAGE_LOADING;
+                    
                     MainWindow.LoadImage(Image.ThumbImageUrl, Image.Referer,
                         new Action<BitmapImage, string>((image, status) =>
                         {
                             this.ThumbImage = null;
                             this.ThumbImage = image;
-                            this.Status = status;
+                            this.ImageStatus = status;
+                            this.Message = status;
                         }
                     ));
-                    return loading;
+                    return NijieImageViewModelHelper.LoadingImage;
                 }
                 return _thumbImage;
             }
@@ -135,13 +123,24 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _status;
-        public string Status
+        public string Message
         {
             get { return _status; }
             set
             {
                 _status = value;
-                onPropertyChanged("Status");
+                onPropertyChanged("Message");
+            }
+        }
+
+        private string _imageStatus;
+        public string ImageStatus
+        {
+            get { return _imageStatus; }
+            set
+            {
+                _imageStatus = value;
+                onPropertyChanged("ImageStatus");
             }
         }
 
@@ -171,7 +170,6 @@ namespace NijieDownloader.UI.ViewModel
             if (this.Page > 0)
             {
                 --this.Page;
-                this.Status = MainWindow.IMAGE_LOADING;
                 LoadBigImage(Image.ImageUrls[this.Page]);
 
             }
@@ -183,7 +181,6 @@ namespace NijieDownloader.UI.ViewModel
             if (this.Page < Image.ImageUrls.Count - 1)
             {
                 ++this.Page;
-                this.Status = MainWindow.IMAGE_LOADING;
                 LoadBigImage(Image.ImageUrls[this.Page]);
             }
             return this.Page;
@@ -193,8 +190,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             if (page >= 0 && page < Image.ImageUrls.Count)
             {
-                this.Page = page;
-                this.Status = MainWindow.IMAGE_LOADING;
+                this.Page = page;                
                 LoadBigImage(Image.ImageUrls[this.Page]);
             }
             return this.Page;
@@ -203,12 +199,15 @@ namespace NijieDownloader.UI.ViewModel
         private void LoadBigImage(string url)
         {
             if (String.IsNullOrWhiteSpace(url)) return;
+
+            this.ImageStatus = MainWindow.IMAGE_LOADING;
             MainWindow.LoadImage(url, Image.Referer,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.BigImage = null;
                                 this.BigImage = image;
-                                this.Status = status;
+                                this.ImageStatus = status;
+                                this.Message = status;
                             }
                         ));
         }
@@ -225,7 +224,26 @@ namespace NijieDownloader.UI.ViewModel
                                           {
                                               this.MangaImage[i] = null;
                                               this.MangaImage[i] = image;
-                                              this.Status = "Manga [" + i + "]: " + status;
+                                              this.Message = "Manga [" + i + "]: " + status;
+
+                                              if (status == MainWindow.IMAGE_LOADED && i == Page)
+                                                  this.BigImage = this.MangaImage[i];
+
+                                              var allLoaded = true;
+                                              foreach (var item in this.MangaImage)
+                                              {
+                                                  if (item == NijieImageViewModelHelper.LoadingImage)
+                                                  {
+                                                      allLoaded = false;
+                                                      break;
+                                                  }
+                                              }
+                                              if (allLoaded)
+                                              {
+                                                  this.ImageStatus = MainWindow.IMAGE_LOADED;
+                                              }
+                                              else
+                                                  this.ImageStatus = MainWindow.IMAGE_LOADING;
                                           }));
                             }
                         ));
@@ -240,6 +258,54 @@ namespace NijieDownloader.UI.ViewModel
                 _isSelected = value;
                 onPropertyChanged("IsSelected");
             }
+        }
+    }
+
+    public class NijieImageViewModelHelper
+    {
+        private static BitmapImage _loading;
+        public static BitmapImage LoadingImage
+        {
+            get
+            {
+                if (_loading == null)
+                {
+                    _loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
+                    _loading.Freeze();
+                }
+                return _loading;
+            }
+            private set { }
+        }
+
+        private static BitmapImage _friendOnly;
+        public static BitmapImage FriendOnly
+        {
+            get
+            {
+                if (_friendOnly == null)
+                {
+                    _friendOnly = new BitmapImage(new Uri("pack://application:,,,/Resources/friends.png"));
+                    _friendOnly.Freeze();
+                }
+                return _friendOnly;
+            }
+            private set { }
+        }
+
+        private static BitmapImage _error;
+        public static BitmapImage Error
+        {
+            get
+            {
+                if (_error == null)
+                {
+                    _error = new BitmapImage(new Uri("pack://application:,,,/Resources/error_icon.png"));
+                    _error.Freeze();
+                }
+                return _error;
+            }
+            private set { }
         }
     }
 }

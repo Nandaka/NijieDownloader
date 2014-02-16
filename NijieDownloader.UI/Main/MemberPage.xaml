@@ -33,7 +33,7 @@
                            Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     <CheckBox IsChecked="{Binding Path=IsSelected}" Margin="100,100,0,0"/>
                 </Grid>
-                <TextBlock Text="{Binding Path=Status}" Height="25"/>
+                <TextBlock Text="{Binding Path=ImageStatus}" Height="25"/>
             </StackPanel>
         </DataTemplate>
     </Page.Resources>

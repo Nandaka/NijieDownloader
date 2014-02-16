@@ -40,17 +40,21 @@ namespace NijieDownloader.UI
 
         private void LoadImage(int imageId)
         {
+            MainWindow.Log.Debug("Loading Image: " + imageId);
             try
             {
                 var result = MainWindow.Bot.ParseImage(imageId);
                 ViewData = new NijieImageViewModel(result);
-                this.DataContext = ViewData;
             }
             catch (NijieException ne)
             {
                 if (ViewData == null) ViewData = new NijieImageViewModel(imageId);
-                ViewData.Status = "Error: " + ne.Message;
+                ViewData.Message = "Error: " + ne.Message;
+                ViewData.ImageStatus = MainWindow.IMAGE_ERROR;
+                ViewData.BigImage = NijieImageViewModelHelper.Error;
+                MainWindow.Log.Error(ne.Message, ne.InnerException);
             }
+            this.DataContext = ViewData;
         }
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
@@ -85,24 +89,12 @@ namespace NijieDownloader.UI
 
         private void btnAddBatch_Click(object sender, RoutedEventArgs e)
         {
-            var uri = new Uri("/Main/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text, UriKind.RelativeOrAbsolute);
-            var frame = NavigationHelper.FindFrame(null, this);
-            if (frame != null)
-            {
-                frame.Source = uri;
-            }
+            e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text);
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            var uri = new Uri("/Main/SearchPage.xaml#query=" + e.Uri.OriginalString, UriKind.RelativeOrAbsolute);
-            var frame = NavigationHelper.FindFrame(null, this);
-            if (frame != null)
-            {
-                frame.Source = uri;
-            }
-
-            e.Handled = true;
+            e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
         }
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)
@@ -128,23 +120,15 @@ namespace NijieDownloader.UI
             imgBigImage.Height = h;
             lbxMangaThumb.Height = h;
         }
-
-        private void lblMember_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            var uri = new Uri("/Main/MemberPage.xaml#memberId=" + lblMember.Content, UriKind.RelativeOrAbsolute);
-            var frame = NavigationHelper.FindFrame(null, this);
-            if (frame != null)
-            {
-                frame.Source = uri;
-            }
-
-            e.Handled = true;
-        }
-
+        
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
         }
 
+        private void lblMember_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + lblMember.Content);
+        }
     }
 }

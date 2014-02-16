@@ -86,15 +86,18 @@ namespace NijieDownloader.UI
 
         public void OnNavigatedTo(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
-            if (Nijie.IsLoggedIn)
+            if (e.Source.ToString().Contains("from_title_links=1"))
             {
-                var result = ModernDialog.ShowMessage("Logout?", "Confimation", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
+                if (Nijie.IsLoggedIn)
                 {
-                    MainWindow.Bot.Logout();
-                    lblLoginStatus.Text = "Logged Out.";
+                    var result = ModernDialog.ShowMessage("Logout?", "Confimation", MessageBoxButton.YesNo);
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        MainWindow.Bot.Logout();
+                        lblLoginStatus.Text = "Logged Out.";
+                    }
                 }
-            }            
+            }
         }
 
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
