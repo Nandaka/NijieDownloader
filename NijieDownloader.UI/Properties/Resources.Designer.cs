@@ -103,6 +103,16 @@ namespace NijieDownloader.UI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap queued {
+            get {
+                object obj = ResourceManager.GetObject("queued", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap thumbnail_anime {
             get {
                 object obj = ResourceManager.GetObject("thumbnail_anime", resourceCulture);

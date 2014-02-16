@@ -14,19 +14,28 @@ using System.Windows.Threading;
 namespace NijieDownloader.UI.ViewModel
 {
     public class NijieImageViewModel : INotifyPropertyChanged
-    {        
+    {
         public NijieImageViewModel(int imageId)
         {
-            this.Image = new NijieImage(imageId);
-            _page = 0;
-            _status = "N/A";
+            setup(new NijieImage(imageId));
         }
 
         public NijieImageViewModel(NijieImage image)
         {
+            setup(image);
+        }
+
+        private void setup(NijieImage image)
+        {
             this.Image = image;
             _page = 0;
             _status = "N/A";
+
+            if (image.IsManga)
+            {
+                _mangaImage = new ObservableCollection<BitmapImage>();
+                _mangaImageStatus = new List<string>();
+            }
         }
 
         private NijieImage _image;
@@ -43,17 +52,24 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private List<string> _mangaImageStatus;
         private ObservableCollection<BitmapImage> _mangaImage;
         public ObservableCollection<BitmapImage> MangaImage
         {
             get
             {
-                if (Image != null && Image.IsManga && _mangaImage == null)
+                if (Image != null && Image.IsManga && this.ImageStatus != MainWindow.IMAGE_LOADED )
                 {
-                    _mangaImage = new ObservableCollection<BitmapImage>();
+                    while (_mangaImage.Count < Image.ImageUrls.Count)
+                    {
+                        _mangaImage.Add(NijieImageViewModelHelper.Queued);
+                        _mangaImageStatus.Add(MainWindow.IMAGE_QUEUED);
+                    }
+
                     for (int i = 0; i < Image.ImageUrls.Count; ++i)
                     {
-                        _mangaImage.Add(NijieImageViewModelHelper.LoadingImage);
+                        if (_mangaImageStatus[i] == MainWindow.IMAGE_LOADED || _mangaImageStatus[i] == MainWindow.IMAGE_LOADING)
+                            continue;
                         LoadMangaImage(Image.ImageUrls[i], i);
                     }
                 }
@@ -82,7 +98,7 @@ namespace NijieDownloader.UI.ViewModel
                     {
                         LoadBigImage(Image.BigImageUrl);
                     }
-                    return NijieImageViewModelHelper.LoadingImage;
+                    return NijieImageViewModelHelper.Loading;
                 }
                 return _bigImage;
             }
@@ -101,7 +117,7 @@ namespace NijieDownloader.UI.ViewModel
                 if (_thumbImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
                 {
                     this.ImageStatus = MainWindow.IMAGE_LOADING;
-                    
+
                     MainWindow.LoadImage(Image.ThumbImageUrl, Image.Referer,
                         new Action<BitmapImage, string>((image, status) =>
                         {
@@ -111,7 +127,7 @@ namespace NijieDownloader.UI.ViewModel
                             this.Message = status;
                         }
                     ));
-                    return NijieImageViewModelHelper.LoadingImage;
+                    return NijieImageViewModelHelper.Queued;
                 }
                 return _thumbImage;
             }
@@ -190,7 +206,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             if (page >= 0 && page < Image.ImageUrls.Count)
             {
-                this.Page = page;                
+                this.Page = page;
                 LoadBigImage(Image.ImageUrls[this.Page]);
             }
             return this.Page;
@@ -216,37 +232,46 @@ namespace NijieDownloader.UI.ViewModel
         private void LoadMangaImage(string url, int i)
         {
             if (String.IsNullOrWhiteSpace(url)) return;
-            MainWindow.LoadImage(url, Image.Referer,
-                            new Action<BitmapImage, string>((image, status) =>
-                            {
-                                Application.Current.Dispatcher.BeginInvoke(
-                                          DispatcherPriority.Background, new Action(() =>
-                                          {
-                                              this.MangaImage[i] = null;
-                                              this.MangaImage[i] = image;
-                                              this.Message = "Manga [" + i + "]: " + status;
 
-                                              if (status == MainWindow.IMAGE_LOADED && i == Page)
-                                                  this.BigImage = this.MangaImage[i];
-
-                                              var allLoaded = true;
-                                              foreach (var item in this.MangaImage)
+            this._mangaImageStatus[i] = MainWindow.IMAGE_LOADING;
+            try
+            {
+                MainWindow.LoadImage(url, Image.Referer,
+                                new Action<BitmapImage, string>((image, status) =>
+                                {
+                                    Application.Current.Dispatcher.BeginInvoke(
+                                              DispatcherPriority.Background, new Action(() =>
                                               {
-                                                  if (item == NijieImageViewModelHelper.LoadingImage)
+                                                  this.MangaImage[i] = image;
+                                                  this.Message = "Manga [" + i + "]: " + status;
+                                                  this._mangaImageStatus[i] = status;
+
+                                                  if (status == MainWindow.IMAGE_LOADED && i == Page)
+                                                      this.BigImage = this.MangaImage[i];
+
+                                                  var allLoaded = true;
+                                                  foreach (var item in this._mangaImageStatus)
                                                   {
-                                                      allLoaded = false;
-                                                      break;
+                                                      if (item != MainWindow.IMAGE_LOADED)
+                                                      {
+                                                          allLoaded = false;
+                                                          break;
+                                                      }
                                                   }
-                                              }
-                                              if (allLoaded)
-                                              {
-                                                  this.ImageStatus = MainWindow.IMAGE_LOADED;
-                                              }
-                                              else
-                                                  this.ImageStatus = MainWindow.IMAGE_LOADING;
-                                          }));
-                            }
-                        ));
+                                                  if (allLoaded)
+                                                  {
+                                                      this.ImageStatus = MainWindow.IMAGE_LOADED;
+                                                  }
+                                                  else
+                                                      this.ImageStatus = MainWindow.IMAGE_LOADING;
+                                              }));
+                                }
+                            ));
+            }
+            catch (Exception ex)
+            {
+                MainWindow.Log.Error(ex.Message, ex);
+            }
         }
 
         private bool _isSelected;
@@ -264,7 +289,7 @@ namespace NijieDownloader.UI.ViewModel
     public class NijieImageViewModelHelper
     {
         private static BitmapImage _loading;
-        public static BitmapImage LoadingImage
+        public static BitmapImage Loading
         {
             get
             {
@@ -304,6 +329,22 @@ namespace NijieDownloader.UI.ViewModel
                     _error.Freeze();
                 }
                 return _error;
+            }
+            private set { }
+        }
+
+
+        private static BitmapImage _queued;
+        public static BitmapImage Queued
+        {
+            get
+            {
+                if (_queued == null)
+                {
+                    _queued = new BitmapImage(new Uri("pack://application:,,,/Resources/queued.png"));
+                    _queued.Freeze();
+                }
+                return _queued;
             }
             private set { }
         }

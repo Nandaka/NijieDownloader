@@ -89,7 +89,6 @@
                             <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
                             <TextBlock Text="{Binding Path=ImageStatus}" />
                             <TextBlock Text="{Binding Path=Message}" TextWrapping="Wrap" />                            
-                            <TextBlock Text="{Binding ElementName=page, Path=Height}" />
                         </StackPanel>
                     </ScrollViewer>
                     <DockPanel Grid.Column="1" >
@@ -111,7 +110,7 @@
                         </ListBox>
                         <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent"
                                           BorderBrush="Black" BorderThickness="1" >
-                            <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}" />
+                            <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}"/>
                         </local:ZoomBorder>
                     </DockPanel>
                 </Grid>

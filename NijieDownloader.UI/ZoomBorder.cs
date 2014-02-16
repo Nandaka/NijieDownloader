@@ -38,6 +38,7 @@ namespace NijieDownloader.UI
         public void Initialize(UIElement element)
         {
             this.child = element;
+
             if (child != null)
             {
                 TransformGroup group = new TransformGroup();
@@ -56,7 +57,7 @@ namespace NijieDownloader.UI
                 this.MouseDown += new MouseButtonEventHandler(ZoomBorder_MouseDown);
             }
         }
-
+        
         void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount >= 2)

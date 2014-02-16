@@ -45,12 +45,7 @@ namespace NijieDownloader.UI
             {
                 if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
                 {
-                    var uri = new Uri("/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
-                    var frame = NavigationHelper.FindFrame(null, this);
-                    if (frame != null)
-                    {
-                        frame.Source = uri;
-                    }
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId);
                 }
             }
         }
@@ -111,12 +106,7 @@ namespace NijieDownloader.UI
         {
             if (!string.IsNullOrWhiteSpace(txtQuery.Text))
             {
-                var uri = new Uri("/Main/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text + "&sort=" + cbxSort.SelectedValue, UriKind.RelativeOrAbsolute);
-                var frame = NavigationHelper.FindFrame(null, this);
-                if (frame != null)
-                {
-                    frame.Source = uri;
-                }
+                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text + "&sort=" + cbxSort.SelectedValue);
             }
         }
 
@@ -146,6 +136,19 @@ namespace NijieDownloader.UI
                 ViewData = new NijieSearchViewModel(query.Get("query"));
 
                 this.DataContext = ViewData;
+            }
+        }
+
+        private void btnAddSelectedJob_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = from l in ViewData.Images
+                           where l.IsSelected == true
+                           select l.Image.ImageId.ToString();
+
+            var join = String.Join(",", selected.ToList<String>());
+            if (!String.IsNullOrWhiteSpace(join))
+            {
+                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
     }

@@ -44,6 +44,7 @@ namespace NijieDownloader.UI
         public const string IMAGE_LOADING = "Loading";
         public const string IMAGE_LOADED = "Done";
         public const string IMAGE_ERROR = "Error";
+        public const string IMAGE_QUEUED = "Queued";
 
         private static ObjectCache cache;
         private static ILog _log;
@@ -81,6 +82,7 @@ namespace NijieDownloader.UI
 
         public MainWindow()
         {
+            Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
             checkUpgrade();
             InitializeComponent();
             Bot = new Nijie(Log);
@@ -95,6 +97,12 @@ namespace NijieDownloader.UI
             cache = new MemoryCache("CustomCache", config);
 
             Log.Info(AppName + " started.");
+        }
+
+        void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Log.Error("Unexpected Error: " + e.Exception.Message, e.Exception);
+            MessageBox.Show(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);            
         }
 
         private void checkUpgrade()
@@ -134,6 +142,8 @@ namespace NijieDownloader.UI
                 {
                     try
                     {
+                        action(NijieImageViewModelHelper.Loading, IMAGE_LOADING);
+
                         Log.Debug("Loading image: " + url);
                         var result = MainWindow.Bot.DownloadData(url, referer);
                         using (var ms = new MemoryStream(result))

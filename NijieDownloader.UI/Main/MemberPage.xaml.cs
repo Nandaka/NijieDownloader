@@ -61,12 +61,7 @@ namespace NijieDownloader.UI
             {
                 if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
                 {
-                    var uri = new Uri("/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId, UriKind.RelativeOrAbsolute);
-                    var frame = NavigationHelper.FindFrame(null, this);
-                    if (frame != null)
-                    {
-                        frame.Source = uri;
-                    }
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId);
                 }
             }
         }
@@ -86,12 +81,7 @@ namespace NijieDownloader.UI
         {
             if (!string.IsNullOrWhiteSpace(txtMemberID.Text))
             {
-                var uri = new Uri("/Main/BatchDownloadPage.xaml#type=member&memberId=" + txtMemberID.Text, UriKind.RelativeOrAbsolute);
-                var frame = NavigationHelper.FindFrame(null, this);
-                if (frame != null)
-                {
-                    frame.Source = uri;
-                }
+                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=member&memberId=" + txtMemberID.Text);
             }
         }
 
@@ -104,12 +94,7 @@ namespace NijieDownloader.UI
             var join = String.Join(",", selected.ToList<String>());
             if (!String.IsNullOrWhiteSpace(join))
             {
-                var uri = new Uri("/Main/BatchDownloadPage.xaml#type=image&imageId=" + join, UriKind.RelativeOrAbsolute);
-                var frame = NavigationHelper.FindFrame(null, this);
-                if (frame != null)
-                {
-                    frame.Source = uri;
-                }
+                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
 
