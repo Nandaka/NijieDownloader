@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Model\NijieSearch.cs" />
     <Compile Include="Nijie.Image.cs" />
+    <Compile Include="Nijie.Member.cs" />
     <Compile Include="Nijie.Search.cs" />
     <Compile Include="Model\NijieImage.cs" />
     <Compile Include="Model\NijieLoginInfo.cs" />
