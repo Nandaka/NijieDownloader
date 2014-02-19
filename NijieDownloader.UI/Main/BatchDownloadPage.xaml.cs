@@ -17,6 +17,9 @@ using System.Collections.ObjectModel;
 using FirstFloor.ModernUI.Windows;
 using System.Web;
 using FirstFloor.ModernUI.Windows.Controls;
+using System.Xml.Serialization;
+using System.IO;
+using Microsoft.Win32;
 
 namespace NijieDownloader.UI
 {
@@ -49,7 +52,7 @@ namespace NijieDownloader.UI
             this.NewJob.JobType = JobType.Member;
             this.NewJob.MemberId = memberId;
             this.NewJob.Status = Status.Added;
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;            
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
             pnlAddJob.DataContext = this.NewJob;
         }
 
@@ -60,7 +63,7 @@ namespace NijieDownloader.UI
             this.NewJob.SearchTag = tags;
             this.NewJob.Status = Status.Added;
             this.NewJob.StartPage = page;
-            this.NewJob.Sort = sort; 
+            this.NewJob.Sort = sort;
             pnlAddJob.Visibility = System.Windows.Visibility.Visible;
             pnlAddJob.DataContext = this.NewJob;
         }
@@ -97,13 +100,14 @@ namespace NijieDownloader.UI
                 {
                     var imageIds = query.Get("imageId");
                     var ids = imageIds.Split(',');
-                    foreach(var imageId in ids) {
+                    foreach (var imageId in ids)
+                    {
                         addJobForImage(Int32.Parse(imageId));
                     }
                 }
             }
         }
-        
+
         public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
         }
@@ -120,7 +124,7 @@ namespace NijieDownloader.UI
         {
             foreach (var job in ViewData)
             {
-                if (job.Status == Status.Added)
+                if (job.Status == Status.Added || job.Status == Status.Error)
                 {
                     MainWindow.DoJob(job);
                 }
@@ -200,6 +204,77 @@ namespace NijieDownloader.UI
                 pnlLimit.Visibility = System.Windows.Visibility.Visible;
                 pnlSort.Visibility = System.Windows.Visibility.Visible;
             }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.AddExtension = true;
+            save.ValidateNames = true;
+            save.Filter = "xml|*.xml";
+            var result = save.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                try
+                {
+                    XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
+                    using (StreamWriter myWriter = new StreamWriter(save.FileName))
+                    {
+                        ser.Serialize(myWriter, ViewData);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.Log.Error(ex.Message, ex);
+                    ModernDialog.ShowMessage(ex.Message, "Error Saving", MessageBoxButton.OK);
+                }
+            }
+        }
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            open.Multiselect = false;
+            open.Filter = "xml|*.xml";
+            var result = open.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                var filename = open.FileName;
+                int i = 0;
+                try
+                {
+                    XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
+                    using (StreamReader reader = new StreamReader(filename))
+                    {
+                        var batchJob = ser.Deserialize(reader) as ObservableCollection<JobDownloadViewModel>;
+                        if (batchJob != null)
+                        {
+                            foreach (var item in batchJob)
+                            {
+                                if (!ViewData.Contains(item, new JobDownloadViewModelComparer()))
+                                {
+                                    ViewData.Add(item);
+                                    ++i;
+                                }
+                            }
+                        }
+                    }
+                    if (i == 0)
+                    {
+                        ModernDialog.ShowMessage(string.Format("No job loaded from {0}{1}Either the jobs already loaded or no job in the file.", filename, Environment.NewLine), "Batch Job Loading", MessageBoxButton.OK);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.Log.Error(ex.Message, ex);
+                    ModernDialog.ShowMessage(ex.Message, "Error Loading", MessageBoxButton.OK);
+                }
+            }
+        }
+
+        private void btnClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            ViewData.Clear();
         }
     }
 }

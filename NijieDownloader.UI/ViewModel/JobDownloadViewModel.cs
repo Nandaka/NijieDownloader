@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Xml.Serialization;
 
 namespace NijieDownloader.UI.ViewModel
 {
+    [Serializable]
     public class JobDownloadViewModel : INotifyPropertyChanged
     {
         private bool _isSelected;
+        [XmlIgnoreAttribute]
         public bool IsSelected
         {
             get { return _isSelected; }
@@ -30,17 +33,18 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        [XmlIgnoreAttribute]
         public string Name
         {
             get
             {
                 switch (JobType)
                 {
-                    case ViewModel.JobType.Image:
+                    case JobType.Image:
                         return String.Format("Image ID: {0}", ImageId);
-                    case ViewModel.JobType.Member:
+                    case JobType.Member:
                         return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
-                    case ViewModel.JobType.Tags:
+                    case JobType.Tags:
                         return String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
                 }
                 return "N/A";
@@ -82,7 +86,6 @@ namespace NijieDownloader.UI.ViewModel
         public int ImageId { get; set; }
         public int MemberId { get; set; }
         public string SearchTag { get; set; }
-
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -140,13 +143,15 @@ namespace NijieDownloader.UI.ViewModel
             {
                 return _sort;
             }
-            set{
+            set
+            {
                 _sort = value;
                 onPropertyChanged("Sort");
             }
         }
 
         private int _downloadCount;
+        [XmlIgnoreAttribute]
         public int DownloadCount
         {
             get
@@ -161,6 +166,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _currentPage;
+        [XmlIgnoreAttribute]
         public int CurrentPage
         {
             get
@@ -175,7 +181,52 @@ namespace NijieDownloader.UI.ViewModel
         }
     }
 
-    public enum JobType{
+    public class JobDownloadViewModelComparer : IComparer<JobDownloadViewModel> , IEqualityComparer<JobDownloadViewModel>
+    {
+        public int Compare(JobDownloadViewModel x, JobDownloadViewModel other)
+        {
+            if (x.JobType == other.JobType)
+            {
+                switch (x.JobType)
+                {
+                    case JobType.Image:
+                        if (x.ImageId == other.ImageId)
+                            return 0;
+                        break;
+                    case JobType.Member:
+                        if (x.MemberId == other.MemberId &&
+                            x.StartPage == other.StartPage &&
+                            x.EndPage == other.EndPage &&
+                            x.Limit == other.Limit)
+                            return 0;
+                        break;
+                    case JobType.Tags:
+                        if (x.SearchTag == other.SearchTag &&
+                            x.StartPage == other.StartPage &&
+                            x.EndPage == other.EndPage &&
+                            x.Limit == other.Limit)
+                            return 0;
+                        break;
+                    default:
+                        return 1;
+                }
+            }
+            return 1;
+        }
+
+        public bool Equals(JobDownloadViewModel x, JobDownloadViewModel y)
+        {
+            return Compare(x, y) == 0 ? true : false;
+        }
+
+        public int GetHashCode(JobDownloadViewModel obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
+    public enum JobType
+    {
         Image,
         Member,
         Tags

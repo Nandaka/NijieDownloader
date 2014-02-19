@@ -212,7 +212,7 @@ namespace NijieDownloader.Library
                 var result = getPage(url);
                 doc = result.Item1;
 
-                var images = doc.DocumentNode.SelectNodes("//img[@class='lazy']");
+                var images = doc.DocumentNode.SelectNodes("//img[@class='']");
                 if (image.IsManga)
                 {
                     image.ImageUrls.Clear();

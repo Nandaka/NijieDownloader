@@ -32,10 +32,10 @@ namespace Nandaka.Common
             if (input == null) return "";
             foreach (char c in Path.GetInvalidFileNameChars())
             {
+                if (c == Path.PathSeparator) continue;
+                else if (c == '\\') continue;
                 input = input.Replace(c, '_');
-            }
-            input = input.Replace(':', '_');
-            input = input.Replace('\\', '_');
+            }            
             return input;
         }
 

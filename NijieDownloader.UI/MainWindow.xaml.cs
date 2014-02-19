@@ -378,29 +378,35 @@ namespace NijieDownloader.UI
             }
         }
 
+
+        public const string FILENAME_FORMAT_MEMBER_ID = "{memberId}";
+        public const string FILENAME_FORMAT_IMAGE_ID = "{imageId}";
+        public const string FILENAME_FORMAT_PAGE = "{page}";
+        public const string FILENAME_FORMAT_MAX_PAGE = "{maxPage}";
+        public const string FILENAME_FORMAT_TAGS = "{tags}";
         private static string makeFilename(NijieImage image, int currPage = 0)
         {
             var filename = Properties.Settings.Default.FilenameFormat;
 
             // {memberId} - {imageId}{page}{maxPage} - {tags}
-            filename = filename.Replace("{memberId}", image.Member.MemberId.ToString());
-            filename = filename.Replace("{imageId}", image.ImageId.ToString());
+            filename = filename.Replace(FILENAME_FORMAT_MEMBER_ID, image.Member.MemberId.ToString());
+            filename = filename.Replace(FILENAME_FORMAT_IMAGE_ID, image.ImageId.ToString());
 
             if (image.IsManga)
             {
-                filename = filename.Replace("{page}", currPage.ToString());
-                filename = filename.Replace("{maxPage}", " of " + image.ImageUrls.Count);
+                filename = filename.Replace(FILENAME_FORMAT_PAGE, currPage.ToString());
+                filename = filename.Replace(FILENAME_FORMAT_MAX_PAGE, " of " + image.ImageUrls.Count);
             }
             else
             {
-                filename = filename.Replace("{page}", "");
-                filename = filename.Replace("{maxPage}", "");
+                filename = filename.Replace(FILENAME_FORMAT_PAGE, "");
+                filename = filename.Replace(FILENAME_FORMAT_MAX_PAGE, "");
             }
 
             if (image.Tags != null || image.Tags.Count > 0)
-                filename = filename.Replace("{tags}", String.Join(" ", image.Tags));
+                filename = filename.Replace(FILENAME_FORMAT_TAGS, String.Join(" ", image.Tags));
             else
-                filename = filename.Replace("{tags}", "");
+                filename = filename.Replace(FILENAME_FORMAT_TAGS, "");
 
             return filename;
         }

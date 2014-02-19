@@ -32,5 +32,13 @@ namespace NijieDownloader.UI.Settings
         {
             NijieDownloader.UI.Properties.Settings.Default.Save();
         }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            if (pnlFilenameHelp.Visibility == System.Windows.Visibility.Collapsed)
+                pnlFilenameHelp.Visibility = System.Windows.Visibility.Visible;
+            else
+                pnlFilenameHelp.Visibility = System.Windows.Visibility.Collapsed;
+        }
     }
 }
