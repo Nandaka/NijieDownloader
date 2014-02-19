@@ -10,7 +10,6 @@
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       d:DesignHeight="600" d:DesignWidth="800">
     <Page.Resources>
-        <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
         <h:ListToStringConverter x:Key="ListToStringConverter"/>
         <local:IsMangaToVisibilityConverter x:Key="isMangaToVisibilityConverter" />
     </Page.Resources>
@@ -53,7 +52,9 @@
                             </StackPanel>
 
                             <TextBlock Text="Description" Margin="5,5,5,0" />
-                            <TextBox Name="txtDescription" Height="25" Text="{Binding Path=Image.Description}" TextWrapping="Wrap"/>
+                            <TextBox Name="txtDescription" Height="25" 
+                                     Text="{Binding Path=Image.Description}" ToolTip="{Binding Path=Image.Description}" 
+                                     TextWrapping="Wrap"/>
 
                             <TextBlock Text="Work Date" Margin="5,5,5,0" />
                             <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=Image.WorkDate}"/>

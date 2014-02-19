@@ -386,6 +386,16 @@ namespace NijieDownloader.UI
         public const string FILENAME_FORMAT_MAX_PAGE = "{maxPage}";
         public const string FILENAME_FORMAT_TAGS = "{tags}";
         public const string FILENAME_FORMAT_SEARCH_TAGS = "{searchTags}";
+
+        public const string FILENAME_FORMAT_TOOLTIP = @"
+    {memberId}  = Member ID 
+    {imageId}   = Image ID 
+    {page}      = Page Number for manga 
+    {maxPage}   = Page Count for manga 
+    {tags}      = Image Tags 
+    {searchTags}= Search Tags used for query 
+";
+
         private static string makeFilename(JobDownloadViewModel job, NijieImage image, int currPage = 0)
         {
             string filenameFormat = job.SaveFilenameFormat;

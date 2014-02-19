@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:np="clr-namespace:NijieDownloader.UI.Properties"
+             xmlns:local="clr-namespace:NijieDownloader.UI"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800">
     <Grid Style="{StaticResource ContentRoot}">
@@ -37,14 +38,7 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Name="pnlFilenameHelp" Visibility="Collapsed" MinHeight="100">
                             <TextBlock MinWidth="100" />
-                            <TextBlock>
-                            {memberId} = Member ID <LineBreak/>
-                            {imageId}  = Image ID <LineBreak/>
-                            {page}     = Page Number for manga <LineBreak/>
-                            {maxPage}  = Page Count for manga <LineBreak/>
-                            {tags}     = Image Tags <LineBreak/>
-                            {searchTags}= Search Tags used for query <LineBreak/>
-                            </TextBlock>
+                            <TextBlock Text="{x:Static local:MainWindow.FILENAME_FORMAT_TOOLTIP}" />
                         </StackPanel>
                     </StackPanel>
                     <CheckBox Grid.Row="2" Grid.Column="1" Width="100" Content="Overwrite" HorizontalAlignment="Left" IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>

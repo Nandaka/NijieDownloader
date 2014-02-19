@@ -211,20 +211,20 @@ namespace NijieDownloader.Library
                 var url = "http://nijie.info/view_popup.php?id=" + image.ImageId;
                 var result = getPage(url);
                 doc = result.Item1;
-
-                var images = doc.DocumentNode.SelectNodes("//img[@class='']");
+                
+                var bigImage = doc.DocumentNode.SelectSingleNode("//img[@class='']");
+                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
+                
                 if (image.IsManga)
                 {
                     image.ImageUrls.Clear();
+                    image.ImageUrls.Add(image.BigImageUrl);
+                    var images = doc.DocumentNode.SelectNodes("//img[@class='lazy']");                    
                     foreach (var item in images)
                     {
                         image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
                     }
-                }
-                else
-                {
-                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(images[0].Attributes["data-original"].Value);
-                }
+                }                    
                     
                 return image;
             }

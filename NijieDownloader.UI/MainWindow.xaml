@@ -23,6 +23,7 @@
                 <mui:Link DisplayName="Login" Source="/Settings/LoginInfo.xaml" />
                 <mui:Link DisplayName="Network" Source="/Settings/Network.xaml" />
                 <mui:Link DisplayName="Download" Source="/Settings/Download.xaml" />
+                <mui:Link DisplayName="About" Source="/Settings/About.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
     </mui:ModernWindow.MenuLinkGroups>

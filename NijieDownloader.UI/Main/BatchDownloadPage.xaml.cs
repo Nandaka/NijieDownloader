@@ -276,5 +276,10 @@ namespace NijieDownloader.UI
         {
             ViewData.Clear();
         }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
+        }
     }
 }
