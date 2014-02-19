@@ -1,0 +1,16 @@
+Nijie Downloader 1.0.0.2
+- Feature: Add save/load batch job.
+- Feature: Add custom filename format per job.
+- Feature: Add new meta filename format {searchTag} based on the search tags used.
+- Feature: Add auto calculate image column count on Member and Search page.
+- Feature: Implement Pause/Stop button on batch job.
+- Feature: Allow '\' in filename format for path separator.
+- Bug Fix: Update error handling.
+- Bug Fix: Update big image parser.
+
+
+Nijie Downloader 1.0.0.1
+- First release.
+- Feature: Browse images by Member ID or Search Tags.
+- Feature: Batch Download by Member ID, Image ID, or Search Tags.
+- Feature: Custom filename format.
