@@ -6,7 +6,7 @@
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="800" Name="memberPage"
 	Title="Member Page">
     <Page.Resources>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
@@ -112,7 +112,7 @@
                 <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid IsItemsHost="True" Columns="8"/>
+                            <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=memberPage, Path=TileColumns}"/>
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>

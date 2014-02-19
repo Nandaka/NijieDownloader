@@ -6,8 +6,8 @@
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
-	Title="Member Page">
+      d:DesignHeight="600" d:DesignWidth="800" Name="searchPage"
+	Title="Search Page">
     <Page.Resources>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
         <BitmapImage x:Key="AnimeIcon" UriSource="/Resources/thumbnail_anime.png" />
@@ -86,7 +86,7 @@
                 <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" Height="Auto">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid IsItemsHost="True" Columns="8"/>
+                            <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=searchPage, Path=TileColumns}"/>
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>

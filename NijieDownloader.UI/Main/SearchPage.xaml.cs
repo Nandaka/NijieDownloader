@@ -28,6 +28,13 @@ namespace NijieDownloader.UI
     public partial class SearchPage : Page, IContent
     {
         public NijieSearchViewModel ViewData { get; set; }
+        public int TileColumns
+        {
+            get { return (int)GetValue(TileColumnsProperty); }
+            set { SetValue(TileColumnsProperty, value); }
+        }
+        public static readonly DependencyProperty TileColumnsProperty =
+            DependencyProperty.Register("TileColumns", typeof(int), typeof(SearchPage), new PropertyMetadata(3));
 
         public SearchPage()
         {
@@ -63,6 +70,12 @@ namespace NijieDownloader.UI
                 lbxImages.MaxHeight = h;
             else
                 lbxImages.MaxHeight = 1;
+
+            int tileCount = (int)(e.NewSize.Width / 140);
+            if (tileCount > 1)
+                TileColumns = tileCount;
+            else
+                TileColumns = 1;
         }
 
         private void doSearch(string query, int page, int sort)

@@ -29,6 +29,14 @@ namespace NijieDownloader.UI
     {
         public NijieMemberViewModel ViewData { get; set; }
 
+        public int TileColumns
+        {
+            get { return (int)GetValue(TileColumnsProperty); }
+            set { SetValue(TileColumnsProperty, value); }
+        }
+        public static readonly DependencyProperty TileColumnsProperty =
+            DependencyProperty.Register("TileColumns", typeof(int), typeof(MemberPage), new PropertyMetadata(3));
+
         public MemberPage()
         {
             InitializeComponent();
@@ -74,7 +82,21 @@ namespace NijieDownloader.UI
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            lbxImages.MaxHeight = e.NewSize.Height;
+            if (e.NewSize.Height > 0)
+            {
+                lbxImages.MaxHeight = e.NewSize.Height;
+            }
+            else
+            {
+                lbxImages.MaxHeight = 1;
+            }
+
+            int tileCount = (int)(e.NewSize.Width / 140);
+            if (tileCount > 1)
+                TileColumns = tileCount;
+            else
+                TileColumns = 1;
+
         }
 
         private void btnAddToBatch_Click(object sender, RoutedEventArgs e)
