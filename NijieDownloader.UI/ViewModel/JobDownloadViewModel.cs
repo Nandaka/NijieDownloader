@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.Xml.Serialization;
+using System.Threading;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -71,6 +72,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private Status _status;
+        [XmlIgnoreAttribute]
         public Status Status
         {
             get
@@ -85,6 +87,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _message;
+        [XmlIgnoreAttribute]
         public string Message
         {
             get
@@ -197,6 +200,35 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("CurrentPage");
             }
         }
+
+        private ManualResetEvent _pause;
+        [XmlIgnoreAttribute]
+        public ManualResetEvent PauseEvent
+        {
+            get
+            {
+                if (_pause == null)
+                    _pause = new ManualResetEvent(false);
+                return _pause;
+            }
+            private set { }
+        }
+
+        public void Pause()
+        {
+            this.Message = "Pausing...";
+            this.PauseEvent.Reset();
+            this.Message = "Paused.";
+            this.Status = Status.Paused;
+        }
+
+        public void Resume()
+        {
+            this.Message = "Resuming...";
+            this.PauseEvent.Set();
+            this.Message = "Running.";
+            this.Status = Status.Running;
+        }
     }
 
     public class JobDownloadViewModelComparer : IComparer<JobDownloadViewModel> , IEqualityComparer<JobDownloadViewModel>
@@ -255,8 +287,10 @@ namespace NijieDownloader.UI.ViewModel
         Added,
         Queued,
         Running,
+        Paused,
         Completed,
         Canceling,
+        Cancelled,
         Error
     }
 }

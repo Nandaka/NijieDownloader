@@ -281,5 +281,38 @@ namespace NijieDownloader.UI
         {
             ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
         }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in ViewData)
+            {
+                if (item.Status != Status.Completed || item.Status != Status.Error)
+                {
+                    item.Status = Status.Canceling;
+                }
+            }
+        }
+
+        private void btnPause_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnPause.Content.ToString() == "Pause")
+            {
+                foreach (var item in ViewData)
+                {
+                    if (item.Status == Status.Running)
+                        item.Pause();
+                }
+                btnPause.Content = "Resume";
+            }
+            else
+            {
+                foreach (var item in ViewData)
+                {
+                    if (item.Status == Status.Paused)
+                        item.Resume();
+                }
+                btnPause.Content = "Pause";
+            }
+        }
     }
 }

@@ -34,8 +34,8 @@
                     <Button Name="btnAdd" Margin="10,0,0,10" Content="Add" Click="btnAdd_Click" />
                     <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete" Click="btnDelete_Click" />
                     <Button Name="btnStart" Margin="10,0,0,10" Content="Start" Click="btnStart_Click" />
-                    <Button Name="btnPause" Margin="10,0,0,10" Content="Pause" />
-                    <Button Name="btnStop" Margin="10,0,0,10" Content="Stop" />
+                    <Button Name="btnPause" Margin="10,0,0,10" Content="Pause" Click="btnPause_Click" />
+                    <Button Name="btnStop" Margin="10,0,0,10" Content="Stop" Click="btnStop_Click" />
                     <Button Name="btnSave" Margin="10,0,0,10" Content="Save" Click="btnSave_Click" />
                     <Button Name="btnLoad" Margin="10,0,0,10" Content="Load" Click="btnLoad_Click" />
                     <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All" Click="btnClearAll_Click" />

@@ -181,6 +181,8 @@ namespace NijieDownloader.UI
             job.Status = Status.Queued;
             JobFactory.StartNew(() =>
             {
+                if (isCancelled(job)) return;
+
                 job.Status = Status.Running;
                 switch (job.JobType)
                 {
@@ -194,6 +196,9 @@ namespace NijieDownloader.UI
                         doImageJob(job);
                         break;
                 }
+
+                if (isCancelled(job)) return;
+
                 if (job.Status != Status.Error)
                 {
                     job.Status = Status.Completed;
@@ -205,6 +210,8 @@ namespace NijieDownloader.UI
 
         private static void doImageJob(JobDownloadViewModel job)
         {
+            if (isCancelled(job)) return;
+
             Log.Debug("Running Image Job: " + job.Name);
             try
             {
@@ -221,6 +228,8 @@ namespace NijieDownloader.UI
 
         private static void doSearchJob(JobDownloadViewModel job)
         {
+            if (isCancelled(job)) return;
+
             Log.Debug("Running Search Job: " + job.Name);
             try
             {
@@ -234,11 +243,15 @@ namespace NijieDownloader.UI
 
                 while (flag)
                 {
+                    if (isCancelled(job)) return;
+
                     job.Message = "Parsing search page: " + job.CurrentPage;
                     var searchPage = Bot.Search(job.SearchTag, job.CurrentPage, sort);
 
                     foreach (var image in searchPage.Images)
                     {
+                        if (isCancelled(job)) return;
+
                         processImage(job, null, image);
                         ++job.DownloadCount;
                         if (job.DownloadCount > limit && limit != 0)
@@ -270,6 +283,8 @@ namespace NijieDownloader.UI
 
         private static void doMemberJob(JobDownloadViewModel job)
         {
+            if (isCancelled(job)) return;
+
             Log.Debug("Running Member Job: " + job.Name);
             try
             {
@@ -278,6 +293,8 @@ namespace NijieDownloader.UI
 
                 foreach (var imageTemp in memberPage.Images)
                 {
+                    if (isCancelled(job)) return;
+
                     processImage(job, memberPage, imageTemp);
                     ++job.DownloadCount;
                 }
@@ -292,6 +309,8 @@ namespace NijieDownloader.UI
 
         private static void processImage(JobDownloadViewModel job, NijieMember memberPage, NijieImage imageTemp)
         {
+            if (isCancelled(job)) return;
+
             Log.Debug("Processing Image:" + imageTemp.ImageId);
             try
             {
@@ -302,6 +321,9 @@ namespace NijieDownloader.UI
                     Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
                     for (int i = 0; i < image.ImageUrls.Count; ++i)
                     {
+                        if (isCancelled(job)) return;
+                        job.PauseEvent.WaitOne(Timeout.Infinite);
+
                         var filename = makeFilename(job, image, i);
                         job.Message = "Downloading: " + image.ImageUrls[i];
                         var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
@@ -309,19 +331,22 @@ namespace NijieDownloader.UI
 
                         if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
                         {
-                            dowloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
+                            downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
                         }
                     }
                 }
                 else
                 {
+                    if (isCancelled(job)) return;
+                    job.PauseEvent.WaitOne(Timeout.Infinite);
+
                     var filename = makeFilename(job, image);
                     job.Message = "Downloading: " + image.BigImageUrl;
                     filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
                     filename = rootPath + "\\" + Util.SanitizeFilename(filename);
                     if (canDownloadFile(job, image.BigImageUrl, filename))
                     {
-                        dowloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                        downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
                     }
                 }
             }
@@ -333,7 +358,19 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static Boolean canDownloadFile(JobDownloadViewModel job, String url, String filename)
+        private static bool isCancelled(JobDownloadViewModel job)
+        {
+            if (job.Status == Status.Canceling || job.Status == Status.Cancelled)
+            {
+                job.Status = Status.Cancelled;
+                job.Message = "Job Cancelled.";
+                Log.Debug(string.Format("Job: {0} cancelled", job.Name));
+                return true;
+            }
+            return false;
+        }
+
+        private static bool canDownloadFile(JobDownloadViewModel job, String url, String filename)
         {
             if (!File.Exists(filename) || Properties.Settings.Default.Overwrite)
             {
@@ -353,17 +390,19 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static void dowloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        private static void downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
             Log.Debug(String.Format("Downloading url: {0} ==> {1}", url, filename));
             int retry = 0;
             while (retry < 3)
             {
+                if (isCancelled(job)) return;
                 try
                 {
                     job.Message = "Saving to: " + filename;
                     Bot.Download(url, referer, filename);
                     job.Message = "Saved to: " + filename;
+
                     break;
                 }
                 catch (Exception ex)
@@ -378,8 +417,7 @@ namespace NijieDownloader.UI
                 }
             }
         }
-
-
+        
         public const string FILENAME_FORMAT_MEMBER_ID = "{memberId}";
         public const string FILENAME_FORMAT_IMAGE_ID = "{imageId}";
         public const string FILENAME_FORMAT_PAGE = "{page}";
