@@ -102,7 +102,7 @@ namespace NijieDownloader.UI
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Error("Unexpected Error: " + e.Exception.Message, e.Exception);
-            MessageBox.Show(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);            
+            MessageBox.Show(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
         }
 
         private void checkUpgrade()
@@ -302,7 +302,7 @@ namespace NijieDownloader.UI
                     Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
                     for (int i = 0; i < image.ImageUrls.Count; ++i)
                     {
-                        var filename = makeFilename(image, i);
+                        var filename = makeFilename(job, image, i);
                         job.Message = "Downloading: " + image.ImageUrls[i];
                         var pagefilename = filename + "_p" + i + "." + Util.ParseExtension(image.ImageUrls[i]);
                         pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
@@ -315,7 +315,7 @@ namespace NijieDownloader.UI
                 }
                 else
                 {
-                    var filename = makeFilename(image);
+                    var filename = makeFilename(job, image);
                     job.Message = "Downloading: " + image.BigImageUrl;
                     filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
                     filename = rootPath + "\\" + Util.SanitizeFilename(filename);
@@ -361,8 +361,9 @@ namespace NijieDownloader.UI
             {
                 try
                 {
-                    Bot.Download(url, referer, filename);
                     job.Message = "Saving to: " + filename;
+                    Bot.Download(url, referer, filename);
+                    job.Message = "Saved to: " + filename;
                     break;
                 }
                 catch (Exception ex)
@@ -384,31 +385,42 @@ namespace NijieDownloader.UI
         public const string FILENAME_FORMAT_PAGE = "{page}";
         public const string FILENAME_FORMAT_MAX_PAGE = "{maxPage}";
         public const string FILENAME_FORMAT_TAGS = "{tags}";
-        private static string makeFilename(NijieImage image, int currPage = 0)
+        public const string FILENAME_FORMAT_SEARCH_TAGS = "{searchTags}";
+        private static string makeFilename(JobDownloadViewModel job, NijieImage image, int currPage = 0)
         {
-            var filename = Properties.Settings.Default.FilenameFormat;
+            string filenameFormat = job.SaveFilenameFormat;
+            if (string.IsNullOrWhiteSpace(filenameFormat))
+                throw new NijieException("Empty filename format!", NijieException.INVALID_SAVE_FILENAME_FORMAT);
 
-            // {memberId} - {imageId}{page}{maxPage} - {tags}
-            filename = filename.Replace(FILENAME_FORMAT_MEMBER_ID, image.Member.MemberId.ToString());
-            filename = filename.Replace(FILENAME_FORMAT_IMAGE_ID, image.ImageId.ToString());
+            filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MEMBER_ID, image.Member.MemberId.ToString());
+            filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_IMAGE_ID, image.ImageId.ToString());
+
+            if (job.JobType == JobType.Tags)
+            {
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_SEARCH_TAGS, job.SearchTag);
+            }
+            else
+            {
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_SEARCH_TAGS, "");
+            }
 
             if (image.IsManga)
             {
-                filename = filename.Replace(FILENAME_FORMAT_PAGE, currPage.ToString());
-                filename = filename.Replace(FILENAME_FORMAT_MAX_PAGE, " of " + image.ImageUrls.Count);
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_PAGE, currPage.ToString());
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MAX_PAGE, " of " + image.ImageUrls.Count);
             }
             else
             {
-                filename = filename.Replace(FILENAME_FORMAT_PAGE, "");
-                filename = filename.Replace(FILENAME_FORMAT_MAX_PAGE, "");
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_PAGE, "");
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MAX_PAGE, "");
             }
 
             if (image.Tags != null || image.Tags.Count > 0)
-                filename = filename.Replace(FILENAME_FORMAT_TAGS, String.Join(" ", image.Tags));
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_TAGS, String.Join(" ", image.Tags));
             else
-                filename = filename.Replace(FILENAME_FORMAT_TAGS, "");
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_TAGS, "");
 
-            return filename;
+            return filenameFormat;
         }
 
         private void ModernWindow_Closed(object sender, EventArgs e)

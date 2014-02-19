@@ -9,6 +9,7 @@ namespace NijieDownloader.Library
     {
         public const int NOT_LOGGED_IN = 1000;
         public const int DOWNLOAD_ERROR = 1001;
+        public const int INVALID_SAVE_FILENAME_FORMAT = 1002;
 
         public const int MEMBER_REDIR = 2000;
         public const int MEMBER_UNKNOWN_ERROR = 2999;

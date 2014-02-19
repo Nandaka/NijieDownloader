@@ -33,6 +33,24 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private string _saveFilenameFormat;
+        public string SaveFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveFilenameFormat))
+                {
+                    _saveFilenameFormat = Properties.Settings.Default.FilenameFormat;
+                }
+                return _saveFilenameFormat;
+            }
+            set
+            {
+                _saveFilenameFormat = value;
+                onPropertyChanged("SaveFilenameFormat");
+            }
+        }
+
         [XmlIgnoreAttribute]
         public string Name
         {
@@ -74,7 +92,7 @@ namespace NijieDownloader.UI.ViewModel
                 if (JobType == JobType.Tags || JobType == JobType.Member)
                     return String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
                 else
-                    return _message;
+                    return _message + Environment.NewLine;
             }
             set
             {

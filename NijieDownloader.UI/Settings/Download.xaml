@@ -43,6 +43,7 @@
                             {page}     = Page Number for manga <LineBreak/>
                             {maxPage}  = Page Count for manga <LineBreak/>
                             {tags}     = Image Tags <LineBreak/>
+                            {searchTags}= Search Tags used for query <LineBreak/>
                             </TextBlock>
                         </StackPanel>
                     </StackPanel>

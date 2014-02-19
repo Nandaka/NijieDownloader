@@ -47,19 +47,20 @@
                         <RowDefinition />
                         <RowDefinition />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition Width="130" />
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition Width="100" />
                         <ColumnDefinition Width="150" />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" Margin="5,5,5,5"/>
                     <ComboBox Grid.Row="0" Grid.Column="1" Name="cbxJobType" SelectedItem="{Binding Path=JobType}"
                              ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" SelectionChanged="cbxJobType_SelectionChanged" />
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
                     <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="txtQuery" Text="{Binding Path=SearchTag}" 
                              Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Name="txtMemberId" Text="{Binding Path=MemberId}" 
@@ -69,25 +70,27 @@
 
                     <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Name="pnlStart" Orientation="Horizontal">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Start Page" MinWidth="100" />
+                            <TextBlock Margin="5,5,5,5" Text="Start Page" MinWidth="100" />
                             <TextBox Name="txtStartPage" MinWidth="150" Text="{Binding Path=StartPage}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="End Page" MinWidth="100" />
+                            <TextBlock Margin="5,5,5,5" Text="End Page" MinWidth="100" />
                             <TextBox Name="txtEndPage" MinWidth="150" Text="{Binding Path=EndPage}" />
                         </StackPanel>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Name="pnlLimit"  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                        <TextBlock MinWidth="100" Text="Limit" />
+                    <StackPanel Orientation="Horizontal" Name="pnlLimit" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <TextBlock Margin="5,5,5,5" MinWidth="100" Text="Limit" />
                         <TextBox MinWidth="150" Name="txtLimit" Text="{Binding Path=Limit}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Name="pnlSort"  Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
-                        <TextBlock Text="Sort Type" MinWidth="100"/>
+                    <StackPanel Orientation="Horizontal" Name="pnlSort" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
+                        <TextBlock Margin="5,5,5,5" Text="Sort Type" MinWidth="100"/>
                         <ComboBox Name="cbxSortType" SelectedIndex="{Binding Path=Sort}" MinWidth="150" 
                                   ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" />
                     </StackPanel>
+                    <TextBlock Margin="5,5,5,5" Text="Filename Format" Grid.Row="4" Grid.Column="0"/>
+                    <TextBox Name="txtFilenameFormat" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Path=SaveFilenameFormat}" />
 
-                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Name="btnJobOk" Content="OK" Click="btnJobOk_Click" />
                         <Button Name="btnJobCancel" Content="Cancel" Click="btnJobCancel_Click" />
                     </StackPanel>
@@ -100,8 +103,20 @@
                     <DataGrid.Columns>
                         <DataGridCheckBoxColumn Header="#" Width="30" Binding="{Binding Path=IsSelected}" />
                         <DataGridTextColumn Header="Type" Width="100" Binding="{Binding Path=JobType}" />
-                        <DataGridTextColumn Header="Name" Width=".4*" Binding="{Binding Path=Name}"/>
-                        <DataGridTextColumn Header="Message" Width=".6*" Binding="{Binding Path=Message}" />
+                        <DataGridTextColumn Header="Name" Width="3*" Binding="{Binding Path=Name}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Message" Width="7*" Binding="{Binding Path=Message}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip" Value="{Binding Path=Message}" />
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Status" Width="100" Binding="{Binding Path=Status}" />
                     </DataGrid.Columns>
                 </DataGrid>
