@@ -62,14 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\NijieContext.cs" />
-    <Compile Include="Migrations\201402200610072_InitialCreate.cs" />
-    <Compile Include="Migrations\201402200610072_InitialCreate.Designer.cs">
-      <DependentUpon>201402200610072_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402200637190_AddImageSaveLocation.cs" />
-    <Compile Include="Migrations\201402200637190_AddImageSaveLocation.Designer.cs">
-      <DependentUpon>201402200637190_AddImageSaveLocation.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\NijieSearch.cs" />
     <Compile Include="Nijie.Image.cs" />
@@ -93,14 +85,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201402200610072_InitialCreate.resx">
-      <DependentUpon>201402200610072_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402200637190_AddImageSaveLocation.resx">
-      <DependentUpon>201402200637190_AddImageSaveLocation.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

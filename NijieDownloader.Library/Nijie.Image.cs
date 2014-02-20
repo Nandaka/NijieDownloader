@@ -42,7 +42,7 @@ namespace NijieDownloader.Library
                 }
                 image.Member = member;
 
-                ParseImageLinks(image, doc);                
+                ParseImageLinks(image, doc);
 
                 ParseImageTitleAndDescription(image, doc);
 
@@ -169,7 +169,7 @@ namespace NijieDownloader.Library
         }
 
         private NijieMember ParseMemberFromImage(HtmlDocument doc)
-        {            
+        {
             var memberUrl = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a").Attributes["href"].Value;
             var split = memberUrl.Split('?');
             int memberId = Int32.Parse(split[1].Replace("id=", ""));
@@ -211,21 +211,24 @@ namespace NijieDownloader.Library
                 var url = "http://nijie.info/view_popup.php?id=" + image.ImageId;
                 var result = getPage(url);
                 doc = result.Item1;
-                
-                var bigImage = doc.DocumentNode.SelectSingleNode("//img[@class='']");
+
+                var bigImage = doc.DocumentNode.SelectSingleNode("//img");
                 image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
-                
+
                 if (image.IsManga)
                 {
                     image.ImageUrls.Clear();
-                    image.ImageUrls.Add(image.BigImageUrl);
-                    var images = doc.DocumentNode.SelectNodes("//img[@class='lazy']");                    
+                    //image.ImageUrls.Add(image.BigImageUrl);
+                    var images = doc.DocumentNode.SelectNodes("//img");
                     foreach (var item in images)
                     {
-                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
+                        if (item.Attributes.Contains("data-original"))
+                            image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
+                        else
+                            image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["src"].Value));
                     }
-                }                    
-                    
+                }
+
                 return image;
             }
             catch (Exception ex)

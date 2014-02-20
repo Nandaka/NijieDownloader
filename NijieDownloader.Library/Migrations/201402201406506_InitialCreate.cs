@@ -21,9 +21,11 @@ namespace NijieDownloader.Library.Migrations
                         IsManga = c.Boolean(nullable: false),
                         Referer = c.String(maxLength: 4000),
                         IsFriendOnly = c.Boolean(nullable: false),
+                        IsGoldenMember = c.Boolean(nullable: false),
                         NuitaCount = c.Int(nullable: false),
                         GoodCount = c.Int(nullable: false),
                         IsAnimated = c.Boolean(nullable: false),
+                        SavedFilename = c.String(maxLength: 4000),
                         Member_MemberId = c.Int(),
                     })
                 .PrimaryKey(t => t.ImageId)

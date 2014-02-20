@@ -10,7 +10,6 @@ namespace NijieDownloader.Library.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "NijieDownloader.Library.DAL.NijieContext";
         }
 
         protected override void Seed(NijieDownloader.Library.DAL.NijieContext context)

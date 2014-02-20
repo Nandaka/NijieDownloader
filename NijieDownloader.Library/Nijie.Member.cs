@@ -112,6 +112,13 @@ namespace NijieDownloader.Library
                             image.IsFriendOnly = true;
                         }
 
+                        //"//img.nijie.info/pic/common_icon/illust/golden.png"
+                        image.IsGoldenMember = false;
+                        if (image.ThumbImageUrl.EndsWith("golden.png"))
+                        {
+                            image.IsGoldenMember = true;
+                        }
+
                         // check manga icon
                         image.IsManga = false;
                         var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
