@@ -9,11 +9,21 @@
       d:DesignHeight="600" d:DesignWidth="800" Name="searchPage"
 	Title="Search Page">
     <Page.Resources>
+        <Style x:Key="panelback" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Path=Image.IsDownloaded}" Value="true">
+                    <Setter Property="Opacity" Value="0.5" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Path=Image.IsDownloaded}" Value="false">
+                    <Setter Property="Opacity" Value="1" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
         <BitmapImage x:Key="AnimeIcon" UriSource="/Resources/thumbnail_anime.png" />
         <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <DataTemplate DataType="{x:Type vd:NijieImageViewModel}">
-            <StackPanel MaxWidth="130" MaxHeight="210" MouseDown="StackPanel_MouseDown">
+            <StackPanel MaxWidth="130" MaxHeight="210" MouseDown="StackPanel_MouseDown" Style="{StaticResource panelback}">
                 <TextBlock Text="{Binding Path=Image.ImageId}" Height="25"/>
                 <TextBlock Text="{Binding Path=Image.Title}" Height="25"/>
                 <Grid>

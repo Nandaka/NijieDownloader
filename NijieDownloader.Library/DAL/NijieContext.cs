@@ -11,7 +11,7 @@ namespace NijieDownloader.Library.DAL
     {
         public NijieContext()
         {
-            //Database.SetInitializer(new MigrateDatabaseToLatestVersion<NijieContext, Migrations.Configuration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<NijieContext, Migrations.Configuration>()); 
         }
 
         public DbSet<NijieImage> Images { get; set; }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NijieDownloader.Library.Model;
 using HtmlAgilityPack;
+using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.Library
 {
@@ -142,6 +143,19 @@ namespace NijieDownloader.Library
                     imageDiv.Remove();
                 }
             }
+
+            using (var ctx = new NijieContext())
+            {
+                foreach (var item in list)
+                {
+                    var r = (from x in ctx.Images
+                             where x.ImageId == item.ImageId
+                             select x).FirstOrDefault();
+                    if (r != null) item.IsDownloaded = true;
+                    else item.IsDownloaded = false;
+                }
+            }
+
             return list;
         }
     }

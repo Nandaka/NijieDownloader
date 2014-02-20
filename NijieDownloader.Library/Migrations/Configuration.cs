@@ -9,7 +9,7 @@ namespace NijieDownloader.Library.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(NijieDownloader.Library.DAL.NijieContext context)

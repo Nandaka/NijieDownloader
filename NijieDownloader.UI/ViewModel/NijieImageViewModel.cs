@@ -92,6 +92,17 @@ namespace NijieDownloader.UI.ViewModel
                     this.ImageStatus = MainWindow.IMAGE_LOADED;
                     return NijieImageViewModelHelper.FriendOnly;
                 }
+
+                if (Image.IsDownloaded)
+                {
+                    if (File.Exists(Image.SavedFilename))
+                    {
+                        _bigImage = new BitmapImage(new Uri(Image.SavedFilename));
+                        _bigImage.Freeze();
+                        return _bigImage;
+                    }
+                }
+
                 if (_bigImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
                 {
                     if (!Image.IsManga)

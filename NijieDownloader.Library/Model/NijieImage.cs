@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.Library.Model
 {
@@ -43,6 +45,20 @@ namespace NijieDownloader.Library.Model
                 return "http://nijie.info/view.php?id=" + ImageId;
             }
             private set { }
+        }
+
+        private bool _isDownloaded;
+        [NotMapped]
+        public bool IsDownloaded
+        {
+            get
+            {
+                return _isDownloaded;
+            }
+            set 
+            { 
+                _isDownloaded = value;
+            }
         }
 
         public NijieImage()

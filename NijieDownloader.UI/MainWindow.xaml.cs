@@ -90,6 +90,13 @@ namespace NijieDownloader.UI
             cache = new MemoryCache("CustomCache", config);
 
             Log.Info(AppName + " started.");
+
+            using (var ctx = new NijieContext())
+            {
+                var count = ctx.Images.Count();
+                Log.Info(string.Format("Tracking {0} image(s)", count));
+
+            }
         }
 
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -437,10 +444,12 @@ namespace NijieDownloader.UI
         public const string FILENAME_FORMAT_MAX_PAGE = "{maxPage}";
         public const string FILENAME_FORMAT_TAGS = "{tags}";
         public const string FILENAME_FORMAT_SEARCH_TAGS = "{searchTags}";
+        public const string FILENAME_FORMAT_IMAGE_TITLE = "{imageTitle}";
 
         public const string FILENAME_FORMAT_TOOLTIP = @"
     {memberId}  = Member ID 
     {imageId}   = Image ID 
+    {imageTitle}= Image Title
     {page}      = Page Number for manga 
     {maxPage}   = Page Count for manga 
     {tags}      = Image Tags 
@@ -457,6 +466,7 @@ namespace NijieDownloader.UI
 
                 filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MEMBER_ID, image.Member.MemberId.ToString());
                 filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_IMAGE_ID, image.ImageId.ToString());
+                filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_IMAGE_TITLE, image.Title);
 
                 if (job.JobType == JobType.Tags)
                 {

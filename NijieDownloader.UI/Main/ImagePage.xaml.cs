@@ -16,6 +16,7 @@ using FirstFloor.ModernUI.Windows;
 using NijieDownloader.UI.ViewModel;
 using FirstFloor.ModernUI.Windows.Navigation;
 using NijieDownloader.Library;
+using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.UI
 {
@@ -41,6 +42,21 @@ namespace NijieDownloader.UI
         private void LoadImage(int imageId)
         {
             MainWindow.Log.Debug("Loading Image: " + imageId);
+
+            using (var ctx = new NijieContext())
+            {
+                var i = (from x in ctx.Images.Include("Member")
+                         where x.ImageId == imageId
+                         select x).FirstOrDefault();
+                if (i != null)
+                {
+                    i.IsDownloaded = true;
+                    ViewData = new NijieImageViewModel(i);
+                    this.DataContext = ViewData;
+                    return;
+                }
+            }
+            
             try
             {
                 var result = MainWindow.Bot.ParseImage(imageId);
@@ -54,6 +70,7 @@ namespace NijieDownloader.UI
                 ViewData.BigImage = NijieImageViewModelHelper.Error;
                 MainWindow.Log.Error(ne.Message, ne.InnerException);
             }
+            
             this.DataContext = ViewData;
         }
 
