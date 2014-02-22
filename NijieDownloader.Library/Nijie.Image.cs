@@ -213,7 +213,10 @@ namespace NijieDownloader.Library
                 doc = result.Item1;
 
                 var bigImage = doc.DocumentNode.SelectSingleNode("//img");
-                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
+                if (bigImage.Attributes.Contains("data-original"))
+                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
+                else
+                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["src"].Value);
 
                 if (image.IsManga)
                 {
