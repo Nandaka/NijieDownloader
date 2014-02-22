@@ -127,7 +127,7 @@ namespace NijieDownloader.UI
                 if (job.Status == Status.Added || job.Status == Status.Error)
                 {
                     MainWindow.DoJob(job);
-                    job.Resume();
+                    job.PauseEvent.Set();
                 }
             }
         }
@@ -300,8 +300,7 @@ namespace NijieDownloader.UI
             {
                 foreach (var item in ViewData)
                 {
-                   // if (item.Status == Status.Running)
-                        item.Pause();
+                    item.Pause();
                 }
                 btnPause.Content = "Resume";
             }
@@ -309,8 +308,7 @@ namespace NijieDownloader.UI
             {
                 foreach (var item in ViewData)
                 {
-                    //if (item.Status == Status.Paused)
-                        item.Resume();
+                    item.Resume();
                 }
                 btnPause.Content = "Pause";
             }

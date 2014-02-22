@@ -216,18 +216,30 @@ namespace NijieDownloader.UI.ViewModel
 
         public void Pause()
         {
-            this.Message = "Pausing...";
-            this.PauseEvent.Reset();
-            this.Message = "Paused.";
-            this.Status = Status.Paused;
+            lock (this)
+            {
+                if (this.Status == Status.Running)
+                {
+                    this.Message = "Pausing...";
+                    this.PauseEvent.Reset();
+                    this.Message = "Paused.";
+                    this.Status = Status.Paused;
+                }
+            }
         }
 
         public void Resume()
         {
-            this.Message = "Resuming...";
-            this.PauseEvent.Set();
-            this.Message = "Running.";
-            this.Status = Status.Running;
+            lock (this)
+            {
+                if (this.Status == Status.Paused)
+                {
+                    this.Message = "Resuming...";
+                    this.PauseEvent.Set();
+                    this.Message = "Running.";
+                    this.Status = Status.Running;
+                }
+            }
         }
     }
 
