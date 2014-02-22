@@ -110,5 +110,18 @@ namespace Nandaka.Common
                 output.Flush();
             }
         }
+
+        public static string ExtractFilenameFromUrl(string url, bool stripExtension=true)
+        {
+            var uri = new Uri(url, true);
+            var result = uri.Segments.Last();
+
+            result = result.Split('?')[0];
+
+            if (stripExtension)
+                result = result.Split('.')[0];
+
+            return result.Trim();
+        }
     }
 }

@@ -43,19 +43,20 @@ namespace NijieDownloader.UI
         {
             MainWindow.Log.Debug("Loading Image: " + imageId);
 
-            using (var ctx = new NijieContext())
-            {
-                var i = (from x in ctx.Images.Include("Member")
-                         where x.ImageId == imageId
-                         select x).FirstOrDefault();
-                if (i != null)
-                {
-                    i.IsDownloaded = true;
-                    ViewData = new NijieImageViewModel(i);
-                    this.DataContext = ViewData;
-                    return;
-                }
-            }
+            // TODO: need to implement manga
+            //using (var ctx = new NijieContext())
+            //{
+            //    var i = (from x in ctx.Images.Include("Member")
+            //             where x.ImageId == imageId
+            //             select x).FirstOrDefault();
+            //    if (i != null)
+            //    {
+            //        i.IsDownloaded = true;
+            //        ViewData = new NijieImageViewModel(i);
+            //        this.DataContext = ViewData;
+            //        return;
+            //    }
+            //}
             
             try
             {

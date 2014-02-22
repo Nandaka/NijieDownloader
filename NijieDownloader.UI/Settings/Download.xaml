@@ -11,7 +11,7 @@
     <Grid Style="{StaticResource ContentRoot}">
         <ScrollViewer>
             <StackPanel MinWidth="200">
-                <TextBlock Text="Network" Style="{StaticResource Heading2}" />
+                <TextBlock Text="Download" Style="{StaticResource Heading2}" />
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="30" />
@@ -25,13 +25,18 @@
                         <ColumnDefinition Width="300" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Root Directory" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="0" Grid.Column="0" Width="100" Text="Root Directory" Margin="5,5,5,0"/>
+                    <TextBox Grid.Column="1" Height="25" Margin="10,0,0,0" MinWidth="290" 
+                             Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
+                        <Button Width="100" Name="btnBrowse" Content="Browse" Margin="5,2,5,2"/>
+                        <Button Width="100" Name="btnOpen" Content="Open" Margin="5,2,5,2"/>
+                    </StackPanel>
                     
                     <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="100" Text="Filename Format" />
-                            <TextBox Width="300" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}"/>
+                            <TextBlock Width="100" Text="Filename Format" Margin="5,5,5,0"/>
+                            <TextBox MinWidth="500" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}"/>
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>

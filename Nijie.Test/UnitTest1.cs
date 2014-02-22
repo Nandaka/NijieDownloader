@@ -7,6 +7,7 @@ using NijieDownloader.Library.DAL;
 using System.Data.Entity;
 using System.Diagnostics;
 using System.Data.Entity.Migrations;
+using Nandaka.Common;
 
 namespace Nijie.Test
 {
@@ -42,6 +43,49 @@ namespace Nijie.Test
                 }
 
                 Assert.IsTrue(true);
+            }
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            {
+                var url = "http://pic04.nijie.info/nijie_picture/122240_20140213201403.jpg";
+                var result = Util.ExtractFilenameFromUrl(url, false);
+                var expected = "122240_20140213201403.jpg";
+
+                Assert.IsTrue(result == expected);
+
+                result = Util.ExtractFilenameFromUrl(url, true);
+                expected = "122240_20140213201403";
+
+                Assert.IsTrue(result == expected);
+
+            }
+            {
+                var url = "http://pic04.nijie.info/nijie_picture/122240_20140213201403.jpg?someparams=xxx";
+                var result = Util.ExtractFilenameFromUrl(url, false);
+                var expected = "122240_20140213201403.jpg";
+
+                Assert.IsTrue(result == expected);
+
+                result = Util.ExtractFilenameFromUrl(url, true);
+                expected = "122240_20140213201403";
+
+                Assert.IsTrue(result == expected);
+            }
+
+            {
+                var url = "//pic04.nijie.info/nijie_picture/122240_20140213201403.jpg?someparams=xxx";
+                var result = Util.ExtractFilenameFromUrl(url, false);
+                var expected = "122240_20140213201403.jpg";
+
+                Assert.IsTrue(result == expected);
+
+                result = Util.ExtractFilenameFromUrl(url, true);
+                expected = "122240_20140213201403";
+
+                Assert.IsTrue(result == expected);
             }
         }
     }

@@ -125,6 +125,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MainWindow.JobHelper.cs" />
     <Compile Include="Main\BatchDownloadPage.xaml.cs">
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>
     </Compile>
@@ -145,6 +146,7 @@
     <Compile Include="Settings\Network.xaml.cs">
       <DependentUpon>Network.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MainWindow.UIHelper.cs" />
     <Compile Include="ViewModel\JobDownloadViewModel.cs" />
     <Compile Include="ViewModel\NijieSearchViewModel.cs" />
     <Compile Include="ViewModel\NijieImageViewModel.cs" />

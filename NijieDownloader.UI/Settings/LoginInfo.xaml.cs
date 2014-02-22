@@ -27,6 +27,7 @@ namespace NijieDownloader.UI
     public partial class LoginInfo : Page, IContent
     {
         private ModernDialog dialog;
+        private bool isAutoLogin = false;
         public LoginInfo()
         {
             InitializeComponent();
@@ -36,6 +37,20 @@ namespace NijieDownloader.UI
             using (var secureString = Properties.Settings.Default.Password.DecryptString())
             {
                 txtPassword.Password = secureString.ToInsecureString();
+            }
+
+            this.Loaded += new RoutedEventHandler(LoginInfo_Loaded);
+        }
+
+        void LoginInfo_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (isAutoLogin)
+            {
+                if (!Nijie.IsLoggedIn && Properties.Settings.Default.AutoLogin)
+                {
+                    btnLogin_Click(this, null);
+                    isAutoLogin = false;
+                }
             }
         }
 
@@ -103,10 +118,7 @@ namespace NijieDownloader.UI
             }
             else if (e.Source.ToString().Contains("autologin"))
             {
-                if (!Nijie.IsLoggedIn && Properties.Settings.Default.AutoLogin)
-                {
-                    btnLogin_Click(this, null);
-                }
+                isAutoLogin = true;
             }
         }
 
