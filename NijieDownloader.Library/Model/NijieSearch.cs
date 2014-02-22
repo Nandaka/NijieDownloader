@@ -7,41 +7,27 @@ namespace NijieDownloader.Library.Model
 {
     public class NijieSearch
     {
-        public NijieSearch(string query, int page = 1, int sort = 0)
+        public NijieSearch(NijieSearchOption option)
         {
-            this.Query = query;
-            this.Page = page;
-            this.Sort = sort;
+            this.Option = option;
         }
 
-        public string Query { get; set; }
+        public NijieSearchOption Option { get; set; }
+        
         public string QueryUrl
         {
             get
             {
                 var url = String.Format(@"http://nijie.info/search.php?type={0}&word={1}&p={2}&mode={3}&illust_type={4}&sort={5}"
+                    , Option.SearchTypeStr
+                    , Option.Query
+                    , (int)Option.Page
+                    , (int)Option.SearchBy
                     , ""
-                    , this.Query
-                    , this.Page
-                    , ""
-                    , ""
-                    , this.Sort);
+                    , (int)Option.Sort);
                 return url;
             }
             private set { }
-        }
-
-        private int _page = 1;
-        public int Page
-        {
-            get
-            {
-                return _page;
-            }
-            set
-            {
-                _page = value;
-            }
         }
 
         public List<NijieImage> Images { get; set; }
@@ -49,7 +35,5 @@ namespace NijieDownloader.Library.Model
         public bool IsNextAvailable { get; set; }
         public bool IsPrevAvailable { get; set; }
 
-
-        public int Sort { get; set; }
     }
 }

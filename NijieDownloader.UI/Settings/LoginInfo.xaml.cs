@@ -126,7 +126,7 @@ namespace NijieDownloader.UI
         {
         }
 
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
         }

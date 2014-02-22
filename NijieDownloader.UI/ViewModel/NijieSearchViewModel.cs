@@ -11,6 +11,34 @@ namespace NijieDownloader.UI.ViewModel
 {
     public class NijieSearchViewModel : INotifyPropertyChanged
     {
+        public NijieSearchViewModel(NijieSearch search)
+        {
+            this.Search = search;
+            _images = new ObservableCollection<NijieImageViewModel>();
+            foreach (var image in search.Images)
+            {
+                var temp = new NijieImageViewModel(image);
+                _images.Add(temp);
+            }
+            this.Sort = search.Option.Sort;
+            this.Query = search.Option.Query;
+            this.Page = search.Option.Page;
+            this.SearchBy = search.Option.SearchBy;
+            this.Matching = search.Option.Matching;
+        }
+
+        public NijieSearchViewModel(NijieSearchOption option)
+        {
+            this.Search = new NijieSearch(option);
+            this.Sort = option.Sort;
+            this.Query = option.Query;
+            this.Page = option.Page;
+            this.SearchBy = option.SearchBy;
+            this.Matching = option.Matching;
+        }
+
+        public NijieSearchViewModel() { }
+
         private NijieSearch _search;
         public NijieSearch Search
         {
@@ -22,6 +50,69 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private SortType _sortType;
+        public SortType Sort
+        {
+            get { return _sortType; }
+            set
+            {
+                _sortType = value;
+                onPropertyChanged("Sort");
+            }
+        }
+
+        private string _query;
+        public string Query {
+            get { return _query; }
+            set
+            {
+                _query = value;
+                onPropertyChanged("Query");
+            }
+        }
+
+        private int _page = 1;
+        public int Page
+        {
+            get { return _page; }
+            set
+            {
+                _page = value;
+                onPropertyChanged("Page");
+            }
+        }
+
+        private SearchMode _searchMode;
+        public SearchMode SearchBy {
+            get { return _searchMode; }
+            set
+            {
+                _searchMode = value;
+                onPropertyChanged("SearchBy");
+            }
+        }
+
+        private SearchType _searchType;
+        public SearchType Matching {
+            get { return _searchType; }
+            set
+            {
+                _searchType = value;
+                onPropertyChanged("Matching");
+            }
+        }
+
+        private string _status;
+        public string Status
+        {
+            get
+            { return _status; }
+            set
+            {
+                _status = value;
+                onPropertyChanged("Status");
+            }
+        }
 
         private ObservableCollection<NijieImageViewModel> _images;
         public ObservableCollection<NijieImageViewModel> Images
@@ -47,60 +138,5 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public NijieSearchViewModel(NijieSearch search)
-        {
-            this.Search = search;
-            _images = new ObservableCollection<NijieImageViewModel>();
-            foreach (var image in search.Images)
-            {
-                var temp = new NijieImageViewModel(image);
-                _images.Add(temp);
-            }
-            this.SelectedSort = (SearchSortType) search.Sort;
-        }
-
-        public NijieSearchViewModel(string query)
-        {
-            this.Search = new NijieSearch(query);
-        }
-
-        public IEnumerable<ValueDescription> SortList
-        {
-            get
-            {
-                return EnumHelper.GetAllValuesAndDescriptions<SearchSortType>();
-            }
-        }
-
-        private SearchSortType _selectedSort;
-
-        public SearchSortType SelectedSort
-        {
-            get
-            {
-                return _selectedSort;
-            }
-            set
-            {
-                if (_selectedSort != value)
-                {
-                    _selectedSort = value;
-                    Search.Sort = (int) value;
-                    onPropertyChanged("SelectedSort");
-                }
-            }
-        }
-
-        private string _status;
-        public string Status
-        {
-            get
-            { return _status; }
-            set
-            {
-                _status = value;
-                onPropertyChanged("Status");
-            }
-        }
     }
 }

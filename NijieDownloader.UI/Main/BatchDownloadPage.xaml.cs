@@ -18,8 +18,9 @@ using FirstFloor.ModernUI.Windows;
 using System.Web;
 using FirstFloor.ModernUI.Windows.Controls;
 using System.Xml.Serialization;
-using System.IO;
 using Microsoft.Win32;
+using NijieDownloader.Library.Model;
+using System.IO;
 
 namespace NijieDownloader.UI
 {
@@ -31,12 +32,36 @@ namespace NijieDownloader.UI
         public ObservableCollection<JobDownloadViewModel> ViewData { get; set; }
         public JobDownloadViewModel NewJob { get; set; }
 
+        private const string DEFAULT_BATCH_JOB_LIST_FILENAME = "batchjob.xml";
+
         public BatchDownloadPage()
         {
             InitializeComponent();
 
             ViewData = new ObservableCollection<JobDownloadViewModel>();
             dgvJobList.DataContext = this;
+
+            if (Properties.Settings.Default.AutoSaveBatchList)
+            {
+                if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME)) LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
+            }
+
+            Application.Current.Exit += new ExitEventHandler(Current_Exit);
+        }
+
+        void Current_Exit(object sender, ExitEventArgs e)
+        {
+            if (Properties.Settings.Default.AutoSaveBatchList)
+            {
+                try
+                {
+                    SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to save batch job list: " + ex.Message);
+                }
+            }
         }
 
         private void btnAdd_Click(object sender, RoutedEventArgs e)
@@ -56,14 +81,16 @@ namespace NijieDownloader.UI
             pnlAddJob.DataContext = this.NewJob;
         }
 
-        private void addJobForSearch(string tags, int page, int sort)
+        private void addJobForSearch(NijieSearchOption option)
         {
             this.NewJob = new JobDownloadViewModel();
             this.NewJob.JobType = JobType.Tags;
-            this.NewJob.SearchTag = tags;
+            this.NewJob.SearchTag = option.Query;
             this.NewJob.Status = Status.Added;
-            this.NewJob.StartPage = page;
-            this.NewJob.Sort = sort;
+            this.NewJob.StartPage = option.Page;
+            this.NewJob.Sort = option.Sort;
+            this.NewJob.Matching = option.Matching;
+            this.NewJob.SearchBy = option.SearchBy;
             pnlAddJob.Visibility = System.Windows.Visibility.Visible;
             pnlAddJob.DataContext = this.NewJob;
         }
@@ -94,7 +121,18 @@ namespace NijieDownloader.UI
                     var tags = query.Get("tags");
                     var page = query.Get("page");
                     var sort = query.Get("sort");
-                    addJobForSearch(tags, Int32.Parse(page), (int)Enum.Parse(typeof(SearchSortType), sort));
+                    var mode = query.Get("mode");
+                    var type = query.Get("searchType");
+
+                    NijieSearchOption option = new NijieSearchOption()
+                    {
+                        Query = tags,
+                        Page = Int32.Parse(page),
+                        Sort = (SortType)Enum.Parse(typeof(SortType), sort),
+                        SearchBy = (SearchMode)Enum.Parse(typeof(SearchMode), mode),
+                        Matching = (SearchType)Enum.Parse(typeof(SearchType), type)
+                    };
+                    addJobForSearch(option);
                 }
                 else if (query.Get("type").Equals("image"))
                 {
@@ -216,19 +254,24 @@ namespace NijieDownloader.UI
             var result = save.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                try
+                SaveList(save.FileName);
+            }
+        }
+
+        private void SaveList(string filename)
+        {
+            try
+            {
+                XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
+                using (StreamWriter myWriter = new StreamWriter(filename))
                 {
-                    XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
-                    using (StreamWriter myWriter = new StreamWriter(save.FileName))
-                    {
-                        ser.Serialize(myWriter, ViewData);
-                    }
+                    ser.Serialize(myWriter, ViewData);
                 }
-                catch (Exception ex)
-                {
-                    MainWindow.Log.Error(ex.Message, ex);
-                    ModernDialog.ShowMessage(ex.Message, "Error Saving", MessageBoxButton.OK);
-                }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.Log.Error(ex.Message, ex);
+                ModernDialog.ShowMessage(ex.Message, "Error Saving", MessageBoxButton.OK);
             }
         }
 
@@ -240,36 +283,40 @@ namespace NijieDownloader.UI
             var result = open.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                var filename = open.FileName;
-                int i = 0;
-                try
+                LoadList(open.FileName);
+            }
+        }
+
+        private void LoadList(string filename, bool suppressError = false)
+        {
+            int i = 0;
+            try
+            {
+                XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
+                using (StreamReader reader = new StreamReader(filename))
                 {
-                    XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
-                    using (StreamReader reader = new StreamReader(filename))
+                    var batchJob = ser.Deserialize(reader) as ObservableCollection<JobDownloadViewModel>;
+                    if (batchJob != null)
                     {
-                        var batchJob = ser.Deserialize(reader) as ObservableCollection<JobDownloadViewModel>;
-                        if (batchJob != null)
+                        foreach (var item in batchJob)
                         {
-                            foreach (var item in batchJob)
+                            if (!ViewData.Contains(item, new JobDownloadViewModelComparer()))
                             {
-                                if (!ViewData.Contains(item, new JobDownloadViewModelComparer()))
-                                {
-                                    ViewData.Add(item);
-                                    ++i;
-                                }
+                                ViewData.Add(item);
+                                ++i;
                             }
                         }
                     }
-                    if (i == 0)
-                    {
-                        ModernDialog.ShowMessage(string.Format("No job loaded from {0}{1}Either the jobs already loaded or no job in the file.", filename, Environment.NewLine), "Batch Job Loading", MessageBoxButton.OK);
-                    }
                 }
-                catch (Exception ex)
+                if (i == 0 && !suppressError)
                 {
-                    MainWindow.Log.Error(ex.Message, ex);
-                    ModernDialog.ShowMessage(ex.Message, "Error Loading", MessageBoxButton.OK);
+                    ModernDialog.ShowMessage(string.Format("No job loaded from {0}{1}Either the jobs already loaded or no job in the file.", filename, Environment.NewLine), "Batch Job Loading", MessageBoxButton.OK);
                 }
+            }
+            catch (Exception ex)
+            {
+                MainWindow.Log.Error(ex.Message, ex);
+                ModernDialog.ShowMessage(ex.Message, "Error Loading", MessageBoxButton.OK);
             }
         }
 

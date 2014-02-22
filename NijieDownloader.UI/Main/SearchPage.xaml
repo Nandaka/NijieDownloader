@@ -5,10 +5,27 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800" Name="searchPage"
 	Title="Search Page">
     <Page.Resources>
+        <ObjectDataProvider x:Key="sortTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="lib:SortType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="modeTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="lib:SearchMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="searchTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="lib:SearchType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         <Style x:Key="panelback" TargetType="StackPanel">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Path=Image.IsDownloaded}" Value="true">
@@ -61,16 +78,21 @@
                     <DockPanel >
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                             <TextBlock Text="Query" Margin="5,5,5,0"/>
-                            <TextBox  Name="txtQuery" Height="25" Text="{Binding Path=Search.Query}" Width="150"/>
+                            <TextBox  Name="txtQuery" Height="25" Text="{Binding Path=Query}" Width="150"/>
                             <TextBlock Text="Sort" Margin="5,5,5,0"/>
-                            <ComboBox Name="cbxSort" Width="100" Margin="5,5,5,5"
-                                      ItemsSource="{Binding Path=SortList}" 
-                                      SelectedValuePath="Value" DisplayMemberPath="Description" 
-                                      SelectedValue="{Binding Path=SelectedSort}"/>
+                            <ComboBox Name="cbxSort" Width="110" Margin="5,5,5,5"
+                                      ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" 
+                                      SelectedItem="{Binding Path=Sort}"/>
+                            <ComboBox Name="cbxMode" Width="110" Margin="5,5,5,5"
+                                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}" 
+                                      SelectedItem="{Binding Path=SearchBy}"/>
+                            <ComboBox Name="cbxType" Width="110" Margin="5,5,5,5"
+                                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}" 
+                                      SelectedItem="{Binding Path=Matching}"/>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
                             <Button Name="btnPrev" Margin="5,5,5,5" Click="btnPrev_Click" IsEnabled="{Binding Path=Search.IsPrevAvailable}" Content="&lt;" />
-                            <TextBox Name="txtPage" Height="25" Text="{Binding Path=Search.Page}" MinWidth="50"/>
+                            <TextBox Name="txtPage" Height="25" Text="{Binding Path=Page}" MinWidth="50"/>
                             <Button Name="btnNext" Margin="5,5,5,5" Click="btnNext_Click" IsEnabled="{Binding Path=Search.IsNextAvailable}" Content="&gt;"/>
                         </StackPanel>
                         <TextBlock Width="Auto"/>

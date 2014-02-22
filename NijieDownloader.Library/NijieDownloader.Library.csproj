@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\NijieSearch.cs" />
+    <Compile Include="Model\NijieSearchOption.cs" />
     <Compile Include="Nijie.Image.cs" />
     <Compile Include="Nijie.Member.cs" />
     <Compile Include="Nijie.Search.cs" />

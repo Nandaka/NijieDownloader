@@ -142,5 +142,17 @@ namespace NijieDownloader.UI.Properties {
                 this["AutoLogin"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoSaveBatchList {
+            get {
+                return ((bool)(this["AutoSaveBatchList"]));
+            }
+            set {
+                this["AutoSaveBatchList"] = value;
+            }
+        }
     }
 }

@@ -14,14 +14,14 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public NijieSearch Search(string query, int page, int sort)
+        public NijieSearch Search(NijieSearchOption option)
         {
             HtmlDocument doc = null;
             try
             {
                 canOperate();
-                if (page < 1) page = 1;
-                NijieSearch search = new NijieSearch(query, page, sort);
+                if (option.Page < 1) option.Page = 1;
+                NijieSearch search = new NijieSearch(option);
                 var result = getPage(search.QueryUrl);
 
                 if (result.Item2.ResponseUri.ToString() != search.QueryUrl)
@@ -34,7 +34,7 @@ namespace NijieDownloader.Library
                 var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;
                 search.Images = ParseImageList(imagesDiv, search.QueryUrl);
 
-                if (page <= 1) search.IsPrevAvailable = false;
+                if (option.Page <= 1) search.IsPrevAvailable = false;
                 else search.IsPrevAvailable = true;
 
                 search.IsNextAvailable = false;
@@ -65,12 +65,12 @@ namespace NijieDownloader.Library
             {
                 if (doc != null)
                 {
-                    var filename = string.Format("Dump for Search {0} Page {1}.html", query, page);
+                    var filename = string.Format("Dump for Search {0} Page {1}.html", option.Query, option.Page);
                     Log.Debug("Dumping search page to: " + filename);
                     doc.Save(filename);
                 }
 
-                throw new NijieException(string.Format("Error when processing search: {0} Page {1}", query, page), ex, NijieException.SEARCH_UNKNOWN_ERROR);
+                throw new NijieException(string.Format("Error when processing search: {0} Page {1}", option.Query, option.Page), ex, NijieException.SEARCH_UNKNOWN_ERROR);
             }
         }
     }

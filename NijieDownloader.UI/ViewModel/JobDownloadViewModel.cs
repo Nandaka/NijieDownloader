@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel;
 using System.Xml.Serialization;
 using System.Threading;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -157,8 +158,8 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        private int _sort;
-        public int Sort
+        private SortType _sort;
+        public SortType Sort
         {
             get
             {
@@ -168,6 +169,28 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _sort = value;
                 onPropertyChanged("Sort");
+            }
+        }
+
+        private SearchMode _searchMode;
+        public SearchMode SearchBy
+        {
+            get { return _searchMode; }
+            set
+            {
+                _searchMode = value;
+                onPropertyChanged("SearchBy");
+            }
+        }
+
+        private SearchType _searchType;
+        public SearchType Matching
+        {
+            get { return _searchType; }
+            set
+            {
+                _searchType = value;
+                onPropertyChanged("Matching");
             }
         }
 
@@ -293,7 +316,7 @@ namespace NijieDownloader.UI.ViewModel
         Member,
         Tags
     }
-
+    
     public enum Status
     {
         Added,

@@ -7,6 +7,7 @@
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       xmlns:vm="clr-namespace:NijieDownloader.UI.ViewModel"
       xmlns:local="clr-namespace:NijieDownloader.UI"
+      xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800">
     <Page.Resources>
@@ -17,7 +18,17 @@
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="sortTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="local:SearchSortType" />
+                <x:Type TypeName="lib:SortType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="modeTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="lib:SearchMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ObjectDataProvider x:Key="searchTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="lib:SearchType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <local:JobTypeToVisibilityConverter x:Key="jobTypeToVisibilityConverter" />
@@ -58,7 +69,8 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" Margin="5,5,5,5"/>
                     <ComboBox Grid.Row="0" Grid.Column="1" Name="cbxJobType" SelectedItem="{Binding Path=JobType}"
-                             ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" SelectionChanged="cbxJobType_SelectionChanged" />
+                              ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" 
+                              SelectionChanged="cbxJobType_SelectionChanged" />
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
                     <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="txtQuery" Text="{Binding Path=SearchTag}" 
@@ -83,10 +95,17 @@
                         <TextBlock Margin="5,5,5,5" MinWidth="120" Text="Limit" />
                         <TextBox MinWidth="150" Name="txtLimit" Text="{Binding Path=Limit}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Name="pnlSort" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="2">
-                        <TextBlock Margin="5,5,5,5" Text="Sort Type" MinWidth="100"/>
-                        <ComboBox Name="cbxSortType" SelectedIndex="{Binding Path=Sort}" MinWidth="150" 
-                                  ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" />
+                    <StackPanel Orientation="Horizontal" Name="pnlSort" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3">
+                        <TextBlock Margin="5,5,5,5" Text="Sort" MinWidth="100"/>
+                        <ComboBox Name="cbxSortType" MinWidth="150"                                  
+                                  ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" 
+                                  SelectedItem="{Binding Path=Sort}"/>
+                        <ComboBox Name="cbxMode" Width="110"
+                                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}" 
+                                      SelectedItem="{Binding Path=SearchBy}"/>
+                        <ComboBox Name="cbxType" Width="110" 
+                                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}" 
+                                      SelectedItem="{Binding Path=Matching}"/>
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal"  Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5">

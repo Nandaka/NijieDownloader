@@ -42,7 +42,7 @@ namespace NijieDownloader.UI
 #if DEBUG
             txtQuery.Text = "無修正";
 #endif
-            this.ViewData = new NijieSearchViewModel(txtQuery.Text);
+            ViewData = new NijieSearchViewModel();
             this.DataContext = ViewData;
         }
 
@@ -78,11 +78,16 @@ namespace NijieDownloader.UI
                 TileColumns = 1;
         }
 
-        private void doSearch(string query, int page, int sort)
+        private void doSearch()
         {
             try
             {
-                var result = MainWindow.Bot.Search(query, page, sort);
+                var option = new NijieSearchOption() { Query = ViewData.Query, 
+                                                       Page = ViewData.Page, 
+                                                       Sort = ViewData.Sort, 
+                                                       Matching = ViewData.Matching, 
+                                                       SearchBy=ViewData.SearchBy};
+                var result = MainWindow.Bot.Search(option);
                 ViewData = new NijieSearchViewModel(result);
                 this.DataContext = ViewData;
             }
@@ -94,32 +99,33 @@ namespace NijieDownloader.UI
 
         private void btnPrev_Click(object sender, RoutedEventArgs e)
         {
-            int page = Int32.Parse(txtPage.Text) - 1;
-            int sort = (int) cbxSort.SelectedValue;
-            if (page < 1) page = 1;
-            doSearch(txtQuery.Text, page, sort);
+            ViewData.Page -= 1;
+            doSearch();
         }
 
         private void btnFetch_Click(object sender, RoutedEventArgs e)
         {
-            int page = 1;
-            Int32.TryParse(txtPage.Text, out page);
-            int sort = (int)cbxSort.SelectedValue;
-            doSearch(txtQuery.Text, page, sort);
+            doSearch();
         }
 
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
-            var page = Int32.Parse(txtPage.Text) + 1;
-            int sort = (int)cbxSort.SelectedValue;
-            doSearch(txtQuery.Text, page, sort);
+            ViewData.Page += 1;
+            doSearch();
         }
 
         private void btnAddBatchJob_Click(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtQuery.Text))
             {
-                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=search&tags=" + txtQuery.Text + "&page=" + txtPage.Text + "&sort=" + cbxSort.SelectedValue);
+                string target = string.Format("/Main/BatchDownloadPage.xaml#type=search&tags={0}&page={1}&sort={2}&mode={3}&searchType={4}",
+                    txtQuery.Text,
+                    txtPage.Text,
+                    cbxSort.SelectedValue,
+                    cbxMode.SelectedValue,
+                    cbxType.SelectedValue);
+
+                e.Handled = MainWindow.NavigateTo(this, target);
             }
         }
 
@@ -146,9 +152,7 @@ namespace NijieDownloader.UI
             {
                 var uri = new Uri("http://localhost/?" + fragment);
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                ViewData = new NijieSearchViewModel(query.Get("query"));
-
-                this.DataContext = ViewData;
+                txtQuery.Text = query.Get("query");
             }
         }
 
@@ -164,17 +168,5 @@ namespace NijieDownloader.UI
                 e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
-    }
-
-    public enum SearchSortType
-    {
-        [Description("Latest Post")]
-        LATEST = 0,
-        [Description("Popularity")]
-        POPULARITY = 1,
-        [Description("Overtake? Post")]
-        OVERTAKE = 2,
-        [Description("Oldest Post")]
-        OLDEST = 3
     }
 }
