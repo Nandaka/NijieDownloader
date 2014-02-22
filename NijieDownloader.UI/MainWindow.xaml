@@ -4,7 +4,7 @@
   xmlns:mui="http://firstfloorsoftware.com/ModernUI"
   IsTitleVisible="True"
   Title="Nijie Downloader" Height="700" Width="1024"
-  ContentSource="/Settings/LoginInfo.xaml" Closed="ModernWindow_Closed" WindowStartupLocation="CenterScreen">
+  ContentSource="/Settings/LoginInfo.xaml#autologin" Closed="ModernWindow_Closed" WindowStartupLocation="CenterScreen">
     <mui:ModernWindow.TitleLinks>
         <mui:Link x:Name="tlLogin" DisplayName="Login" Source="/Settings/LoginInfo.xaml#from_title_links=1" />
     </mui:ModernWindow.TitleLinks>

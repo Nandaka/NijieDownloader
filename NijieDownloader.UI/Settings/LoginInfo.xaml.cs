@@ -68,12 +68,15 @@ namespace NijieDownloader.UI
 
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
-            lblLoginStatus.Text = "Logging in...";
-            MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus);
-            dialog = new ModernDialog();
-            dialog.Content = "Logging in...";
-            dialog.CloseButton.Visibility = System.Windows.Visibility.Hidden;
-            dialog.ShowDialog();
+            if (!string.IsNullOrWhiteSpace(txtUserName.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password))
+            {
+                lblLoginStatus.Text = "Logging in...";
+                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus);
+                dialog = new ModernDialog();
+                dialog.Content = "Logging in...";
+                dialog.CloseButton.Visibility = System.Windows.Visibility.Hidden;
+                dialog.ShowDialog();
+            }
         }
 
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
@@ -98,10 +101,22 @@ namespace NijieDownloader.UI
                     }
                 }
             }
+            else if (e.Source.ToString().Contains("autologin"))
+            {
+                if (!Nijie.IsLoggedIn && Properties.Settings.Default.AutoLogin)
+                {
+                    btnLogin_Click(this, null);
+                }
+            }
         }
 
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
+        }
+
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Save();
         }
     }
 }
