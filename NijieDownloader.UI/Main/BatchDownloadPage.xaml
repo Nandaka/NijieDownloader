@@ -103,7 +103,7 @@
                     </StackPanel>
                 </Grid>
             </StackPanel>
-            <ScrollViewer>
+            <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
                 <DataGrid AutoGenerateColumns="False" Name="dgvJobList" ItemsSource="{Binding Path=ViewData}" 
                           AlternatingRowBackground="Gainsboro"  AlternationCount="2" ColumnWidth="Auto"
                           IsSynchronizedWithCurrentItem="True" CanUserAddRows="False">
@@ -128,7 +128,6 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </ScrollViewer>
-
         </DockPanel>
     </Grid>
 </Page>

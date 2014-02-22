@@ -315,5 +315,18 @@ namespace NijieDownloader.UI
                 btnPause.Content = "Pause";
             }
         }
+
+        private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (e.NewSize.Height > 0)
+            {
+                dgvJobList.MaxHeight = e.NewSize.Height;
+            }
+            else
+            {
+                dgvJobList.MaxHeight = 1;
+            }
+        }
+
     }
 }
