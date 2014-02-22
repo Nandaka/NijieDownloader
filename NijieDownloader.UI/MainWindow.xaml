@@ -3,8 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:mui="http://firstfloorsoftware.com/ModernUI"
   IsTitleVisible="True"
-  Title="Nijie Downloader" Height="600" Width="800"
-  ContentSource="/Settings/LoginInfo.xaml" Closed="ModernWindow_Closed">
+  Title="Nijie Downloader" Height="700" Width="1024"
+  ContentSource="/Settings/LoginInfo.xaml" Closed="ModernWindow_Closed" WindowStartupLocation="CenterScreen">
     <mui:ModernWindow.TitleLinks>
         <mui:Link x:Name="tlLogin" DisplayName="Login" Source="/Settings/LoginInfo.xaml#from_title_links=1" />
     </mui:ModernWindow.TitleLinks>

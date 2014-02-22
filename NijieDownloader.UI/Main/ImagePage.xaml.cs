@@ -132,7 +132,7 @@ namespace NijieDownloader.UI
 
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var h = MainWindow.GetWindow(imgBigImage).Height - 60;
+            var h = MainWindow.GetWindow(imgBigImage).Height - 160;
             if (h <= 0) h = 1;
             imgBigImage.Height = h;
             lbxMangaThumb.Height = h;
