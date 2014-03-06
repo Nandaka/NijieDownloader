@@ -1,3 +1,16 @@
+Nijie Downloader 1.0.1.0
+- Feature: Add DB support.
+- Feature: Implement additional search options.
+- Feature: Implement additional filename format.
+- Feature: Add auto login.
+- Feature: Implement Stop/Pause job.
+- Feature: Show downloaded image with 50% opacity.
+- Feature: Auto save batch list to batchjob.xml
+- Bug Fix: Fix checkbox handling on batch list.
+- Bug Fix: Fix scrolling in batch list.
+- Bug Fix: Always start application on the center of active screen.
+- Bug Fix: Fix big image parser.
+
 Nijie Downloader 1.0.0.2
 - Feature: Add save/load batch job.
 - Feature: Add custom filename format per job.

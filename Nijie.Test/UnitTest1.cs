@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Diagnostics;
 using System.Data.Entity.Migrations;
 using Nandaka.Common;
+using NijieDownloader.Library.Model;
 
 namespace Nijie.Test
 {
@@ -18,7 +19,11 @@ namespace Nijie.Test
         [TestInitialize]
         public void Init()
         {
-           
+            using (var ctx = new NijieContext())
+            {
+                ctx.Database.Delete();
+                ctx.SaveChanges();
+            }
         }
 
         [TestMethod]
@@ -31,15 +36,25 @@ namespace Nijie.Test
                 img.Title = "dummy";
                 img.WorkDate = DateTime.Now;
                 img.SavedFilename = @"C:\haha.jpg";
+
+                img.Tags = new List<NijieTag>();
+                for (int i = 0; i < 10; ++i)
+                {
+                    img.Tags.Add(new NijieTag() {Name  = "Tag-" + i});
+                }
+
                 ctx.Images.AddOrUpdate(img);
                 ctx.SaveChanges();
 
-                var images = from x in ctx.Images
+                var images = from x in ctx.Images.Include("Tags")
                             select x;
 
                 foreach (var item in images)
                 {
                     Debug.WriteLine(String.Format("Image {0}: {1} ==> {2}", item.ImageId, item.ViewUrl, item.SavedFilename));
+                    foreach(var tag in item.Tags) {
+                        Debug.WriteLine(String.Format("\t - {0}", tag.Name));
+                    }
                 }
 
                 Assert.IsTrue(true);

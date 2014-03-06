@@ -49,6 +49,7 @@
     <Compile Include="ExtendedWebClient.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GenericEqualityComparer.cs" />
     <Compile Include="ListStringConverter.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="LimitedConcurrencyLevelTaskScheduler .cs" />

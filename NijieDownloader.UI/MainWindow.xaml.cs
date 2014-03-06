@@ -102,6 +102,18 @@ namespace NijieDownloader.UI
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Error("Unexpected Error: " + e.Exception.Message, e.Exception);
+            if (e.Exception.InnerException != null)
+            {
+                if (e.Exception.InnerException.Message.Contains("No Entity Framework provider found for the ADO.NET provider with invariant name") ||
+                    e.Exception.InnerException.Message.Contains("Failed to find or load the registered .Net Framework Data Provider."))
+                {
+                    MessageBox.Show(e.Exception.InnerException.Message);
+                    MessageBox.Show("Loading url for Microsoft SQL Compact 4.0 SP1 from: http://www.microsoft.com/en-us/download/details.aspx?id=30709");
+                    Process.Start("http://www.microsoft.com/en-us/download/details.aspx?id=30709");
+                    return;
+                }
+            }
+
             MessageBox.Show(e.Exception.Message + Environment.NewLine + e.Exception.StackTrace);
         }
 

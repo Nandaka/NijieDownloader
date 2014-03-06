@@ -10,7 +10,6 @@
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       d:DesignHeight="600" d:DesignWidth="800">
     <Page.Resources>
-        <h:ListToStringConverter x:Key="ListToStringConverter"/>
         <local:IsMangaToVisibilityConverter x:Key="isMangaToVisibilityConverter" />
     </Page.Resources>
 
@@ -70,8 +69,8 @@
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Margin="5,0,0,5">
-                                            <Hyperlink NavigateUri="{Binding}" RequestNavigate="Hyperlink_RequestNavigate">
-                                                <Label Content="{Binding}" />
+                                            <Hyperlink NavigateUri="{Binding Path=Name}" RequestNavigate="Hyperlink_RequestNavigate">
+                                                <Label Content="{Binding Path=Name}" />
                                             </Hyperlink>
                                         </TextBlock>
                                     </DataTemplate>

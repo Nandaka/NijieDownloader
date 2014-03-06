@@ -13,7 +13,7 @@ namespace NijieDownloader.Library.Model
         public string UserName { get; set; }
         public string AvatarUrl { get; set; }
         
-        public List<NijieImage> Images { get; set; }
+        public virtual ICollection<NijieImage> Images { get; set; }
         
 
         [NotMapped]

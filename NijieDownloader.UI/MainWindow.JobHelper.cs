@@ -20,6 +20,7 @@ using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Collections.Generic;
 
 namespace NijieDownloader.UI
 {
@@ -231,6 +232,24 @@ namespace NijieDownloader.UI
                         image.Member = member.FirstOrDefault();
                     }
 
+                    var temp = new List<NijieTag>();
+                    for (int i = 0; i < image.Tags.Count; ++i)
+                    {
+                        var t = image.Tags.ElementAt(i);
+                        var x = from a in dao.Tags
+                                where a.Name == t.Name
+                                select a;
+                        if (x.FirstOrDefault() != null)
+                        {
+                            temp.Add(x.FirstOrDefault());
+                        }
+                        else
+                        {
+                            temp.Add(t);
+                        }
+                    }
+                    image.Tags = temp;
+
                     dao.Images.AddOrUpdate(image);
                     dao.SaveChanges();
                 }
@@ -291,6 +310,9 @@ namespace NijieDownloader.UI
         /// <param name="filename"></param>
         private static void downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
+            filename = Util.SanitizeFilename(filename);
+            url = Util.FixUrl(url);
+
             Log.Debug(String.Format("Downloading url: {0} ==> {1}", url, filename));
             int retry = 0;
             while (retry < 3)

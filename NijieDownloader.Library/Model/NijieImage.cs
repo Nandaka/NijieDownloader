@@ -34,7 +34,7 @@ namespace NijieDownloader.Library.Model
 
         public string SavedFilename { get; set; }
 
-        public List<string> Tags { get; set; }
+        public virtual ICollection<NijieTag> Tags { get; set; }
         public NijieMember Member { get; set; }
 
         [NotMapped]

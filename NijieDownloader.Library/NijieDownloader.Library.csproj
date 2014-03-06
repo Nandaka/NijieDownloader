@@ -66,9 +66,14 @@
     <Compile Include="Migrations\201402201406506_InitialCreate.Designer.cs">
       <DependentUpon>201402201406506_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403061411087_AddNijieTags.cs" />
+    <Compile Include="Migrations\201403061411087_AddNijieTags.Designer.cs">
+      <DependentUpon>201403061411087_AddNijieTags.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Model\NijieSearch.cs" />
     <Compile Include="Model\NijieSearchOption.cs" />
+    <Compile Include="Model\NijieTag.cs" />
     <Compile Include="Nijie.Image.cs" />
     <Compile Include="Nijie.Member.cs" />
     <Compile Include="Nijie.Search.cs" />
@@ -88,12 +93,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201402201406506_InitialCreate.resx">
       <DependentUpon>201402201406506_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403061411087_AddNijieTags.resx">
+      <DependentUpon>201403061411087_AddNijieTags.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

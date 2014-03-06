@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Linq.Expressions;
 
 namespace Nandaka.Common
 {
@@ -30,12 +31,28 @@ namespace Nandaka.Common
         public static string SanitizeFilename(string input)
         {
             if (input == null) return "";
+
+            var drive = "";
+            if (input[1] == ':' || input.Substring(0, 2) == @"\\")
+            {
+                drive = input.Substring(0, 2);
+                input = input.Substring(2);
+            }
+
             foreach (char c in Path.GetInvalidFileNameChars())
             {
                 if (c == Path.PathSeparator) continue;
                 else if (c == '\\') continue;
                 input = input.Replace(c, '_');
-            }            
+            }
+
+            while (input.Contains(@"\\"))
+            {
+                input = input.Replace(@"\\", @"\");
+            }
+
+            input = drive + input;
+
             return input;
         }
 
@@ -111,7 +128,7 @@ namespace Nandaka.Common
             }
         }
 
-        public static string ExtractFilenameFromUrl(string url, bool stripExtension=true)
+        public static string ExtractFilenameFromUrl(string url, bool stripExtension = true)
         {
             var uri = new Uri(url, true);
             var result = uri.Segments.Last();

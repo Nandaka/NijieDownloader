@@ -16,5 +16,6 @@ namespace NijieDownloader.Library.DAL
 
         public DbSet<NijieImage> Images { get; set; }
         public DbSet<NijieMember> Members { get; set; }
+        public DbSet<NijieTag> Tags { get; set; }
     }
 }

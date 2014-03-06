@@ -93,13 +93,13 @@ namespace NijieDownloader.Library
             var tagsDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-tag']");
             if (tagsDiv != null)
             {
-                image.Tags = new List<string>();
+                image.Tags = new List<NijieTag>();
                 var tagNames = doc.DocumentNode.SelectNodes("//div[@id='view-tag']//span[@class='tag_name']");
                 if (tagNames != null)
                 {
                     foreach (var tag in tagNames)
                     {
-                        image.Tags.Add(tag.InnerText);
+                        image.Tags.Add(new NijieTag() { Name = tag.InnerText });
                     }
                 }
             }
