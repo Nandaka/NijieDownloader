@@ -38,7 +38,12 @@
                     </StackPanel>
                     <CheckBox Margin="120,0,0,0" Width="100" Content="Auto Save Batch List" HorizontalAlignment="Left" 
                               IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}"/>
-                    <Button Width="100" Name="btnSave" Click="btnSave_Click">Save</Button>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Width="100" Name="btnSave" Click="btnSave_Click" Margin="5,0,5,0">Save</Button>
+                        <Button Width="100" Name="btnReset" Margin="5,0,5,0" Click="btnReset_Click">Reset</Button>
+                        <Button Width="200" Name="btnDelete" Margin="5,0,5,0" Click="btnDelete_Click">Delete User.config</Button>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>

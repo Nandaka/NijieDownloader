@@ -24,8 +24,7 @@ namespace NijieDownloader.UI.Settings
     {
         public Download()
         {
-            InitializeComponent();
-            
+            InitializeComponent();            
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -39,6 +38,22 @@ namespace NijieDownloader.UI.Settings
                 pnlFilenameHelp.Visibility = System.Windows.Visibility.Visible;
             else
                 pnlFilenameHelp.Visibility = System.Windows.Visibility.Collapsed;
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Reset();
+        }
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.Reset();
+            var result = Util.DeleteUserSettings();
+            Properties.Settings.Default.Reload();
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                MessageBox.Show(string.Format("Some items cannot be deleted: {0}", result));
+            }
         }
     }
 }

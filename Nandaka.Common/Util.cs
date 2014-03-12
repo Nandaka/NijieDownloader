@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Linq.Expressions;
+using System.Configuration;
+using System.Threading;
 
 namespace Nandaka.Common
 {
@@ -139,6 +141,42 @@ namespace Nandaka.Common
                 result = result.Split('.')[0];
 
             return result.Trim();
+        }
+
+        public static string DeleteUserSettings()
+        {
+            string result = null;
+            ConfigurationUserLevel[] options = { ConfigurationUserLevel.PerUserRoaming, ConfigurationUserLevel.PerUserRoamingAndLocal };
+
+            List<FileSystemInfo> toBeDeleted = new List<FileSystemInfo>();
+            foreach (var item in options)
+            {
+                var config = ConfigurationManager.OpenExeConfiguration(item);
+                FileInfo i = new FileInfo(config.FilePath);
+                DirectoryInfo d1 = new DirectoryInfo(i.Directory.FullName);
+                DirectoryInfo d2 = new DirectoryInfo(i.Directory.Parent.FullName);
+                toBeDeleted.Add(i);
+                toBeDeleted.Add(d1);
+                toBeDeleted.Add(d2);
+            }
+
+            foreach (var item in toBeDeleted)
+            {
+                if (item.Exists)
+                {
+                    try
+                    {
+                        item.Delete();
+                    }
+                    catch (IOException ioex)
+                    {
+                        result = ioex.Message + Environment.NewLine + "==> " + item.FullName;
+                    }
+                    Thread.Sleep(1);
+                }
+            }
+
+            return result;
         }
     }
 }
