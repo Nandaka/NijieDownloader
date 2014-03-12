@@ -26,6 +26,9 @@ namespace NijieDownloader.UI
 {
     public partial class MainWindow : ModernWindow
     {
+        public static Status BatchStatus { get; set; }
+        private static Object _lock = new Object();
+
         /// <summary>
         /// Run job on Task factory
         /// </summary>
@@ -50,8 +53,6 @@ namespace NijieDownloader.UI
                         doImageJob(job);
                         break;
                 }
-
-                if (isJobCancelled(job)) return;
 
                 if (job.Status != Status.Error)
                 {
@@ -264,14 +265,19 @@ namespace NijieDownloader.UI
 
         private static bool isJobCancelled(JobDownloadViewModel job)
         {
-            if (job.Status == Status.Canceling || job.Status == Status.Cancelled)
+            lock (_lock)
             {
-                job.Status = Status.Cancelled;
-                job.Message = "Job Cancelled.";
-                Log.Debug(string.Format("Job: {0} cancelled", job.Name));
-                return true;
+                if (BatchStatus != Status.Running) return true;
+
+                if (job.Status == Status.Canceling || job.Status == Status.Cancelled)
+                {
+                    job.Status = Status.Cancelled;
+                    job.Message = "Job Cancelled.";
+                    Log.Debug(string.Format("Job: {0} cancelled", job.Name));
+                    return true;
+                }
+                return false;
             }
-            return false;
         }
 
         /// <summary>

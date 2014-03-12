@@ -168,6 +168,7 @@ namespace NijieDownloader.UI
                     job.PauseEvent.Set();
                 }
             }
+            MainWindow.BatchStatus = Status.Running;
         }
 
         private void btnJobOk_Click(object sender, RoutedEventArgs e)
@@ -185,6 +186,7 @@ namespace NijieDownloader.UI
             {
                 if (NewJob.ImageId <= 0)
                 {
+                    ModernDialog.ShowMessage("Image ID must be larger than 0!", "Error", MessageBoxButton.OK);
                     ok = false;
                 }
             }
@@ -192,6 +194,7 @@ namespace NijieDownloader.UI
             {
                 if (NewJob.MemberId <= 0)
                 {
+                    ModernDialog.ShowMessage("Member ID must be larger than 0!", "Error", MessageBoxButton.OK);
                     ok = false;
                 }
             }
@@ -199,6 +202,10 @@ namespace NijieDownloader.UI
             if (ok)
             {
                 ViewData.Add(NewJob);
+                if (MainWindow.BatchStatus == Status.Running)
+                {
+                    MainWindow.DoJob(NewJob);
+                }
                 pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
 
             }
@@ -339,6 +346,7 @@ namespace NijieDownloader.UI
                     item.Status = Status.Canceling;
                 }
             }
+            MainWindow.BatchStatus = Status.Cancelled;
         }
 
         private void btnPause_Click(object sender, RoutedEventArgs e)
