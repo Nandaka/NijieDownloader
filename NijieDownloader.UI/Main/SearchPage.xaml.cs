@@ -42,7 +42,7 @@ namespace NijieDownloader.UI
 #if DEBUG
             txtQuery.Text = "無修正";
 #endif
-            ViewData = new NijieSearchViewModel();
+            if (ViewData == null) ViewData = new NijieSearchViewModel();
             this.DataContext = ViewData;
         }
 
@@ -82,11 +82,14 @@ namespace NijieDownloader.UI
         {
             try
             {
-                var option = new NijieSearchOption() { Query = ViewData.Query, 
-                                                       Page = ViewData.Page, 
-                                                       Sort = ViewData.Sort, 
-                                                       Matching = ViewData.Matching, 
-                                                       SearchBy=ViewData.SearchBy};
+                var option = new NijieSearchOption()
+                {
+                    Query = ViewData.Query,
+                    Page = ViewData.Page,
+                    Sort = ViewData.Sort,
+                    Matching = ViewData.Matching,
+                    SearchBy = ViewData.SearchBy
+                };
                 var result = MainWindow.Bot.Search(option);
                 ViewData = new NijieSearchViewModel(result);
                 this.DataContext = ViewData;
@@ -150,9 +153,11 @@ namespace NijieDownloader.UI
         {
             if (!String.IsNullOrWhiteSpace(fragment))
             {
+                if (this.ViewData == null) ViewData = new NijieSearchViewModel();
+
                 var uri = new Uri("http://localhost/?" + fragment);
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
-                txtQuery.Text = query.Get("query");
+                ViewData.Query = query.Get("query");
             }
         }
 
