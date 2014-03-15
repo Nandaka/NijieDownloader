@@ -33,14 +33,18 @@ namespace NijieDownloader.UI
         /// Run job on Task factory
         /// </summary>
         /// <param name="job"></param>
-        public static void DoJob(JobDownloadViewModel job)
+        public static void DoJob(JobDownloadViewModel job, CancellationTokenSource cancelSource)
         {
             job.Status = Status.Queued;
+            job.CancelToken = cancelSource.Token;
+
             JobFactory.StartNew(() =>
             {
+                Thread.Sleep(Properties.Settings.Default.JobDelay);
                 if (isJobCancelled(job)) return;
 
                 job.Status = Status.Running;
+                job.Message = "Starting job...";
                 switch (job.JobType)
                 {
                     case JobType.Member:
@@ -60,6 +64,9 @@ namespace NijieDownloader.UI
                     Log.Debug("Job completed: " + job.Name);
                 }
             }
+            , cancelSource.Token
+            , TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness
+            , jobScheduler
             );
         }
 
@@ -265,13 +272,7 @@ namespace NijieDownloader.UI
         {
             lock (_lock)
             {
-                if (BatchStatus != Status.Running)
-                {
-                    job.Status = Status.Cancelled;
-                    return true;
-                }
-
-                if (job.Status == Status.Canceling || job.Status == Status.Cancelled)
+                if (job.CancelToken.IsCancellationRequested && job.Status != Status.Completed && job.Status != Status.Error)
                 {
                     job.Status = Status.Cancelled;
                     job.Message = "Job Cancelled.";

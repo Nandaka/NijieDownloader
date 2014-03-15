@@ -33,6 +33,17 @@
         </ObjectDataProvider>
         <local:JobTypeToVisibilityConverter x:Key="jobTypeToVisibilityConverter" />
     </Page.Resources>
+    <Page.CommandBindings>
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.StartCommand}"
+                        Executed="ExecuteStartCommand"
+                        CanExecute="CanExecuteStartCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.StopCommand}"
+                        Executed="ExecuteStopCommand"
+                        CanExecute="CanExecuteStopCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.PauseCommand}"
+                        Executed="ExecutePauseCommand"
+                        CanExecute="CanExecutePauseCommand" />
+    </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -44,9 +55,12 @@
                 <StackPanel Orientation="Horizontal">
                     <Button Name="btnAdd" Margin="10,0,0,10" Content="Add" Click="btnAdd_Click" />
                     <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete" Click="btnDelete_Click" />
-                    <Button Name="btnStart" Margin="10,0,0,10" Content="Start" Click="btnStart_Click" />
-                    <Button Name="btnPause" Margin="10,0,0,10" Content="Pause" Click="btnPause_Click" />
-                    <Button Name="btnStop" Margin="10,0,0,10" Content="Stop" Click="btnStop_Click" />
+                    <Button Name="btnStart" Margin="10,0,0,10" Content="Start"
+                            Command="{x:Static local:BatchDownloadPage.StartCommand}"/>
+                    <Button Name="btnPause" Margin="10,0,0,10" Content="Pause"
+                            Command="{x:Static local:BatchDownloadPage.PauseCommand}" />
+                    <Button Name="btnStop" Margin="10,0,0,10" Content="Stop"
+                            Command="{x:Static local:BatchDownloadPage.StopCommand}" />
                     <Button Name="btnSave" Margin="10,0,0,10" Content="Save" Click="btnSave_Click" />
                     <Button Name="btnLoad" Margin="10,0,0,10" Content="Load" Click="btnLoad_Click" />
                     <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All" Click="btnClearAll_Click" />

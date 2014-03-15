@@ -109,30 +109,6 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int concurrentImageLoad {
-            get {
-                return ((int)(this["concurrentImageLoad"]));
-            }
-            set {
-                this["concurrentImageLoad"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int concurrentJob {
-            get {
-                return ((int)(this["concurrentJob"]));
-            }
-            set {
-                this["concurrentJob"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AutoLogin {
             get {
@@ -164,6 +140,42 @@ namespace NijieDownloader.UI.Properties {
             }
             set {
                 this["UseHttps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int ConcurrentImageLoad {
+            get {
+                return ((int)(this["ConcurrentImageLoad"]));
+            }
+            set {
+                this["ConcurrentImageLoad"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int ConcurrentJob {
+            get {
+                return ((int)(this["ConcurrentJob"]));
+            }
+            set {
+                this["ConcurrentJob"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public int JobDelay {
+            get {
+                return ((int)(this["JobDelay"]));
+            }
+            set {
+                this["JobDelay"] = value;
             }
         }
     }

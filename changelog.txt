@@ -1,3 +1,13 @@
+Nijie Downloader 1.0.2.0
+- Experimental: Add HTTPS support.
+- Feature: Add settings to change Concurent Job (require restart).
+- Feature: Add settings to add delay between each job.
+- Feature: Implement browse/open save directory.
+- Feature: Implement delete user.config.
+- Bug Fix: Update Start/Stop/Pause logic.
+- Bug Fix: Update login logic.
+- Bug Fix: Update tag click handler from Image Page.
+
 Nijie Downloader 1.0.1.0
 - Feature: Add DB support.
 - Feature: Implement additional search options.

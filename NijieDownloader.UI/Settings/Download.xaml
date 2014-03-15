@@ -36,8 +36,23 @@
                         <CheckBox Margin="120,0,0,0" Width="100" Content="Overwrite" HorizontalAlignment="Left" 
                                   IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>
                     </StackPanel>
-                    <CheckBox Margin="120,0,0,0" Width="100" Content="Auto Save Batch List" HorizontalAlignment="Left" 
+                    <CheckBox Margin="120,0,0,0" Width="200" Content="Auto Save Batch List" HorizontalAlignment="Left" 
                               IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}"/>
+                    <StackPanel Orientation="Horizontal" ToolTip="Restart required.">
+                        <TextBlock Width="100" Text="Concurrent Thumb Loader" Margin="5,5,5,0"/>
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                 Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentImageLoad, Mode=TwoWay}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="100" Text="Concurrent Job" Margin="5,5,5,0"/>
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentJob, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="100" Text="Job Delay" Margin="5,5,5,0"/>
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=JobDelay, Mode=TwoWay}"/>
+                    </StackPanel>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Width="100" Name="btnSave" Click="btnSave_Click" Margin="5,0,5,0">Save</Button>

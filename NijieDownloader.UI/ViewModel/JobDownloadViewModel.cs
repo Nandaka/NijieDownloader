@@ -237,11 +237,19 @@ namespace NijieDownloader.UI.ViewModel
             private set { }
         }
 
+        [XmlIgnoreAttribute]
+        public CancellationToken CancelToken { get; set; }
+
+        private Status _prevStatus;
+        private string _prevMessage;
+
         public void Pause()
         {
             lock (this)
             {
-                if (this.Status == Status.Running)
+                _prevStatus = this.Status;
+                _prevMessage = this.Message;
+                if (this.Status == Status.Running || this.Status == Status.Queued)
                 {
                     this.Message = "Pausing...";
                     this.PauseEvent.Reset();
@@ -259,8 +267,8 @@ namespace NijieDownloader.UI.ViewModel
                 {
                     this.Message = "Resuming...";
                     this.PauseEvent.Set();
-                    this.Message = "Running.";
-                    this.Status = Status.Running;
+                    this.Message = _prevMessage;
+                    this.Status = _prevStatus;
                 }
             }
         }

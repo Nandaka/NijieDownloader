@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using Microsoft.Win32;
 using NijieDownloader.Library.Model;
 using System.IO;
+using System.Threading;
 
 namespace NijieDownloader.UI
 {
@@ -31,8 +32,13 @@ namespace NijieDownloader.UI
     {
         public ObservableCollection<JobDownloadViewModel> ViewData { get; set; }
         public JobDownloadViewModel NewJob { get; set; }
+        private CancellationTokenSource cancelToken;
 
         private const string DEFAULT_BATCH_JOB_LIST_FILENAME = "batchjob.xml";
+
+        public static RoutedCommand StartCommand = new RoutedCommand();
+        public static RoutedCommand StopCommand = new RoutedCommand();
+        public static RoutedCommand PauseCommand = new RoutedCommand();
 
         public BatchDownloadPage()
         {
@@ -158,19 +164,6 @@ namespace NijieDownloader.UI
         {
         }
 
-        private void btnStart_Click(object sender, RoutedEventArgs e)
-        {
-            MainWindow.BatchStatus = Status.Running;
-            foreach (var job in ViewData)
-            {
-                if (job.Status == Status.Added || job.Status == Status.Error)
-                {
-                    MainWindow.DoJob(job);
-                    job.PauseEvent.Set();
-                }
-            }
-        }
-
         private void btnJobOk_Click(object sender, RoutedEventArgs e)
         {
             var ok = true;
@@ -204,7 +197,7 @@ namespace NijieDownloader.UI
                 ViewData.Add(NewJob);
                 if (MainWindow.BatchStatus == Status.Running)
                 {
-                    MainWindow.DoJob(NewJob);
+                    MainWindow.DoJob(NewJob, cancelToken);
                 }
                 pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
 
@@ -337,22 +330,69 @@ namespace NijieDownloader.UI
             ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
         }
 
-        private void btnStop_Click(object sender, RoutedEventArgs e)
+        #region Command 
+
+        private void ExecuteStartCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            cancelToken = new CancellationTokenSource();
+            MainWindow.BatchStatus = Status.Running;
+            foreach (var job in ViewData)
+            {
+                if (job.Status != Status.Completed)
+                {
+                    MainWindow.DoJob(job, cancelToken);
+                    job.PauseEvent.Set();
+                }
+            }
+        }
+        private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            Control target = e.Source as Control;
+            e.CanExecute = false;
+
+            if (target != null)
+            {
+                if(MainWindow.BatchStatus != Status.Running && 
+                   MainWindow.BatchStatus != Status.Paused)
+                    e.CanExecute = true;
+            }
+        }
+        
+        private void ExecuteStopCommand(object sender, ExecutedRoutedEventArgs e)
         {
             MainWindow.BatchStatus = Status.Cancelled;
+
+            if (cancelToken != null)
+            {
+                cancelToken.Cancel();
+            }
+
             foreach (var item in ViewData)
             {
-                if (item.Status != Status.Completed || item.Status != Status.Error)
+                if (item.Status != Status.Completed && item.Status != Status.Error && item.Status != Status.Queued)
                 {
                     item.Status = Status.Canceling;
                 }
             }
         }
+        private void CanExecuteStopCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            Control target = e.Source as Control;
 
-        private void btnPause_Click(object sender, RoutedEventArgs e)
+            e.CanExecute = false;
+
+            if (target != null)
+            {
+                if (MainWindow.BatchStatus == Status.Running)
+                    e.CanExecute = true;
+            }
+        }
+
+        private void ExecutePauseCommand(object sender, ExecutedRoutedEventArgs e)
         {
             if (btnPause.Content.ToString() == "Pause")
             {
+                MainWindow.BatchStatus = Status.Paused;
                 foreach (var item in ViewData)
                 {
                     item.Pause();
@@ -361,6 +401,7 @@ namespace NijieDownloader.UI
             }
             else
             {
+                MainWindow.BatchStatus = Status.Running;
                 foreach (var item in ViewData)
                 {
                     item.Resume();
@@ -368,6 +409,18 @@ namespace NijieDownloader.UI
                 btnPause.Content = "Pause";
             }
         }
+        private void CanExecutePauseCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            Control target = e.Source as Control;
+
+            if (target != null)
+            {
+                if (MainWindow.BatchStatus == Status.Running || 
+                    MainWindow.BatchStatus == Status.Paused)
+                    e.CanExecute = true;
+            }
+        }
+        #endregion
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {

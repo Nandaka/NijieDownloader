@@ -10,6 +10,7 @@ using System.Collections.Specialized;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Net;
+using System.Diagnostics;
 
 namespace NijieDownloader.Library
 {
@@ -66,11 +67,28 @@ namespace NijieDownloader.Library
                 }
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
-        
+
+        private void PrintCookie(string header)
+        {
+            Debug.WriteLine(header);
+            var uri = new Uri(Util.FixUrl("//nijie.info", UseHttps));
+            foreach (Cookie item in ExtendedWebClient.CookieJar.GetCookies(uri))
+            {
+                Debug.WriteLine("\tSite: {0} ==> {1}: {2}", item.Domain, item.Name, item.Value);
+            }
+        }
+
         private NijieLoginInfo PrepareLoginInfo(string userName, string password)
         {
             ExtendedWebClient client = new ExtendedWebClient();
-            NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = false };
+
+            // not really used
+            var uri = new Uri(Util.FixUrl("//nijie.info", UseHttps));
+            var tick = ((int)Util.DateTimeToUnixTimestamp(DateTime.Now)).ToString();
+            ExtendedWebClient.CookieJar.Add(uri, new Cookie("nijie_token_secret", tick));
+            ExtendedWebClient.CookieJar.Add(uri, new Cookie("nijie_token", tick));
+
+            NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = true };
 
             HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, UseHttps)).Item1;
 
@@ -81,6 +99,8 @@ namespace NijieDownloader.Library
             var returnUrls = doc.DocumentNode.SelectNodes("//input[@name='url']");
             if (returnUrls != null && returnUrls.Count > 0)
                 info.ReturnUrl = returnUrls[0].Attributes["value"].Value;
+
+            PrintCookie("Prepare Login:");
 
             return info;
         }
@@ -122,8 +142,8 @@ namespace NijieDownloader.Library
                     break;
                 }
             }
-            
 
+            PrintCookie("Login:");
 
             return IsLoggedIn;
         }

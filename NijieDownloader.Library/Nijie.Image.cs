@@ -31,6 +31,7 @@ namespace NijieDownloader.Library
             {
                 canOperate();
                 var result = getPage(image.ViewUrl);
+                PrintCookie("Image Page " + image.ImageId);
                 doc = result.Item1;
                 if (result.Item2.ResponseUri.ToString() != image.ViewUrl)
                 {

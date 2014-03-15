@@ -29,10 +29,9 @@ namespace NijieDownloader.UI
     public partial class MainWindow : ModernWindow
     {
         public static Nijie Bot { get; private set; }
-        public static LimitedConcurrencyLevelTaskScheduler lcts = new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.concurrentImageLoad, 8);
-        public static LimitedConcurrencyLevelTaskScheduler lctsJob = new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.concurrentJob, 8);
         public static TaskFactory Factory { get; private set; }
         public static TaskFactory JobFactory { get; private set; }
+        private static LimitedConcurrencyLevelTaskScheduler jobScheduler;
 
         public const string IMAGE_LOADING = "Loading";
         public const string IMAGE_LOADED = "Done";
@@ -80,8 +79,12 @@ namespace NijieDownloader.UI
             InitializeComponent();
             Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
             Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
-            Factory = new TaskFactory(lcts);
-            JobFactory = new TaskFactory(lctsJob);
+
+            Factory = new TaskFactory(new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentImageLoad, 8));
+
+            jobScheduler = new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentJob, 8);
+            JobFactory = new TaskFactory(jobScheduler);
+            
 
             var config = new NameValueCollection();
             config.Add("pollingInterval", "00:05:00");

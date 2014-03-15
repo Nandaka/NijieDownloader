@@ -23,12 +23,6 @@
     <Setting Name="cacheMemoryLimitMegabytes" Type="System.String" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="concurrentImageLoad" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
-    </Setting>
-    <Setting Name="concurrentJob" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">5</Value>
-    </Setting>
     <Setting Name="AutoLogin" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
@@ -37,6 +31,15 @@
     </Setting>
     <Setting Name="UseHttps" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ConcurrentImageLoad" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="ConcurrentJob" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="JobDelay" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2000</Value>
     </Setting>
   </Settings>
 </SettingsFile>
