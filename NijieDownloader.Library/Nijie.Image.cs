@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using NijieDownloader.Library.Model;
+using Nandaka.Common;
 
 namespace NijieDownloader.Library
 {
@@ -11,10 +12,14 @@ namespace NijieDownloader.Library
         private Regex re_date = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}");
         private Regex re_image = new Regex(@"id=(\d+)");
 
-        public NijieImage ParseImage(int imageId, string referer = NijieConstants.NIJIE_INDEX)
+        public NijieImage ParseImage(int imageId, bool useHttps, string referer = null)
         {
+            if (string.IsNullOrWhiteSpace(referer))
+            {
+                referer = Util.FixUrl(NijieConstants.NIJIE_INDEXx, useHttps);
+            }
             canOperate();
-            NijieImage image = new NijieImage(imageId);
+            NijieImage image = new NijieImage(imageId, UseHttps);
             image.Referer = referer;
             return ParseImage(image);
         }
@@ -174,7 +179,7 @@ namespace NijieDownloader.Library
             var split = memberUrl.Split('?');
             int memberId = Int32.Parse(split[1].Replace("id=", ""));
 
-            NijieMember member = new NijieMember(memberId);
+            NijieMember member = new NijieMember(memberId, UseHttps);
             var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
             if (profileDiv != null)
             {

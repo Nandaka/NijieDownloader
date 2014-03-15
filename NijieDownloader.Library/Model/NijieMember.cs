@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Nandaka.Common;
+
 namespace NijieDownloader.Library.Model
 {
     public class NijieMember
@@ -21,7 +23,7 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return "http://nijie.info/members_illust.php?id=" + MemberId;
+                return Util.FixUrl("//nijie.info/members_illust.php?id=" + MemberId, UseHttps);
             }
             private set { }
         }
@@ -31,15 +33,19 @@ namespace NijieDownloader.Library.Model
 
         [NotMapped]
         public string Status { get; set; }
+        
+        [NotMapped]
+        public bool UseHttps { get; set; }
 
         public NijieMember()
         {
             this.MemberId = -1;
         }
 
-        public NijieMember(int memberId)
+        public NijieMember(int memberId, bool useHttps)
         {
             this.MemberId = memberId;
+            this.UseHttps = useHttps;
         }
     }
 }

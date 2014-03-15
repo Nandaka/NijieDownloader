@@ -5,6 +5,7 @@ using System.Text;
 using HtmlAgilityPack;
 using log4net;
 using Nandaka.Common;
+using System.Threading;
 
 namespace NijieDownloader.Library
 {
@@ -30,13 +31,17 @@ namespace NijieDownloader.Library
             }
         }
 
-        public Nijie(ILog _log)
+        public bool UseHttps { get; set; }
+
+        public Nijie(ILog _log, bool useHttps)
         {
             this.Log = _log;
             ExtendedWebClient.EnableCompression = true;
             ExtendedWebClient.EnableCookie = true;
             var proxy = ExtendedWebClient.GlobalProxy;
             Log.Debug("Proxy= " + proxy);
+            UseHttps = useHttps;
+            Log.Debug("UseHttps= " + useHttps);
         }
 
         private void canOperate()
@@ -82,6 +87,7 @@ namespace NijieDownloader.Library
             {
                 throw new NijieException(string.Format("Error when downloading: {0} to {1}", url, tempFilename), ex, NijieException.DOWNLOAD_ERROR);
             }
+            Thread.Sleep(100); // delay before renaming
             File.Move(tempFilename, filename);
         }
 

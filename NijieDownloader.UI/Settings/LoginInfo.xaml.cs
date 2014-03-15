@@ -86,7 +86,7 @@ namespace NijieDownloader.UI
             if (!string.IsNullOrWhiteSpace(txtUserName.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password))
             {
                 lblLoginStatus.Text = "Logging in...";
-                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus, Properties.Settings.Default.UseHttps );
+                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus );
                 dialog = new ModernDialog();
                 dialog.Content = "Logging in...";
                 dialog.CloseButton.Visibility = System.Windows.Visibility.Hidden;
@@ -129,6 +129,7 @@ namespace NijieDownloader.UI
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             Properties.Settings.Default.Save();
+            MainWindow.Bot.UseHttps = Properties.Settings.Default.UseHttps;
         }
     }
 }

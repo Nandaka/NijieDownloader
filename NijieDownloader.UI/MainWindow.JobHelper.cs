@@ -70,13 +70,16 @@ namespace NijieDownloader.UI
             Log.Debug("Running Image Job: " + job.Name);
             try
             {
-                NijieImage image = new NijieImage(job.ImageId);
+                NijieImage image = new NijieImage(job.ImageId, Properties.Settings.Default.UseHttps);
                 processImage(job, null, image);
+                Thread.Sleep(1000); //delay 1 s
             }
             catch (NijieException ne)
             {
                 job.Status = Status.Error;
                 job.Message = ne.Message;
+                if (ne.InnerException != null)
+                    job.Message += Environment.NewLine + ne.InnerException.Message;
                 Log.Error("Error when processing Image Job: " + job.Name, ne);
             }
         }
@@ -140,6 +143,8 @@ namespace NijieDownloader.UI
             {
                 job.Status = Status.Error;
                 job.Message = ne.Message;
+                if (ne.InnerException != null)
+                    job.Message += Environment.NewLine + ne.InnerException.Message;
                 Log.Error("Error when processing Search Job: " + job.Name, ne);
             }
         }
@@ -166,6 +171,8 @@ namespace NijieDownloader.UI
             {
                 job.Status = Status.Error;
                 job.Message = ne.Message;
+                if (ne.InnerException != null)
+                    job.Message += Environment.NewLine + ne.InnerException.Message;
                 Log.Error("Error when processing Member Job: " + job.Name, ne);
             }
         }
@@ -175,91 +182,82 @@ namespace NijieDownloader.UI
             if (isJobCancelled(job)) return;
 
             Log.Debug("Processing Image:" + imageTemp.ImageId);
-            try
+            var rootPath = Properties.Settings.Default.RootDirectory;
+            var image = Bot.ParseImage(imageTemp, memberPage);
+            var lastFilename = "";
+            if (image.IsManga)
             {
-                var rootPath = Properties.Settings.Default.RootDirectory;
-                var image = Bot.ParseImage(imageTemp, memberPage);
-                var lastFilename = "";
-                if (image.IsManga)
-                {
-                    Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
+                Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
 
-                    for (int i = 0; i < image.ImageUrls.Count; ++i)
-                    {
-                        if (isJobCancelled(job)) return;
-                        job.PauseEvent.WaitOne(Timeout.Infinite);
-
-                        var filename = makeFilename(job, image, i);
-                        job.Message = "Downloading: " + image.ImageUrls[i];
-                        var pagefilename = filename;
-                        if (!(job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE) || job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE_ZERO)))
-                        {
-                            pagefilename += "_p" + i;
-                        }
-                        pagefilename += "." + Util.ParseExtension(image.ImageUrls[i]);
-                        pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
-
-                        if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
-                        {
-                            downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
-                        }
-                        lastFilename = pagefilename;
-                    }
-                }
-                else
+                for (int i = 0; i < image.ImageUrls.Count; ++i)
                 {
                     if (isJobCancelled(job)) return;
                     job.PauseEvent.WaitOne(Timeout.Infinite);
 
-                    var filename = makeFilename(job, image);
-                    job.Message = "Downloading: " + image.BigImageUrl;
-                    filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
-                    filename = rootPath + "\\" + Util.SanitizeFilename(filename);
-                    if (canDownloadFile(job, image.BigImageUrl, filename))
+                    var filename = makeFilename(job, image, i);
+                    job.Message = "Downloading: " + image.ImageUrls[i];
+                    var pagefilename = filename;
+                    if (!(job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE) || job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE_ZERO)))
                     {
-                        downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                        pagefilename += "_p" + i;
                     }
-                    lastFilename = filename;
-                }
+                    pagefilename += "." + Util.ParseExtension(image.ImageUrls[i]);
+                    pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
 
-                using (var dao = new NijieContext())
-                {
-                    image.SavedFilename = lastFilename;
-                    var member = from x in dao.Members
-                                 where x.MemberId == image.Member.MemberId
-                                 select x;
-                    if (member.FirstOrDefault() != null)
+                    if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
                     {
-                        image.Member = member.FirstOrDefault();
+                        downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
                     }
-
-                    var temp = new List<NijieTag>();
-                    for (int i = 0; i < image.Tags.Count; ++i)
-                    {
-                        var t = image.Tags.ElementAt(i);
-                        var x = from a in dao.Tags
-                                where a.Name == t.Name
-                                select a;
-                        if (x.FirstOrDefault() != null)
-                        {
-                            temp.Add(x.FirstOrDefault());
-                        }
-                        else
-                        {
-                            temp.Add(t);
-                        }
-                    }
-                    image.Tags = temp;
-
-                    dao.Images.AddOrUpdate(image);
-                    dao.SaveChanges();
+                    lastFilename = pagefilename;
                 }
             }
-            catch (NijieException ne)
+            else
             {
-                job.Status = Status.Error;
-                job.Message = ne.Message;
-                Log.Error("Error when processing Image:" + imageTemp.ImageId, ne);
+                if (isJobCancelled(job)) return;
+                job.PauseEvent.WaitOne(Timeout.Infinite);
+
+                var filename = makeFilename(job, image);
+                job.Message = "Downloading: " + image.BigImageUrl;
+                filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
+                filename = rootPath + "\\" + Util.SanitizeFilename(filename);
+                if (canDownloadFile(job, image.BigImageUrl, filename))
+                {
+                    downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                }
+                lastFilename = filename;
+            }
+
+            using (var dao = new NijieContext())
+            {
+                image.SavedFilename = lastFilename;
+                var member = from x in dao.Members
+                             where x.MemberId == image.Member.MemberId
+                             select x;
+                if (member.FirstOrDefault() != null)
+                {
+                    image.Member = member.FirstOrDefault();
+                }
+
+                var temp = new List<NijieTag>();
+                for (int i = 0; i < image.Tags.Count; ++i)
+                {
+                    var t = image.Tags.ElementAt(i);
+                    var x = from a in dao.Tags
+                            where a.Name == t.Name
+                            select a;
+                    if (x.FirstOrDefault() != null)
+                    {
+                        temp.Add(x.FirstOrDefault());
+                    }
+                    else
+                    {
+                        temp.Add(t);
+                    }
+                }
+                image.Tags = temp;
+
+                dao.Images.AddOrUpdate(image);
+                dao.SaveChanges();
             }
         }
 
@@ -267,7 +265,11 @@ namespace NijieDownloader.UI
         {
             lock (_lock)
             {
-                if (BatchStatus != Status.Running) return true;
+                if (BatchStatus != Status.Running)
+                {
+                    job.Status = Status.Cancelled;
+                    return true;
+                }
 
                 if (job.Status == Status.Canceling || job.Status == Status.Cancelled)
                 {

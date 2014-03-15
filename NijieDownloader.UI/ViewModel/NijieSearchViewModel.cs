@@ -29,7 +29,7 @@ namespace NijieDownloader.UI.ViewModel
 
         public NijieSearchViewModel(NijieSearchOption option)
         {
-            this.Search = new NijieSearch(option);
+            this.Search = new NijieSearch(option, Properties.Settings.Default.UseHttps);
             this.Sort = option.Sort;
             this.Query = option.Query;
             this.Page = option.Page;

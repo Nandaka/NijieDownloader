@@ -21,7 +21,7 @@ namespace NijieDownloader.Library
             {
                 canOperate();
                 if (option.Page < 1) option.Page = 1;
-                NijieSearch search = new NijieSearch(option);
+                NijieSearch search = new NijieSearch(option, UseHttps);
                 var result = getPage(search.QueryUrl);
 
                 if (result.Item2.ResponseUri.ToString() != search.QueryUrl)

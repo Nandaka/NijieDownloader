@@ -47,7 +47,7 @@ namespace NijieDownloader.UI
             using (var ctx = new NijieContext())
             {
                 var i = (from x in ctx.Images.Include("Member").Include("Tags")
-                         where x.ImageId == imageId
+                         where x.ImageId == imageId && x.IsManga == false
                          select x).FirstOrDefault();
                 if (i != null)
                 {
@@ -60,7 +60,7 @@ namespace NijieDownloader.UI
             
             try
             {
-                var result = MainWindow.Bot.ParseImage(imageId);
+                var result = MainWindow.Bot.ParseImage(imageId, Properties.Settings.Default.UseHttps);
                 ViewData = new NijieImageViewModel(result);
             }
             catch (NijieException ne)

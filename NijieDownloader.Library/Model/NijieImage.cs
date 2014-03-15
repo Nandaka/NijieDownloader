@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using NijieDownloader.Library.DAL;
+using Nandaka.Common;
 
 namespace NijieDownloader.Library.Model
 {
@@ -42,7 +43,8 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return "http://nijie.info/view.php?id=" + ImageId;
+
+                return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, UseHttps);
             }
             private set { }
         }
@@ -61,16 +63,20 @@ namespace NijieDownloader.Library.Model
             }
         }
 
+        [NotMapped]
+        public bool UseHttps { get; set; }
+
         public NijieImage()
         {
             this.ImageId = -1;
             this.WorkDate = DateTime.MinValue;
         }
 
-        public NijieImage(int imageId)
+        public NijieImage(int imageId, bool useHttps)
         {
             this.ImageId = imageId;
             this.WorkDate = DateTime.MinValue;
+            this.UseHttps = useHttps;
         }
     }
 }

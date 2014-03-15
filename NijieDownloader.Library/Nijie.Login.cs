@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Net;
 
 namespace NijieDownloader.Library
 {
@@ -17,6 +18,8 @@ namespace NijieDownloader.Library
         public static event NijieEventHandler LoggingEventHandler;
 
         public delegate void NijieEventHandler(object sender, bool result);
+
+        private static string NijieSessionID { get; set; }
 
         private static bool _isLoggedIn;
         public static bool IsLoggedIn {
@@ -34,10 +37,10 @@ namespace NijieDownloader.Library
             }
         }
 
-        public bool Login(string userName, string password, bool useHttps)
+        public bool Login(string userName, string password)
         {
-            var info = PrepareLoginInfo(userName, password, useHttps);
-            return DoLogin(info, useHttps);
+            var info = PrepareLoginInfo(userName, password);
+            return DoLogin(info);
         }
 
         public void Logout()
@@ -46,9 +49,9 @@ namespace NijieDownloader.Library
             IsLoggedIn = false;
         }
 
-        public void LoginAsync(string userName, string password, Action<bool, string> callback, bool useHttps)
+        public void LoginAsync(string userName, string password, Action<bool, string> callback)
         {
-            var task = Task.Factory.StartNew<bool>(() => Login(userName, password, useHttps));
+            var task = Task.Factory.StartNew<bool>(() => Login(userName, password));
             task.ContinueWith(x => {
                 try
                 {
@@ -64,12 +67,12 @@ namespace NijieDownloader.Library
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
         
-        private NijieLoginInfo PrepareLoginInfo(string userName, string password, bool useHttps)
+        private NijieLoginInfo PrepareLoginInfo(string userName, string password)
         {
             ExtendedWebClient client = new ExtendedWebClient();
             NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = false };
 
-            HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, useHttps)).Item1;
+            HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, UseHttps)).Item1;
 
             var tickets = doc.DocumentNode.SelectNodes("//input[@name='ticket']");
             if (tickets != null && tickets.Count > 0)
@@ -82,7 +85,7 @@ namespace NijieDownloader.Library
             return info;
         }
 
-        private bool DoLogin(NijieLoginInfo info, bool useHttps)
+        private bool DoLogin(NijieLoginInfo info)
         {
             IsLoggedIn = false;
             ExtendedWebClient client = new ExtendedWebClient();
@@ -94,7 +97,7 @@ namespace NijieDownloader.Library
             loginInfo.Add("ticket", info.Ticket);
             loginInfo.Add("url", info.ReturnUrl);
 
-            var result = client.UploadValues(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL2, useHttps), "POST", loginInfo);
+            var result = client.UploadValues(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL2, UseHttps), "POST", loginInfo);
             //String data = Encoding.UTF8.GetString(result);
 
             var location = client.Response.ResponseUri.ToString();
@@ -105,6 +108,23 @@ namespace NijieDownloader.Library
                 else
                     IsLoggedIn = true;
             }
+
+            var uri = new Uri(Util.FixUrl("//nijie.info", UseHttps));
+            ExtendedWebClient.CookieJar.Add(uri, new Cookie("R18", "1"));
+            var cookies = ExtendedWebClient.CookieJar.GetCookies(uri);
+            foreach (Cookie item in cookies)
+            {
+                //Cookie: NIJIEIJIEID=lp1ffmjc9gi7a3u9qkj8p566u3
+                if (item.Name == "NIJIEIJIEID")
+                {
+                    NijieSessionID = item.Value;
+                    item.Expires = DateTime.MaxValue;
+                    break;
+                }
+            }
+            
+
+
             return IsLoggedIn;
         }
 

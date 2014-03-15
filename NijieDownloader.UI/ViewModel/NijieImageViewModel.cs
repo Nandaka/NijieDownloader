@@ -17,7 +17,7 @@ namespace NijieDownloader.UI.ViewModel
     {
         public NijieImageViewModel(int imageId)
         {
-            setup(new NijieImage(imageId));
+            setup(new NijieImage(imageId, Properties.Settings.Default.UseHttps));
         }
 
         public NijieImageViewModel(NijieImage image)

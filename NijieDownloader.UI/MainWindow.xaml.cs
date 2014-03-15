@@ -78,7 +78,7 @@ namespace NijieDownloader.UI
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
             checkUpgrade();
             InitializeComponent();
-            Bot = new Nijie(Log);
+            Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
             Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
             Factory = new TaskFactory(lcts);
             JobFactory = new TaskFactory(lctsJob);

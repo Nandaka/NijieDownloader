@@ -111,6 +111,7 @@ namespace NijieDownloader.UI
             }
             catch (Exception ex)
             {
+                Log.Error("filenameFormat=" + job.SaveFilenameFormat, ex);
                 throw new NijieException("Failed when renaming", ex, NijieException.RENAME_ERROR);
             }
         }

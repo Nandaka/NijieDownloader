@@ -16,7 +16,7 @@ namespace NijieDownloader.Library
             try
             {
                 canOperate();
-                NijieMember member = new NijieMember(memberId);
+                NijieMember member = new NijieMember(memberId, UseHttps);
                 var result = getPage(member.MemberUrl);
                 var res = result.Item2;
                 if (res.ResponseUri.ToString() != member.MemberUrl)
@@ -93,7 +93,7 @@ namespace NijieDownloader.Library
                     var res = re_image.Match(imageId);
                     if (res.Success)
                     {
-                        NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
+                        NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value), UseHttps);
                         image.Referer = referer;
 
                         var div = new HtmlDocument();

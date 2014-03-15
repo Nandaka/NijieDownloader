@@ -57,7 +57,7 @@ namespace NijieDownloader.UI
             }
             catch (NijieException ne)
             {
-                ViewData = new NijieMemberViewModel(new NijieMember(memberId) { Status = "Error: " + ne.Message });
+                ViewData = new NijieMemberViewModel(new NijieMember(memberId, Properties.Settings.Default.UseHttps) { Status = "Error: " + ne.Message });
                 ViewData.Status = "Error: " + ne.Message;
                 this.DataContext = ViewData;
             }
