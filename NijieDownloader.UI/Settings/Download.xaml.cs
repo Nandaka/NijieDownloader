@@ -13,7 +13,12 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using FirstFloor.ModernUI;
+
 using Nandaka.Common;
+using System.Diagnostics;
+using FirstFloor.ModernUI.Windows.Controls;
+using System.IO;
 
 namespace NijieDownloader.UI.Settings
 {
@@ -53,6 +58,36 @@ namespace NijieDownloader.UI.Settings
             if (!string.IsNullOrWhiteSpace(result))
             {
                 MessageBox.Show(string.Format("Some items cannot be deleted: {0}", result));
+            }
+        }
+
+        private void btnOpen_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DirectoryInfo dir = new DirectoryInfo(txtRootDir.Text);
+                if (!dir.Exists)
+                    dir.Create();
+
+                Process.Start(dir.FullName);
+            }
+            catch (Exception ex)
+            {
+                ModernDialog d = new ModernDialog();
+                d.Content = ex.Message;
+                d.ShowDialog();
+                MainWindow.Log.Error(string.Format("Failed to open root directory: {0}", txtRootDir.Text), ex);
+            }
+        }
+
+        private void btnBrowse_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.FolderBrowserDialog f = new System.Windows.Forms.FolderBrowserDialog();
+            f.ShowNewFolderButton = true;
+            var result = f.ShowDialog();
+            if (result == System.Windows.Forms.DialogResult.OK)
+            {
+                txtRootDir.Text = f.SelectedPath;
             }
         }
     }

@@ -173,5 +173,15 @@ namespace NijieDownloader.UI
                 e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
+        
+        private void StackPanel_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                var image = ViewData.Images[lbxImages.SelectedIndex];
+                image.IsSelected = !(image.IsSelected);
+                e.Handled = true;
+            }
+        }
     }
 }

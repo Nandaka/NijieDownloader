@@ -160,6 +160,7 @@ namespace NijieDownloader.UI
 
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.BatchStatus = Status.Running;
             foreach (var job in ViewData)
             {
                 if (job.Status == Status.Added || job.Status == Status.Error)
@@ -168,7 +169,6 @@ namespace NijieDownloader.UI
                     job.PauseEvent.Set();
                 }
             }
-            MainWindow.BatchStatus = Status.Running;
         }
 
         private void btnJobOk_Click(object sender, RoutedEventArgs e)
@@ -339,6 +339,7 @@ namespace NijieDownloader.UI
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
+            MainWindow.BatchStatus = Status.Cancelled;
             foreach (var item in ViewData)
             {
                 if (item.Status != Status.Completed || item.Status != Status.Error)
@@ -346,7 +347,6 @@ namespace NijieDownloader.UI
                     item.Status = Status.Canceling;
                 }
             }
-            MainWindow.BatchStatus = Status.Cancelled;
         }
 
         private void btnPause_Click(object sender, RoutedEventArgs e)

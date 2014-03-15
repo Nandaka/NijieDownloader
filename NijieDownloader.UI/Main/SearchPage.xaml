@@ -40,7 +40,7 @@
         <BitmapImage x:Key="AnimeIcon" UriSource="/Resources/thumbnail_anime.png" />
         <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <DataTemplate DataType="{x:Type vd:NijieImageViewModel}">
-            <StackPanel MaxWidth="130" MaxHeight="210" MouseDown="StackPanel_MouseDown" Style="{StaticResource panelback}">
+            <StackPanel MaxWidth="130" MaxHeight="210" Style="{StaticResource panelback}">
                 <TextBlock Text="{Binding Path=Image.ImageId}" Height="25"/>
                 <TextBlock Text="{Binding Path=Image.Title}" Height="25"/>
                 <Grid>
@@ -115,7 +115,7 @@
                     </DockPanel>
                 </StackPanel>
 
-                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" Height="Auto">
+                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" Height="Auto" PreviewKeyDown="StackPanel_KeyDown">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=searchPage, Path=TileColumns}"/>

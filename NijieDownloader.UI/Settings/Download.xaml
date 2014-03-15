@@ -16,9 +16,9 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="100" Text="Root Directory" Margin="5,5,5,0"/>
                         <TextBox Height="25" Margin="10,0,0,0" MinWidth="290" 
-                                Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" />
-                        <Button Width="100" Name="btnBrowse" Content="Browse" Margin="5,2,5,2"/>
-                        <Button Width="100" Name="btnOpen" Content="Open" Margin="5,2,5,2"/>
+                                Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" Name="txtRootDir" />
+                        <Button Width="100" Name="btnBrowse" Content="Browse" Margin="5,2,5,2" Click="btnBrowse_Click" />
+                        <Button Width="100" Name="btnOpen" Content="Open" Margin="5,2,5,2" Click="btnOpen_Click" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
