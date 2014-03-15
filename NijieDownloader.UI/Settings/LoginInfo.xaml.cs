@@ -86,7 +86,7 @@ namespace NijieDownloader.UI
             if (!string.IsNullOrWhiteSpace(txtUserName.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password))
             {
                 lblLoginStatus.Text = "Logging in...";
-                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus);
+                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus, Properties.Settings.Default.UseHttps );
                 dialog = new ModernDialog();
                 dialog.Content = "Logging in...";
                 dialog.CloseButton.Visibility = System.Windows.Visibility.Hidden;

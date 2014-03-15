@@ -34,10 +34,10 @@ namespace NijieDownloader.Library
             }
         }
 
-        public bool Login(string userName, string password)
+        public bool Login(string userName, string password, bool useHttps)
         {
-            var info = PrepareLoginInfo(userName, password);
-            return DoLogin(info);
+            var info = PrepareLoginInfo(userName, password, useHttps);
+            return DoLogin(info, useHttps);
         }
 
         public void Logout()
@@ -46,9 +46,9 @@ namespace NijieDownloader.Library
             IsLoggedIn = false;
         }
 
-        public void LoginAsync(string userName, string password, Action<bool, string> callback)
+        public void LoginAsync(string userName, string password, Action<bool, string> callback, bool useHttps)
         {
-            var task = Task.Factory.StartNew<bool>(() => Login(userName, password));
+            var task = Task.Factory.StartNew<bool>(() => Login(userName, password, useHttps));
             task.ContinueWith(x => {
                 try
                 {
@@ -64,12 +64,12 @@ namespace NijieDownloader.Library
             }, TaskScheduler.FromCurrentSynchronizationContext());
         }
         
-        private NijieLoginInfo PrepareLoginInfo(string userName, string password)
+        private NijieLoginInfo PrepareLoginInfo(string userName, string password, bool useHttps)
         {
             ExtendedWebClient client = new ExtendedWebClient();
             NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = false };
 
-            HtmlDocument doc = getPage(NijieConstants.NIJIE_LOGIN_URL).Item1;
+            HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, useHttps)).Item1;
 
             var tickets = doc.DocumentNode.SelectNodes("//input[@name='ticket']");
             if (tickets != null && tickets.Count > 0)
@@ -82,7 +82,7 @@ namespace NijieDownloader.Library
             return info;
         }
 
-        private bool DoLogin(NijieLoginInfo info)
+        private bool DoLogin(NijieLoginInfo info, bool useHttps)
         {
             IsLoggedIn = false;
             ExtendedWebClient client = new ExtendedWebClient();
@@ -94,16 +94,17 @@ namespace NijieDownloader.Library
             loginInfo.Add("ticket", info.Ticket);
             loginInfo.Add("url", info.ReturnUrl);
 
-            var result = client.UploadValues(NijieConstants.NIJIE_LOGIN_URL2, "POST", loginInfo);
+            var result = client.UploadValues(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL2, useHttps), "POST", loginInfo);
             //String data = Encoding.UTF8.GetString(result);
 
             var location = client.Response.ResponseUri.ToString();
             if (!String.IsNullOrWhiteSpace(location))
             {
-                if (location == "http://nijie.info/index.php")
+                if (location.Contains(@"//nijie.info/login.php?"))
+                    IsLoggedIn = false;
+                else
                     IsLoggedIn = true;
             }
-
             return IsLoggedIn;
         }
 

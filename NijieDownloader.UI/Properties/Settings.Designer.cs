@@ -154,5 +154,17 @@ namespace NijieDownloader.UI.Properties {
                 this["AutoSaveBatchList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseHttps {
+            get {
+                return ((bool)(this["UseHttps"]));
+            }
+            set {
+                this["UseHttps"] = value;
+            }
+        }
     }
 }

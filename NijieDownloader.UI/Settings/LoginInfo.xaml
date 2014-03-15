@@ -27,8 +27,12 @@
                     <TextBox Grid.Row="0" Grid.Column="1" Name="txtUserName" Height="25"/>
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Password" />
                     <PasswordBox Grid.Row="1" Grid.Column="1" Name="txtPassword" Height="25" />
-                    <CheckBox Grid.Row="2" Grid.Column="2"
-                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoLogin, Mode=TwoWay}" Click="CheckBox_Click">Auto Login</CheckBox>
+                    <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2">
+                        <CheckBox IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoLogin, Mode=TwoWay}" 
+                                  Click="CheckBox_Click" Margin="0,0,10,0">Auto Login</CheckBox>
+                        <CheckBox IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=UseHttps, Mode=TwoWay}" 
+                                  Click="CheckBox_Click" Margin="0,0,10,0">Use Https</CheckBox>
+                    </StackPanel>
                     <Button Grid.Row="3" Grid.Column="1" Width="100" Name="btnLogin" Click="btnLogin_Click">OK</Button>
                     <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Name="lblLoginStatus" />
                 </Grid>

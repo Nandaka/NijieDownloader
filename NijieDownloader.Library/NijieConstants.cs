@@ -10,8 +10,8 @@ namespace NijieDownloader.Library
         public const String NIJIE_URL = "http://nijie.info/";
         public const String NIJIE_INDEX = "http://nijie.info/index.php";
 
-        public const String NIJIE_LOGIN_URL = "http://nijie.info/login.php";
-        public const String NIJIE_LOGIN_URL2 = "http://nijie.info/login_int.php";
+        public const String NIJIE_LOGIN_URL = "//nijie.info/login.php";
+        public const String NIJIE_LOGIN_URL2 = "//nijie.info/login_int.php";
 
     }
 }
