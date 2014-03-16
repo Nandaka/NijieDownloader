@@ -107,7 +107,7 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                            <Button Width="120" Margin="5,5,5,5" Name="btnFetch" Click="btnFetch_Click">Search</Button>
+                            <Button Width="120" Margin="5,5,5,5" Name="btnFetch" Click="btnFetch_Click" IsDefault="True">Search</Button>
                             <Button Width="120" Margin="5,5,5,5" Name="btnAddBatchJob" Click="btnAddBatchJob_Click">Add To Batch</Button>
                             <Button Width="120" Margin="5,5,5,5" Name="btnAddSelectedJob" Click="btnAddSelectedJob_Click">Add Selected</Button>
                         </StackPanel>

@@ -85,7 +85,7 @@
                                 <Button Name="btnNext" Content="&gt;" Click="btnNext_Click" />
                             </StackPanel>
 
-                            <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" >Fetch Image</Button>
+                            <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" IsDefault="True">Fetch Image</Button>
                             <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
                             <TextBlock Text="{Binding Path=ImageStatus}" />
                             <TextBlock Text="{Binding Path=Message}" TextWrapping="Wrap" />                            
