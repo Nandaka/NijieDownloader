@@ -21,6 +21,7 @@ using NijieDownloader.UI.ViewModel;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Collections.Generic;
+using System.Windows.Threading;
 
 namespace NijieDownloader.UI
 {
@@ -28,6 +29,7 @@ namespace NijieDownloader.UI
     {
         public static Status BatchStatus { get; set; }
         private static Object _lock = new Object();
+        private static List<Task> tasks = new List<Task>();
 
         /// <summary>
         /// Run job on Task factory
@@ -38,7 +40,7 @@ namespace NijieDownloader.UI
             job.Status = Status.Queued;
             job.CancelToken = cancelSource.Token;
 
-            JobFactory.StartNew(() =>
+            tasks.Add(JobFactory.StartNew(() =>
             {
                 Thread.Sleep(Properties.Settings.Default.JobDelay);
                 if (isJobCancelled(job)) return;
@@ -67,7 +69,7 @@ namespace NijieDownloader.UI
             , cancelSource.Token
             , TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness
             , jobScheduler
-            );
+            ));
         }
 
         private static void doImageJob(JobDownloadViewModel job)
@@ -234,37 +236,48 @@ namespace NijieDownloader.UI
                 lastFilename = filename;
             }
 
-            using (var dao = new NijieContext())
+            try
             {
-                image.SavedFilename = lastFilename;
-                var member = from x in dao.Members
-                             where x.MemberId == image.Member.MemberId
-                             select x;
-                if (member.FirstOrDefault() != null)
+                using (var dao = new NijieContext())
                 {
-                    image.Member = member.FirstOrDefault();
-                }
+                    if (Properties.Settings.Default.TraceDB)
+                        dao.Database.Log = MainWindow.Log.Debug;
 
-                var temp = new List<NijieTag>();
-                for (int i = 0; i < image.Tags.Count; ++i)
-                {
-                    var t = image.Tags.ElementAt(i);
-                    var x = from a in dao.Tags
-                            where a.Name == t.Name
-                            select a;
-                    if (x.FirstOrDefault() != null)
+                    image.SavedFilename = lastFilename;
+                    var member = from x in dao.Members
+                                 where x.MemberId == image.Member.MemberId
+                                 select x;
+                    if (member.FirstOrDefault() != null)
                     {
-                        temp.Add(x.FirstOrDefault());
+                        image.Member = member.FirstOrDefault();
                     }
-                    else
-                    {
-                        temp.Add(t);
-                    }
-                }
-                image.Tags = temp;
 
-                dao.Images.AddOrUpdate(image);
-                dao.SaveChanges();
+                    var temp = new List<NijieTag>();
+                    for (int i = 0; i < image.Tags.Count; ++i)
+                    {
+                        var t = image.Tags.ElementAt(i);
+                        var x = from a in dao.Tags
+                                where a.Name == t.Name
+                                select a;
+                        if (x.FirstOrDefault() != null)
+                        {
+                            temp.Add(x.FirstOrDefault());
+                        }
+                        else
+                        {
+                            temp.Add(t);
+                        }
+                    }
+                    image.Tags = temp;
+
+                    dao.Images.AddOrUpdate(image);
+                    dao.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Failed to save to DB: " + image.ImageId, ex);
+                job.Message += ex.Message;
             }
         }
 
@@ -346,6 +359,22 @@ namespace NijieDownloader.UI
                     }
                 }
             }
+        }
+
+        public static void NotifyAllCompleted()
+        {
+            var finalTask = JobFactory.ContinueWhenAll(tasks.ToArray(), x =>
+            {
+                BatchStatus = Status.Completed;
+                Application.Current.Dispatcher.BeginInvoke(
+                                              DispatcherPriority.Background, new Action(() =>
+                                              {
+                                                  ModernDialog d = new ModernDialog();
+                                                  d.Content = "Jobs Completed!";
+                                                  d.ShowDialog();
+                                              }
+                ));
+            });
         }
     }
 }

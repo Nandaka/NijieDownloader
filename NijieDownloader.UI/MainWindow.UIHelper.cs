@@ -176,6 +176,7 @@ namespace NijieDownloader.UI
                     {
                         action(null, IMAGE_ERROR);
                         Log.Error(String.Format("Error when loading image: {0}", ex.Message), ex);
+                        if (ex.InnerException != null) Log.Error(ex.InnerException.Message, ex.InnerException);
                     }
                 });
             }

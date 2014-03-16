@@ -178,5 +178,17 @@ namespace NijieDownloader.UI.Properties {
                 this["JobDelay"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TraceDB {
+            get {
+                return ((bool)(this["TraceDB"]));
+            }
+            set {
+                this["TraceDB"] = value;
+            }
+        }
     }
 }

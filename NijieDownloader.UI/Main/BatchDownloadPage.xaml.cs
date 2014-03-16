@@ -344,6 +344,9 @@ namespace NijieDownloader.UI
                     job.PauseEvent.Set();
                 }
             }
+            // notify when all done
+            MainWindow.NotifyAllCompleted();
+
         }
         private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)
         {
