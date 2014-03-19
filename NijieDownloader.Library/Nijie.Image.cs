@@ -9,7 +9,7 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        private Regex re_date = new Regex(@"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}");
+        private Regex re_date = new Regex(@"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})");
         private Regex re_image = new Regex(@"id=(\d+)");
 
         public NijieImage ParseImage(int imageId, bool useHttps, string referer = null)
@@ -133,7 +133,11 @@ namespace NijieDownloader.Library
                     var dateCheck = re_date.Match(dateStr);
                     if (dateCheck.Success)
                     {
-                        image.WorkDate = DateTime.Parse(dateCheck.Groups[0].Value, new System.Globalization.CultureInfo("ja-JP", true));
+                        image.WorkDate = DateTime.ParseExact(dateCheck.Groups[1].Value, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    else
+                    {
+                        Log.Warn("Failed to parse Date: " + ps[0].InnerText);
                     }
 
                     image.Description = ps[1].InnerText;
