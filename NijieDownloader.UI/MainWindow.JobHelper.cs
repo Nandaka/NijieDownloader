@@ -194,6 +194,19 @@ namespace NijieDownloader.UI
             var rootPath = Properties.Settings.Default.RootDirectory;
             var image = Bot.ParseImage(imageTemp, memberPage);
             var lastFilename = "";
+
+            if (image.IsFriendOnly)
+            {
+                // sample: 74587
+                job.Message = "Image locked!";
+                return;
+            }
+            if (image.IsGoldenMember)
+            {
+                job.Message = "Image only for Gold Membership";
+                return;
+            }
+
             if (image.IsManga)
             {
                 Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
