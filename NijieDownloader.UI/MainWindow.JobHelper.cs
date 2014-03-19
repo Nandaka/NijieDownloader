@@ -153,7 +153,7 @@ namespace NijieDownloader.UI
                 job.Status = Status.Error;
                 job.Message = ne.Message;
                 if (ne.InnerException != null)
-                    job.Message += Environment.NewLine + ne.InnerException.Message;
+                    job.Message = ne.Message + Environment.NewLine + ne.InnerException.Message;
                 Log.Error("Error when processing Search Job: " + job.Name, ne);
             }
         }
@@ -363,8 +363,15 @@ namespace NijieDownloader.UI
                 try
                 {
                     job.Message = "Saving to: " + filename;
-                    Bot.Download(url, referer, filename);
-                    job.Message = "Saved to: " + filename;
+                    Bot.Download(url, referer, filename,
+                        Properties.Settings.Default.Overwrite,
+                        Properties.Settings.Default.OverwriteOnlyIfDifferentSize,
+                        Properties.Settings.Default.MakeBackupOldFile
+                        , x =>
+                        {
+                            job.Message = x;
+                        });
+                    //job.Message = "Saved to: " + filename;
 
                     break;
                 }
@@ -372,10 +379,11 @@ namespace NijieDownloader.UI
                 {
                     ++retry;
                     Log.Error(String.Format("Failed to download url: {0}, retrying {1} of {2}", url, retry, 3), ex);
-                    for (int i = 0; i < 60; ++i)
+                    for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
                     {
                         job.Message = ex.Message + " retry: " + retry + " wait: " + i;
                         Thread.Sleep(1000);
+                        if (job.CancelToken.IsCancellationRequested) return;
                     }
                 }
             }

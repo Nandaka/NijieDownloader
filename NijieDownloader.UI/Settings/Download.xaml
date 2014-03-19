@@ -51,8 +51,16 @@
                         </StackPanel>
                         <CheckBox Margin="120,0,0,0" Content="Download Avatar" HorizontalAlignment="Left" 
                                   IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DownloadAvatar, Mode=TwoWay}"/>
-                        <CheckBox Margin="120,0,0,0" Content="Overwrite" HorizontalAlignment="Left" 
-                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>
+                        <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
+                            <CheckBox Margin="0,0,5,0" Content="Overwrite" HorizontalAlignment="Left" Name="cbxOverwrite"
+                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>
+                            <CheckBox Margin="0,0,5,0" Content="Only if different in size" HorizontalAlignment="Left" Name="cbxOOIFDS"
+                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=OverwriteOnlyIfDifferentSize, Mode=TwoWay}"
+                                      IsEnabled="{Binding ElementName=cbxOverwrite, Path=IsChecked}"/>
+                            <CheckBox Margin="0,0,5,0" Content="Backup old file" HorizontalAlignment="Left" 
+                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=MakeBackupOldFile, Mode=TwoWay}"
+                                      IsEnabled="{Binding ElementName=cbxOOIFDS, Path=IsChecked}"/>
+                        </StackPanel>
                     </StackPanel>
                     <CheckBox Margin="120,0,0,0" Content="Auto Save Batch List" HorizontalAlignment="Left" 
                               IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}"/>
@@ -70,6 +78,11 @@
                         <TextBlock Width="100" Text="Job Delay" Margin="5,5,5,0"/>
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=JobDelay, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="100" Text="Retry Delay" Margin="5,5,5,0"/>
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}"/>
                     </StackPanel>
                     <CheckBox Margin="120,0,0,0" Width="200" Content="Trace DB to Log" HorizontalAlignment="Left" 
                               IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=TraceDB, Mode=TwoWay}"/>

@@ -61,7 +61,7 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId}\\{imageId} - {tags}")]
         public string FilenameFormat {
             get {
                 return ((string)(this["FilenameFormat"]));
@@ -205,7 +205,7 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId}\\folder.jpg")]
         public string AvatarFilenameFormat {
             get {
                 return ((string)(this["AvatarFilenameFormat"]));
@@ -217,13 +217,49 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId}\\{imageId}{page} - {tags}")]
         public string MangaFilenameFormat {
             get {
                 return ((string)(this["MangaFilenameFormat"]));
             }
             set {
                 this["MangaFilenameFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OverwriteOnlyIfDifferentSize {
+            get {
+                return ((bool)(this["OverwriteOnlyIfDifferentSize"]));
+            }
+            set {
+                this["OverwriteOnlyIfDifferentSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool MakeBackupOldFile {
+            get {
+                return ((bool)(this["MakeBackupOldFile"]));
+            }
+            set {
+                this["MakeBackupOldFile"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int RetryDelay {
+            get {
+                return ((int)(this["RetryDelay"]));
+            }
+            set {
+                this["RetryDelay"] = value;
             }
         }
     }

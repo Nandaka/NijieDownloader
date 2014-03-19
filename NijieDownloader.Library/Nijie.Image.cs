@@ -134,6 +134,7 @@ namespace NijieDownloader.Library
                     if (dateCheck.Success)
                     {
                         image.WorkDate = DateTime.ParseExact(dateCheck.Groups[1].Value, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        Log.Debug("Works Date: " + dateStr + " ==>" + image.WorkDate.ToString("yyyy-MM-dd HH:mm:ss"));
                     }
                     else
                     {
@@ -142,6 +143,10 @@ namespace NijieDownloader.Library
 
                     image.Description = ps[1].InnerText;
                 }
+            }
+            else
+            {
+                Log.Warn("Failed to get image description and works date.");
             }
         }
 

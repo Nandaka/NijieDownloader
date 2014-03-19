@@ -77,6 +77,11 @@
                                     <Setter Property="ToolTip" Value="{Binding Path=Message, Mode=OneWay}" />
                                 </Style>
                             </DataGridTextColumn.CellStyle>
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="TextWrapping" Value="Wrap"/>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
                         <DataGridTextColumn Header="Status" Width="100" Binding="{Binding Path=Status, Mode=OneWay}" />
                     </DataGrid.Columns>
