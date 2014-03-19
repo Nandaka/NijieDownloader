@@ -43,6 +43,9 @@
         <CommandBinding Command="{x:Static local:BatchDownloadPage.PauseCommand}"
                         Executed="ExecutePauseCommand"
                         CanExecute="CanExecutePauseCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.AddJobCommand}"
+                        Executed="ExecuteAddJobCommand"
+                        CanExecute="CanExecuteAddJobCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
@@ -53,12 +56,13 @@
         <DockPanel Grid.Row="1" >
             <StackPanel DockPanel.Dock="Top"  Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">
-                    <Button Name="btnAdd" Margin="10,0,0,10" Content="Add" Click="btnAdd_Click" />
+                    <Button Name="btnAdd" Margin="10,0,0,10" Content="Add" 
+                            Command="{x:Static local:BatchDownloadPage.AddJobCommand}"/>
                     <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete" Click="btnDelete_Click" />
                     <Button Name="btnStart" Margin="10,0,0,10" Content="Start"
                             Command="{x:Static local:BatchDownloadPage.StartCommand}"/>
                     <Button Name="btnPause" Margin="10,0,0,10" Content="Pause"
-                            Command="{x:Static local:BatchDownloadPage.PauseCommand}" />
+                            Command="{x:Static local:BatchDownloadPage.PauseCommand}"/>
                     <Button Name="btnStop" Margin="10,0,0,10" Content="Stop"
                             Command="{x:Static local:BatchDownloadPage.StopCommand}" />
                     <Button Name="btnSave" Margin="10,0,0,10" Content="Save" Click="btnSave_Click" />

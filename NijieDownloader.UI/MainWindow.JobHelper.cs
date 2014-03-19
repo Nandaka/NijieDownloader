@@ -60,7 +60,7 @@ namespace NijieDownloader.UI
                         break;
                 }
 
-                if (job.Status != Status.Error)
+                if (job.Status != Status.Error && job.Status != Status.Cancelled)
                 {
                     job.Status = Status.Completed;
                     Log.Debug("Job completed: " + job.Name);
@@ -374,19 +374,12 @@ namespace NijieDownloader.UI
             }
         }
 
-        public static void NotifyAllCompleted()
+        public static void NotifyAllCompleted(Action action)
         {
             var finalTask = JobFactory.ContinueWhenAll(tasks.ToArray(), x =>
             {
                 BatchStatus = Status.Completed;
-                Application.Current.Dispatcher.BeginInvoke(
-                                              DispatcherPriority.Background, new Action(() =>
-                                              {
-                                                  ModernDialog d = new ModernDialog();
-                                                  d.Content = "Jobs Completed!";
-                                                  d.ShowDialog();
-                                              }
-                ));
+                Application.Current.Dispatcher.BeginInvoke( DispatcherPriority.Background, action);
             });
         }
     }

@@ -39,6 +39,7 @@ namespace NijieDownloader.UI
         public static RoutedCommand StartCommand = new RoutedCommand();
         public static RoutedCommand StopCommand = new RoutedCommand();
         public static RoutedCommand PauseCommand = new RoutedCommand();
+        public static RoutedCommand AddJobCommand = new RoutedCommand();
 
         public BatchDownloadPage()
         {
@@ -68,13 +69,6 @@ namespace NijieDownloader.UI
                     MessageBox.Show("Failed to save batch job list: " + ex.Message);
                 }
             }
-        }
-
-        private void btnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
-            this.NewJob = new JobDownloadViewModel();
-            pnlAddJob.DataContext = this.NewJob;
         }
 
         private void addJobForMember(int memberId)
@@ -330,7 +324,7 @@ namespace NijieDownloader.UI
             ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
         }
 
-        #region Command 
+        #region Command
 
         private void ExecuteStartCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -345,7 +339,31 @@ namespace NijieDownloader.UI
                 }
             }
             // notify when all done
-            MainWindow.NotifyAllCompleted();
+            MainWindow.NotifyAllCompleted(() =>
+            {
+
+                ModernDialog d = new ModernDialog();
+                var sb = new StringBuilder();
+                sb.Append("Jobs Completed!");
+                sb.Append(Environment.NewLine);
+                int completed = 0;
+                int error = 0;
+                int cancelled = 0;
+                foreach (var job in ViewData)
+                {
+                    if (job.Status == Status.Completed) ++completed;
+                    else if (job.Status == Status.Error) ++error;
+                    else if (job.Status == Status.Cancelled) ++cancelled;
+                }
+                sb.Append("\tCompleted : " + completed);
+                sb.Append(Environment.NewLine);
+                sb.Append("\tError : " + error);
+                sb.Append(Environment.NewLine);
+                sb.Append("\tCancelled : " + cancelled);
+                d.Content = sb.ToString();
+                d.ShowDialog();
+                MainWindow.BatchStatus = Status.Completed;
+            });
 
         }
         private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -355,15 +373,16 @@ namespace NijieDownloader.UI
 
             if (target != null)
             {
-                if(MainWindow.BatchStatus != Status.Running && 
-                   MainWindow.BatchStatus != Status.Paused)
+                if (MainWindow.BatchStatus != Status.Running &&
+                   MainWindow.BatchStatus != Status.Paused &&
+                   MainWindow.BatchStatus != Status.Canceling)
                     e.CanExecute = true;
             }
         }
-        
+
         private void ExecuteStopCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            MainWindow.BatchStatus = Status.Cancelled;
+            MainWindow.BatchStatus = Status.Canceling;
 
             if (cancelToken != null)
             {
@@ -377,6 +396,7 @@ namespace NijieDownloader.UI
                     item.Status = Status.Canceling;
                 }
             }
+            //MainWindow.BatchStatus = Status.Cancelled;
         }
         private void CanExecuteStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -418,9 +438,31 @@ namespace NijieDownloader.UI
 
             if (target != null)
             {
-                if (MainWindow.BatchStatus == Status.Running || 
+                if (MainWindow.BatchStatus == Status.Running ||
                     MainWindow.BatchStatus == Status.Paused)
+                {
                     e.CanExecute = true;
+                }
+                if (MainWindow.BatchStatus == Status.Canceling)
+                {
+                    e.CanExecute = false;
+                }
+            }
+        }
+
+        private void ExecuteAddJobCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
+            this.NewJob = new JobDownloadViewModel();
+            pnlAddJob.DataContext = this.NewJob;
+        }
+        private void CanExecuteAddJobCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            Control target = e.Source as Control;
+
+            if (target != null && pnlAddJob != null)
+            {
+                e.CanExecute = pnlAddJob.Visibility == System.Windows.Visibility.Visible ? false : true;
             }
         }
         #endregion
