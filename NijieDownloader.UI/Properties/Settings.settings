@@ -44,5 +44,14 @@
     <Setting Name="TraceDB" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="DownloadAvatar" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AvatarFilenameFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{memberId} - {imageId}{page} - {tags}</Value>
+    </Setting>
+    <Setting Name="MangaFilenameFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">{memberId} - {imageId}{page} - {tags}</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

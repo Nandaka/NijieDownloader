@@ -190,5 +190,41 @@ namespace NijieDownloader.UI.Properties {
                 this["TraceDB"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DownloadAvatar {
+            get {
+                return ((bool)(this["DownloadAvatar"]));
+            }
+            set {
+                this["DownloadAvatar"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        public string AvatarFilenameFormat {
+            get {
+                return ((string)(this["AvatarFilenameFormat"]));
+            }
+            set {
+                this["AvatarFilenameFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("{memberId} - {imageId}{page} - {tags}")]
+        public string MangaFilenameFormat {
+            get {
+                return ((string)(this["MangaFilenameFormat"]));
+            }
+            set {
+                this["MangaFilenameFormat"] = value;
+            }
+        }
     }
 }

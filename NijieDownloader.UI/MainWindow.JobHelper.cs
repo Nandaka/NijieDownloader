@@ -168,6 +168,13 @@ namespace NijieDownloader.UI
                 job.Message = "Parsing member page";
                 var memberPage = Bot.ParseMember(job.MemberId);
 
+                if (Properties.Settings.Default.DownloadAvatar)
+                {
+                    var rootPath = Properties.Settings.Default.RootDirectory;
+                    var avatarFilename = makeFilename(job, new NijieImage() { Member = memberPage }, type: FilenameFormatType.Avatar);
+                    downloadUrl(job, memberPage.AvatarUrl, memberPage.MemberUrl, rootPath + Path.DirectorySeparatorChar + avatarFilename);
+                }
+
                 foreach (var imageTemp in memberPage.Images)
                 {
                     if (isJobCancelled(job)) return;
@@ -216,7 +223,7 @@ namespace NijieDownloader.UI
                     if (isJobCancelled(job)) return;
                     job.PauseEvent.WaitOne(Timeout.Infinite);
 
-                    var filename = makeFilename(job, image, i);
+                    var filename = makeFilename(job, image, i, FilenameFormatType.Manga);
                     job.Message = "Downloading: " + image.ImageUrls[i];
                     var pagefilename = filename;
                     if (!(job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE) || job.SaveFilenameFormat.Contains(FILENAME_FORMAT_PAGE_ZERO)))
@@ -224,7 +231,7 @@ namespace NijieDownloader.UI
                         pagefilename += "_p" + i;
                     }
                     pagefilename += "." + Util.ParseExtension(image.ImageUrls[i]);
-                    pagefilename = rootPath + "\\" + Util.SanitizeFilename(pagefilename);
+                    pagefilename = rootPath + Path.DirectorySeparatorChar + Util.SanitizeFilename(pagefilename);
 
                     if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
                     {
@@ -238,10 +245,10 @@ namespace NijieDownloader.UI
                 if (isJobCancelled(job)) return;
                 job.PauseEvent.WaitOne(Timeout.Infinite);
 
-                var filename = makeFilename(job, image);
+                var filename = makeFilename(job, image, type: FilenameFormatType.Image);
                 job.Message = "Downloading: " + image.BigImageUrl;
                 filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
-                filename = rootPath + "\\" + Util.SanitizeFilename(filename);
+                filename = rootPath + Path.DirectorySeparatorChar + Util.SanitizeFilename(filename);
                 if (canDownloadFile(job, image.BigImageUrl, filename))
                 {
                     downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
@@ -379,7 +386,7 @@ namespace NijieDownloader.UI
             var finalTask = JobFactory.ContinueWhenAll(tasks.ToArray(), x =>
             {
                 BatchStatus = Status.Completed;
-                Application.Current.Dispatcher.BeginInvoke( DispatcherPriority.Background, action);
+                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, action);
             });
         }
     }

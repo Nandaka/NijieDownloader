@@ -10,7 +10,7 @@ using NijieDownloader.Library.Model;
 namespace NijieDownloader.UI.ViewModel
 {
     [Serializable]
-    public class JobDownloadViewModel : INotifyPropertyChanged
+    public class JobDownloadViewModel : INotifyPropertyChanged, ICloneable
     {
         private bool _isSelected;
         [XmlIgnoreAttribute]
@@ -53,6 +53,42 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private string _saveMangaFilenameFormat;
+        public string SaveMangaFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveMangaFilenameFormat))
+                {
+                    _saveMangaFilenameFormat = Properties.Settings.Default.MangaFilenameFormat;
+                }
+                return _saveMangaFilenameFormat;
+            }
+            set
+            {
+                _saveMangaFilenameFormat = value;
+                onPropertyChanged("SaveMangaFilenameFormat");
+            }
+        }
+
+        private string _saveAvatarFilenameFormat;
+        public string SaveAvatarFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveAvatarFilenameFormat))
+                {
+                    _saveAvatarFilenameFormat = Properties.Settings.Default.AvatarFilenameFormat;
+                }
+                return _saveAvatarFilenameFormat;
+            }
+            set
+            {
+                _saveAvatarFilenameFormat = value;
+                onPropertyChanged("SaveAvatarFilenameFormat");
+            }
+        }
+
         [XmlIgnoreAttribute]
         public string Name
         {
@@ -69,7 +105,7 @@ namespace NijieDownloader.UI.ViewModel
                 }
                 return "N/A";
             }
-            private set { ;}
+            private set {  }
         }
 
         private Status _status;
@@ -105,9 +141,38 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public int ImageId { get; set; }
-        public int MemberId { get; set; }
-        public string SearchTag { get; set; }
+        private int _imageId;
+        public int ImageId
+        {
+            get { return _imageId; }
+            set
+            {
+                _imageId = value;
+                onPropertyChanged("ImageId");
+            }
+        }
+
+        private int _memberId;
+        public int MemberId
+        {
+            get { return _memberId; }
+            set
+            {
+                _memberId = value;
+                onPropertyChanged("MemberId");
+            }
+        }
+
+        private string _searchTag;
+        public string SearchTag
+        {
+            get { return _searchTag; }
+            set
+            {
+                _searchTag = value;
+                onPropertyChanged("SearchTag");
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -116,6 +181,7 @@ namespace NijieDownloader.UI.ViewModel
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
+                PropertyChanged(this, new PropertyChangedEventArgs("Name"));
             }
         }
 
@@ -271,6 +337,11 @@ namespace NijieDownloader.UI.ViewModel
                     this.Status = _prevStatus;
                 }
             }
+        }
+        
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 

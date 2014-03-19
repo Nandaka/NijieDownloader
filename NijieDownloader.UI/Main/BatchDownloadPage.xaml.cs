@@ -31,7 +31,6 @@ namespace NijieDownloader.UI
     public partial class BatchDownloadPage : Page, IContent
     {
         public ObservableCollection<JobDownloadViewModel> ViewData { get; set; }
-        public JobDownloadViewModel NewJob { get; set; }
         private CancellationTokenSource cancelToken;
 
         private const string DEFAULT_BATCH_JOB_LIST_FILENAME = "batchjob.xml";
@@ -40,6 +39,7 @@ namespace NijieDownloader.UI
         public static RoutedCommand StopCommand = new RoutedCommand();
         public static RoutedCommand PauseCommand = new RoutedCommand();
         public static RoutedCommand AddJobCommand = new RoutedCommand();
+        public static RoutedCommand EditJobCommand = new RoutedCommand();
 
         public BatchDownloadPage()
         {
@@ -73,38 +73,35 @@ namespace NijieDownloader.UI
 
         private void addJobForMember(int memberId)
         {
-            this.NewJob = new JobDownloadViewModel();
-            this.NewJob.JobType = JobType.Member;
-            this.NewJob.MemberId = memberId;
-            this.NewJob.Status = Status.Added;
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
-            pnlAddJob.DataContext = this.NewJob;
+            var NewJob = new JobDownloadViewModel();
+            NewJob.JobType = JobType.Member;
+            NewJob.MemberId = memberId;
+            NewJob.Status = Status.Added;
+            ShowAddJobDialog(NewJob);
         }
 
         private void addJobForSearch(NijieSearchOption option)
         {
-            this.NewJob = new JobDownloadViewModel();
-            this.NewJob.JobType = JobType.Tags;
-            this.NewJob.SearchTag = option.Query;
-            this.NewJob.Status = Status.Added;
-            this.NewJob.StartPage = option.Page;
-            this.NewJob.Sort = option.Sort;
-            this.NewJob.Matching = option.Matching;
-            this.NewJob.SearchBy = option.SearchBy;
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
-            pnlAddJob.DataContext = this.NewJob;
+            var NewJob = new JobDownloadViewModel();
+            NewJob.JobType = JobType.Tags;
+            NewJob.SearchTag = option.Query;
+            NewJob.Status = Status.Added;
+            NewJob.StartPage = option.Page;
+            NewJob.Sort = option.Sort;
+            NewJob.Matching = option.Matching;
+            NewJob.SearchBy = option.SearchBy;
+            ShowAddJobDialog(NewJob);
         }
 
         private void addJobForImage(int p)
         {
-            this.NewJob = new JobDownloadViewModel();
-            this.NewJob.JobType = JobType.Image;
-            this.NewJob.ImageId = p;
-            this.NewJob.Status = Status.Added;
-            ViewData.Add(NewJob);
-            pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
+            var NewJob = new JobDownloadViewModel();
+            NewJob.JobType = JobType.Image;
+            NewJob.ImageId = p;
+            NewJob.Status = Status.Added;
+            AddJob(NewJob);
         }
-
+        #region navigation
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(e.Fragment))
@@ -157,29 +154,30 @@ namespace NijieDownloader.UI
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
         }
+        #endregion
 
-        private void btnJobOk_Click(object sender, RoutedEventArgs e)
+        private void AddJob(JobDownloadViewModel newJob)
         {
             var ok = true;
-            if (NewJob.JobType == JobType.Tags)
+            if (newJob.JobType == JobType.Tags)
             {
-                if (String.IsNullOrWhiteSpace(NewJob.SearchTag))
+                if (String.IsNullOrWhiteSpace(newJob.SearchTag))
                 {
                     ModernDialog.ShowMessage("Query String cannot be empty!", "Error", MessageBoxButton.OK);
                     ok = false;
                 }
             }
-            else if (NewJob.JobType == JobType.Image)
+            else if (newJob.JobType == JobType.Image)
             {
-                if (NewJob.ImageId <= 0)
+                if (newJob.ImageId <= 0)
                 {
                     ModernDialog.ShowMessage("Image ID must be larger than 0!", "Error", MessageBoxButton.OK);
                     ok = false;
                 }
             }
-            else if (NewJob.JobType == JobType.Member)
+            else if (newJob.JobType == JobType.Member)
             {
-                if (NewJob.MemberId <= 0)
+                if (newJob.MemberId <= 0)
                 {
                     ModernDialog.ShowMessage("Member ID must be larger than 0!", "Error", MessageBoxButton.OK);
                     ok = false;
@@ -188,21 +186,23 @@ namespace NijieDownloader.UI
 
             if (ok)
             {
-                ViewData.Add(NewJob);
+                ViewData.Add(newJob);
                 if (MainWindow.BatchStatus == Status.Running)
                 {
-                    MainWindow.DoJob(NewJob, cancelToken);
+                    MainWindow.DoJob(newJob, cancelToken);
                 }
-                pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
-
             }
-
         }
 
-        private void btnJobCancel_Click(object sender, RoutedEventArgs e)
+        private JobDownloadViewModel ShowAddJobDialog(JobDownloadViewModel newJob, String title = "Add")
         {
-            pnlAddJob.Visibility = System.Windows.Visibility.Collapsed;
-            pnlAddJob.DataContext = null;
+            var ctx = new NijieDownloader.UI.Main.Popup.AddJob(newJob);
+            var d = new ModernDialog();
+            d.Buttons = ctx.Buttons;
+            d.Content = ctx;
+            d.Title = title;
+            d.ShowDialog();
+            return ctx.NewJob;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -214,28 +214,6 @@ namespace NijieDownloader.UI
                     ViewData.RemoveAt(i);
                     --i;
                 }
-            }
-        }
-
-        private void cbxJobType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cbxJobType.SelectedIndex == (int)JobType.Image)
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Collapsed;
-                pnlLimit.Visibility = System.Windows.Visibility.Collapsed;
-                pnlSort.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            else if (cbxJobType.SelectedIndex == (int)JobType.Member)
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Visible;
-                pnlLimit.Visibility = System.Windows.Visibility.Visible;
-                pnlSort.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            else
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Visible;
-                pnlLimit.Visibility = System.Windows.Visibility.Visible;
-                pnlSort.Visibility = System.Windows.Visibility.Visible;
             }
         }
 
@@ -317,11 +295,6 @@ namespace NijieDownloader.UI
         private void btnClearAll_Click(object sender, RoutedEventArgs e)
         {
             ViewData.Clear();
-        }
-
-        private void Hyperlink_Click(object sender, RoutedEventArgs e)
-        {
-            ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
         }
 
         #region Command
@@ -452,17 +425,36 @@ namespace NijieDownloader.UI
 
         private void ExecuteAddJobCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            pnlAddJob.Visibility = System.Windows.Visibility.Visible;
-            this.NewJob = new JobDownloadViewModel();
-            pnlAddJob.DataContext = this.NewJob;
+            var result = ShowAddJobDialog(new JobDownloadViewModel());
+            if (result != null)
+            {
+                AddJob(result);
+            }
         }
         private void CanExecuteAddJobCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            Control target = e.Source as Control;
+            e.CanExecute = true;
+        }
 
-            if (target != null && pnlAddJob != null)
+        private void ExecuteEditJobCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            var editJob = ViewData[dgvJobList.SelectedIndex];
+            if (editJob != null)
             {
-                e.CanExecute = pnlAddJob.Visibility == System.Windows.Visibility.Visible ? false : true;
+                var item = editJob.Clone() as JobDownloadViewModel;
+                var result = ShowAddJobDialog(item, "Edit");
+                if (result != null)
+                {
+                    ViewData[dgvJobList.SelectedIndex] = result;
+                }
+            }
+        }
+        private void CanExecuteEditJobCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            if (MainWindow.BatchStatus == Status.Running)
+            {
+                e.CanExecute = false;
             }
         }
         #endregion
@@ -478,6 +470,5 @@ namespace NijieDownloader.UI
                 dgvJobList.MaxHeight = 1;
             }
         }
-
     }
 }
