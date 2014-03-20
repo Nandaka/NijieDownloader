@@ -65,5 +65,8 @@
     <Setting Name="SaveDB" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="LogLevel" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Debug</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

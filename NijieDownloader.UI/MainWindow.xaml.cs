@@ -49,7 +49,16 @@ namespace NijieDownloader.UI
                     log4net.GlobalContext.Properties["Date"] = DateTime.Now.ToString("yyyy-MM-dd");
                     _log = LogManager.GetLogger(typeof(MainWindow));
                     log4net.Config.XmlConfigurator.Configure();
-                    _log.Logger.Repository.Threshold = log4net.Core.Level.All;
+
+                    try
+                    {
+                        _log.Logger.Repository.Threshold = _log.Logger.Repository.LevelMap[Properties.Settings.Default.LogLevel];
+                    }
+                    catch (Exception)
+                    {
+                        Properties.Settings.Default.LogLevel = "All";
+                        _log.Logger.Repository.Threshold = log4net.Core.Level.All;
+                    }
                 }
                 return _log;
             }

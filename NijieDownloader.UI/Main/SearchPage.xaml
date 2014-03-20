@@ -40,7 +40,7 @@
         <BitmapImage x:Key="AnimeIcon" UriSource="/Resources/thumbnail_anime.png" />
         <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <DataTemplate DataType="{x:Type vd:NijieImageViewModel}">
-            <StackPanel MaxWidth="130" MaxHeight="210" Style="{StaticResource panelback}">
+            <StackPanel MaxWidth="130" MaxHeight="210" Style="{StaticResource panelback}" MouseDown="StackPanel_MouseDown">
                 <TextBlock Text="{Binding Path=Image.ImageId}" Height="25"/>
                 <TextBlock Text="{Binding Path=Image.Title}" Height="25"/>
                 <Grid>

@@ -27,14 +27,19 @@ namespace NijieDownloader.UI.Settings
     /// </summary>
     public partial class Download : UserControl
     {
+        public List<String> LogLevel { get; set; }
+
         public Download()
         {
-            InitializeComponent();            
+            InitializeComponent();
+            LogLevel = new List<string>(new string[] { "Off", "Fatal", "Error", "Warn", "Info", "Debug", "All" });
+            cbxLogLevel.DataContext = this;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             NijieDownloader.UI.Properties.Settings.Default.Save();
+            MainWindow.Log.Logger.Repository.Threshold = MainWindow.Log.Logger.Repository.LevelMap[Properties.Settings.Default.LogLevel];
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

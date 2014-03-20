@@ -84,8 +84,20 @@
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}"/>
                     </StackPanel>
-                    <CheckBox Margin="120,0,0,0" Width="200" Content="Trace DB to Log" HorizontalAlignment="Left" 
-                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=TraceDB, Mode=TwoWay}"/>
+                    <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
+                        <CheckBox Margin="0,5,0,0" Content="Save Image Info to DB" HorizontalAlignment="Left" 
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=SaveDB, Mode=TwoWay}"/>
+                        <CheckBox Margin="0,5,0,0" Content="Trace DB to Log" HorizontalAlignment="Left" 
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=TraceDB, Mode=TwoWay}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
+                        <TextBlock Width="100" Text="Log Level" Margin="5,5,5,0"/>
+                        <ComboBox Margin="5,5,5,0" MinWidth="100" Name="cbxLogLevel"
+                                  ItemsSource="{Binding Path=LogLevel}"
+                                  SelectedItem="{Binding Source={x:Static np:Settings.Default}, Path=LogLevel, Mode=TwoWay}">                            
+                        </ComboBox>
+                    </StackPanel>
+                    
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Width="100" Name="btnSave" Click="btnSave_Click" Margin="5,0,5,0">Save</Button>
                         <Button Width="100" Name="btnReset" Margin="5,0,5,0" Click="btnReset_Click">Reset</Button>
