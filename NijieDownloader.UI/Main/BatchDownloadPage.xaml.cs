@@ -73,33 +73,41 @@ namespace NijieDownloader.UI
 
         private void addJobForMember(int memberId)
         {
-            var NewJob = new JobDownloadViewModel();
-            NewJob.JobType = JobType.Member;
-            NewJob.MemberId = memberId;
-            NewJob.Status = Status.Added;
-            ShowAddJobDialog(NewJob);
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Member;
+            newJob.MemberId = memberId;
+            newJob.Status = Status.Added;
+            var result = ShowAddJobDialog(newJob);
+            if (result != null)
+            {
+                AddJob(result);
+            }
         }
 
         private void addJobForSearch(NijieSearchOption option)
         {
-            var NewJob = new JobDownloadViewModel();
-            NewJob.JobType = JobType.Tags;
-            NewJob.SearchTag = option.Query;
-            NewJob.Status = Status.Added;
-            NewJob.StartPage = option.Page;
-            NewJob.Sort = option.Sort;
-            NewJob.Matching = option.Matching;
-            NewJob.SearchBy = option.SearchBy;
-            ShowAddJobDialog(NewJob);
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Tags;
+            newJob.SearchTag = option.Query;
+            newJob.Status = Status.Added;
+            newJob.StartPage = option.Page;
+            newJob.Sort = option.Sort;
+            newJob.Matching = option.Matching;
+            newJob.SearchBy = option.SearchBy;
+            var result = ShowAddJobDialog(newJob);
+            if (result != null)
+            {
+                AddJob(result);
+            }
         }
 
         private void addJobForImage(int p)
         {
-            var NewJob = new JobDownloadViewModel();
-            NewJob.JobType = JobType.Image;
-            NewJob.ImageId = p;
-            NewJob.Status = Status.Added;
-            AddJob(NewJob);
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Image;
+            newJob.ImageId = p;
+            newJob.Status = Status.Added;
+            AddJob(newJob);
         }
         #region navigation
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)

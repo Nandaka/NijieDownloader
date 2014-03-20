@@ -32,7 +32,7 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="Process Member" Style="{StaticResource Heading2}" />
+        <TextBlock Grid.Row="0" Text="Batch Download" Style="{StaticResource Heading2}" />
         <DockPanel Grid.Row="1" >
             <StackPanel DockPanel.Dock="Top"  Orientation="Vertical">
                 <StackPanel Orientation="Horizontal">

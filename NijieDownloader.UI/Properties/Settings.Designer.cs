@@ -262,5 +262,17 @@ namespace NijieDownloader.UI.Properties {
                 this["RetryDelay"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SaveDB {
+            get {
+                return ((bool)(this["SaveDB"]));
+            }
+            set {
+                this["SaveDB"] = value;
+            }
+        }
     }
 }

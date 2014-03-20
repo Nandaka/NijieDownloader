@@ -256,42 +256,53 @@ namespace NijieDownloader.UI
                 lastFilename = filename;
             }
 
+            if(Properties.Settings.Default.SaveDB)
+                SaveImageToDB(job, image, lastFilename);
+        }
+
+        private static object _dbLock = new object();
+        private static void SaveImageToDB(JobDownloadViewModel job, NijieImage image, string lastFilename)
+        {
             try
             {
-                using (var dao = new NijieContext())
+                lock (_dbLock)
                 {
-                    if (Properties.Settings.Default.TraceDB)
-                        dao.Database.Log = MainWindow.Log.Debug;
-
-                    image.SavedFilename = lastFilename;
-                    var member = from x in dao.Members
-                                 where x.MemberId == image.Member.MemberId
-                                 select x;
-                    if (member.FirstOrDefault() != null)
+                    using (var dao = new NijieContext())
                     {
-                        image.Member = member.FirstOrDefault();
-                    }
+                        if (Properties.Settings.Default.TraceDB)
+                            dao.Database.Log = MainWindow.Log.Debug;
 
-                    var temp = new List<NijieTag>();
-                    for (int i = 0; i < image.Tags.Count; ++i)
-                    {
-                        var t = image.Tags.ElementAt(i);
-                        var x = from a in dao.Tags
-                                where a.Name == t.Name
-                                select a;
-                        if (x.FirstOrDefault() != null)
+                        image.SavedFilename = lastFilename;
+                        var member = from x in dao.Members
+                                     where x.MemberId == image.Member.MemberId
+                                     select x;
+                        if (member.FirstOrDefault() != null)
                         {
-                            temp.Add(x.FirstOrDefault());
+                            image.Member = member.FirstOrDefault();
                         }
-                        else
-                        {
-                            temp.Add(t);
-                        }
-                    }
-                    image.Tags = temp;
 
-                    dao.Images.AddOrUpdate(image);
-                    dao.SaveChanges();
+                        var temp = new List<NijieTag>();
+                        for (int i = 0; i < image.Tags.Count; ++i)
+                        {
+                            var t = image.Tags.ElementAt(i);
+                            var x = from a in dao.Tags
+                                    where a.Name == t.Name
+                                    select a;
+                            if (x.FirstOrDefault() != null)
+                            {
+                                temp.Add(x.FirstOrDefault());
+                            }
+                            else
+                            {
+                                temp.Add(t);
+                            }
+                        }
+                        image.Tags = temp;
+
+                        dao.Images.AddOrUpdate(image);
+                        dao.ChangeTracker.DetectChanges();
+                        dao.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -299,6 +310,7 @@ namespace NijieDownloader.UI
                 Log.Error("Failed to save to DB: " + image.ImageId, ex);
                 job.Message += ex.Message;
             }
+        
         }
 
         private static bool isJobCancelled(JobDownloadViewModel job)
