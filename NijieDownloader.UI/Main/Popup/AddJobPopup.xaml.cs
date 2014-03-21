@@ -46,19 +46,11 @@ namespace NijieDownloader.UI.Main.Popup
             {
                 pnlStart.Visibility = System.Windows.Visibility.Collapsed;
                 pnlLimit.Visibility = System.Windows.Visibility.Collapsed;
-                pnlSort.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            else if (cbxJobType.SelectedIndex == (int)JobType.Member)
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Visible;
-                pnlLimit.Visibility = System.Windows.Visibility.Visible;
-                pnlSort.Visibility = System.Windows.Visibility.Collapsed;
             }
             else
             {
                 pnlStart.Visibility = System.Windows.Visibility.Visible;
                 pnlLimit.Visibility = System.Windows.Visibility.Visible;
-                pnlSort.Visibility = System.Windows.Visibility.Visible;
             }
         }
 

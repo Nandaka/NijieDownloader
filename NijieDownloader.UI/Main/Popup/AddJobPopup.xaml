@@ -40,91 +40,85 @@
             </Style.Triggers>
         </Style>
     </Page.Resources>
-    <Grid Name="pnlAddJob">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="130" />
-            <ColumnDefinition Width="160" />
-            <ColumnDefinition Width="100" />
-            <ColumnDefinition Width="160" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Job Type" Margin="5,5,5,5"/>
-        <ComboBox Grid.Row="0" Grid.Column="1" Name="cbxJobType" SelectedItem="{Binding Path=JobType}"
-                              ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" 
-                              SelectionChanged="cbxJobType_SelectionChanged" />
+    <d:DesignProperties.DataContext>
+        <vm:JobDownloadViewModel JobType="Tags" SearchTag="SearchTag Here"/>
+    </d:DesignProperties.DataContext>
+    <StackPanel Name="pnlAddJob">
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Job Type" Margin="5,5,5,5" MinWidth="100"/>
+            <ComboBox Name="cbxJobType" MinWidth="100"
+                      SelectedItem="{Binding Path=JobType}"
+                      ItemsSource="{Binding Source={StaticResource jobTypeEnum}}"
+                      SelectionChanged="cbxJobType_SelectionChanged" />
+        </StackPanel>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" />
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Name="txtQuery" Text="{Binding Path=SearchTag}" 
-                 Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}"/>
-        <TextBox Grid.Row="1" Grid.Column="1" Name="txtMemberId" Text="{Binding Path=MemberId}" 
-                 Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Member}">
-        </TextBox>
-        <TextBox Grid.Row="1" Grid.Column="1" Name="txtImage" Text="{Binding Path=ImageId, ValidatesOnExceptions=True, NotifyOnValidationError=True}" 
-                 Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Image}"/>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" MinWidth="100"/>
+            <TextBox Name="txtQuery" Text="{Binding Path=SearchTag}" MinWidth="460"
+                     Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}"/>
+            <TextBox Name="txtMemberId" Text="{Binding Path=MemberId, ValidatesOnExceptions=True, NotifyOnValidationError=True}" MinWidth="100"
+                     Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Member}"/>
+            <TextBox Name="txtImage" Text="{Binding Path=ImageId, ValidatesOnExceptions=True, NotifyOnValidationError=True}" MinWidth="100"
+                     Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Image}"/>
+        </StackPanel>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" Name="pnlStart" Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}">
+            <TextBlock Margin="5,5,5,5" Text="Sort" MinWidth="100"/>
+            <ComboBox Name="cbxSortType" MinWidth="150" Margin="0,0,5,0"
+                      ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" 
+                      SelectedItem="{Binding Path=Sort}"/>
+            <ComboBox Name="cbxMode" MinWidth="150" Margin="0,0,5,0"
+                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}"
+                      SelectedItem="{Binding Path=SearchBy}"/>
+            <ComboBox Name="cbxType" MinWidth="150" Margin="0,0,5,0"
+                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}"
+                      SelectedItem="{Binding Path=Matching}"/>
+        </StackPanel>
+
+        <StackPanel Name="pnlStart" Orientation="Horizontal">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5,5,5,5" Text="Start Page" MinWidth="120" />
+                <TextBlock Margin="5,5,5,5" Text="Start Page" MinWidth="100" />
                 <TextBox Name="txtStartPage" MinWidth="150" Text="{Binding Path=StartPage}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="15,5,5,5" Text="End Page" MinWidth="100" />
+                <TextBlock Margin="5,5,5,5" Text="End Page" MinWidth="100" />
                 <TextBox Name="txtEndPage" MinWidth="150" Text="{Binding Path=EndPage}" />
             </StackPanel>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Name="pnlLimit" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-            <TextBlock Margin="5,5,5,5" MinWidth="120" Text="Limit" />
+        <StackPanel Orientation="Horizontal" Name="pnlLimit">
+            <TextBlock Margin="5,5,5,5" MinWidth="100" Text="Limit" />
             <TextBox MinWidth="150" Name="txtLimit" Text="{Binding Path=Limit}"/>
         </StackPanel>
-        <StackPanel Orientation="Horizontal" Name="pnlSort" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="3">
-            <TextBlock Margin="5,5,5,5" Text="Sort" MinWidth="100"/>
-            <ComboBox Name="cbxSortType" MinWidth="150"                                  
-                                  ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" 
-                                  SelectedItem="{Binding Path=Sort}"/>
-            <ComboBox Name="cbxMode" Width="110"
-                                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}" 
-                                      SelectedItem="{Binding Path=SearchBy}"/>
-            <ComboBox Name="cbxType" Width="110" 
-                                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}" 
-                                      SelectedItem="{Binding Path=Matching}"/>
-        </StackPanel>
 
-        <StackPanel Orientation="Vertical" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5">
+
+        <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5,5,5,5" Text="Filename Format" MinWidth="120"/>
+                <TextBlock Margin="5,5,5,5" Text="Filename Format" MinWidth="150"/>
                 <TextBox Text="{Binding Path=SaveFilenameFormat}" MinWidth="400" />
                 <TextBlock>
-                            <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
+                    <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5,5,5,5" Text="Manga Filename Format" MinWidth="120"/>
+                <TextBlock Margin="5,5,5,5" Text="Manga Filename Format" MinWidth="150"/>
                 <TextBox Text="{Binding Path=SaveMangaFilenameFormat}" MinWidth="400" />
                 <TextBlock>
-                            <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
+                    <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
-                <TextBlock Margin="5,5,5,5" Text="Avatar Filename Format" MinWidth="120"/>
+                <TextBlock Margin="5,5,5,5" Text="Avatar Filename Format" MinWidth="150"/>
                 <TextBox Text="{Binding Path=SaveAvatarFilenameFormat}" MinWidth="400" />
                 <TextBlock>
-                            <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
+                    <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>
             </StackPanel>
         </StackPanel>
-
-        <StackPanel Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel MinHeight="50"></StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Name="btnJobOk" Content="OK" Click="btnJobOk_Click" IsDefault="True" />
             <Button Name="btnJobCancel" Content="Cancel" Click="btnJobCancel_Click" IsCancel="True"/>
         </StackPanel>
-    </Grid>
+    </StackPanel>
 </Page>
