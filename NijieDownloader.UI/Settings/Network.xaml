@@ -6,29 +6,27 @@
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:np="clr-namespace:Nandaka.Common.Properties;assembly=Nandaka.Common"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="500" d:DesignWidth="700">
     <Grid Style="{StaticResource ContentRoot}">
         <ScrollViewer>
             <StackPanel MinWidth="200">
                 <TextBlock Text="Network" Style="{StaticResource Heading2}" />
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="30" />
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="30"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100" />
-                        <ColumnDefinition Width="300" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Proxy Address" />
-                    <TextBox Grid.Row="0" Grid.Column="1" Name="txtProxyAddress" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=ProxyAddress, Mode=TwoWay}" />
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Proxy Port" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Name="txtProxyPort" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=ProxyPort, Mode=TwoWay}"/>
-                    <CheckBox Grid.Row="2" Grid.Column="1" Width="100" Name="chkUseProxy" Content="Use Proxy" HorizontalAlignment="Left" IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=UseProxy, Mode=TwoWay}"/>
-                    <Button Grid.Row="3" Grid.Column="1" Width="100" Name="btnSave" Click="btnSave_Click">Save</Button>
-                </Grid>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Proxy Address" MinWidth="100" Margin="5,5,5,0"/>
+                    <TextBox Name="txtProxyAddress" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=ProxyAddress, Mode=TwoWay}" MinWidth="300"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Proxy Port" MinWidth="100" Margin="5,5,5,0"/>
+                    <TextBox Name="txtProxyPort" Height="25" Text="{Binding Source={x:Static np:Settings.Default}, Path=ProxyPort, Mode=TwoWay}" MinWidth="100"/>
+                </StackPanel>
+                <CheckBox MinWidth="100" Name="chkUseProxy" Content="Use Proxy" Margin="110,0,0,0" 
+                          IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=UseProxy, Mode=TwoWay}"/>
+                <CheckBox MinWidth="100" Name="chkEnableCompression" Content="Use Compression" Margin="110,0,0,0" ToolTip="If enabled, this will cause the image require to be downloaded for size checking."
+                          IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=EnableCompression, Mode=TwoWay}"/>
+                <StackPanel MinHeight="50"></StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Width="100" Name="btnSave" Click="btnSave_Click">Save</Button>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

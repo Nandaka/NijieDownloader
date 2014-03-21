@@ -286,5 +286,17 @@ namespace NijieDownloader.UI.Properties {
                 this["LogLevel"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EnableCompression {
+            get {
+                return ((bool)(this["EnableCompression"]));
+            }
+            set {
+                this["EnableCompression"] = value;
+            }
+        }
     }
 }

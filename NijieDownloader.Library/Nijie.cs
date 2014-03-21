@@ -97,14 +97,17 @@ namespace NijieDownloader.Library
             {
                 using (var stream = client.OpenRead(url))
                 {
-                    if (fileExist)
+                    var isCompressionEnabled = ExtendedWebClient.EnableCompression;
+
+                    if (fileExist && !isCompressionEnabled)
                     {
+                        // if compression enabled, the content-length is the compressed size.
                         FileInfo oldFileInfo = new FileInfo(filename);
                         Int64 bytes_total = -1;
                         if (client.ResponseHeaders["Content-Length"] != null)
                             bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
 
-                        Log.Debug("Filesize: " + bytes_total);
+                        Log.Debug("Content-Length Filesize: " + bytes_total);
 
                         if (bytes_total != -1 && oldFileInfo.Length == bytes_total)
                         {
@@ -135,6 +138,37 @@ namespace NijieDownloader.Library
                     using (var f = File.Create(tempFilename))
                     {
                         stream.CopyTo(f);
+                    }
+
+                    // if compression is enabled, check after downloaded.
+                    if (fileExist && isCompressionEnabled)
+                    {
+                        FileInfo oldFileInfo = new FileInfo(filename);
+                        FileInfo newFileInfo = new FileInfo(tempFilename);
+
+                        if (oldFileInfo.Length == newFileInfo.Length)
+                        {
+                            if (overwriteOnlyIfDifferentSize)
+                            {
+                                message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
+                                Log.Warn(message);
+                                if (progressChanged != null)
+                                    progressChanged(message);
+
+                                // delete downloaded file
+                                File.Delete(tempFilename);
+                                return message;
+                            }
+                        }
+                        else if (makeBackup)
+                        {
+                            var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
+                            message += ", Compression enabled and different size: " + oldFileInfo.Length + " vs " + newFileInfo.Length + ", backing up to: " + backupFilename;
+                            Log.Info(message);
+                            if (progressChanged != null)
+                                progressChanged(message);
+                            File.Move(filename, backupFilename);
+                        }
                     }
                 }
                 //client.DownloadFile(url, tempFilename);

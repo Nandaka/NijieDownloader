@@ -87,6 +87,7 @@ namespace NijieDownloader.UI
             checkUpgrade();
             InitializeComponent();
             Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
+            ExtendedWebClient.EnableCompression = Properties.Settings.Default.EnableCompression;
             Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
 
             Factory = new TaskFactory(new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentImageLoad, 8));

@@ -33,6 +33,8 @@ namespace NijieDownloader.UI.Settings
             Nandaka.Common.Properties.Settings.Default.Save();
             var proxy = ExtendedWebClient.GlobalProxy;
             if (proxy != null) proxy.ToString();
+
+            ExtendedWebClient.EnableCompression = Properties.Settings.Default.EnableCompression;
         }
     }
 }

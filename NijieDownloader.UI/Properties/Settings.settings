@@ -68,5 +68,8 @@
     <Setting Name="LogLevel" Type="System.String" Scope="User">
       <Value Profile="(Default)">Debug</Value>
     </Setting>
+    <Setting Name="EnableCompression" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
