@@ -34,7 +34,7 @@
         <Style TargetType="{x:Type TextBox}">
             <Style.Triggers>
                 <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="Background" Value="Red"/>
+                    <Setter Property="Background" Value="LightPink"/>
                     <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
                 </Trigger>
             </Style.Triggers>
@@ -53,12 +53,12 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal">
-            <TextBlock Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue}" MinWidth="100"/>
+            <TextBlock Margin="5,5,5,5" Text="{Binding ElementName=cbxJobType, Path=SelectedValue, UpdateSourceTrigger=PropertyChanged}" MinWidth="100"/>
             <TextBox Name="txtQuery" Text="{Binding Path=SearchTag}" MinWidth="460"
                      Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Tags}"/>
-            <TextBox Name="txtMemberId" Text="{Binding Path=MemberId, ValidatesOnExceptions=True, NotifyOnValidationError=True}" MinWidth="100"
+            <TextBox Name="txtMemberId" Text="{Binding Path=MemberId, ValidatesOnExceptions=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged}" MinWidth="100"
                      Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Member}"/>
-            <TextBox Name="txtImage" Text="{Binding Path=ImageId, ValidatesOnExceptions=True, NotifyOnValidationError=True}" MinWidth="100"
+            <TextBox Name="txtImage" Text="{Binding Path=ImageId, ValidatesOnExceptions=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged}" MinWidth="100"
                      Visibility="{Binding Path=JobType, Converter={StaticResource jobTypeToVisibilityConverter}, ConverterParameter=Image}"/>
         </StackPanel>
 
