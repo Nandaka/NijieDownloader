@@ -10,6 +10,16 @@
       xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800">
+    <Page.Resources>
+        <local:JobStatusToVisibilityConverter x:Key="JobStatusConverter" />
+        <Style TargetType="ProgressBar">
+            <Style.Triggers>
+                <Trigger Property="Maximum" Value="0">
+                    <Setter Property="IsIndeterminate" Value="True" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
     <Page.CommandBindings>
         <CommandBinding Command="{x:Static local:BatchDownloadPage.StartCommand}"
                         Executed="ExecuteStartCommand"
@@ -83,7 +93,20 @@
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="Status" Width="100" Binding="{Binding Path=Status, Mode=OneWay}" />
+                        <DataGridTemplateColumn Header="Status" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <ProgressBar IsIndeterminate="False" MinWidth="100" MinHeight="20" 
+                                                     Maximum="{Binding Path=Limit}"
+                                                     Value="{Binding Path=DownloadCount}" ToolTip="{Binding Path=DownloadCount}"
+                                                     Visibility="{Binding Path=Status, Converter={StaticResource JobStatusConverter}, Mode=OneWay}">
+                                        </ProgressBar>
+                                        <TextBlock Text="{Binding Path=Status, Mode=OneWay}" />                                        
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                     <DataGrid.ContextMenu>
                         <ContextMenu>

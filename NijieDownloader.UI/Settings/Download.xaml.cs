@@ -28,18 +28,31 @@ namespace NijieDownloader.UI.Settings
     public partial class Download : UserControl
     {
         public List<String> LogLevel { get; set; }
+        private int _oldBatch;
+        private int _oldThumb;
 
         public Download()
         {
             InitializeComponent();
             LogLevel = new List<string>(new string[] { "Off", "Fatal", "Error", "Warn", "Info", "Debug", "All" });
             cbxLogLevel.DataContext = this;
+
+            _oldBatch = Properties.Settings.Default.ConcurrentJob;
+            _oldThumb = Properties.Settings.Default.ConcurrentImageLoad;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             NijieDownloader.UI.Properties.Settings.Default.Save();
             MainWindow.Log.Logger.Repository.Threshold = MainWindow.Log.Logger.Repository.LevelMap[Properties.Settings.Default.LogLevel];
+
+            if (_oldBatch != Properties.Settings.Default.ConcurrentJob ||
+                _oldThumb != Properties.Settings.Default.ConcurrentImageLoad)
+            {
+                ModernDialog d = new ModernDialog();
+                d.Content = "Restart Required!";
+                d.ShowDialog();                  
+            }
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

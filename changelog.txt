@@ -1,3 +1,21 @@
+Nijie Downloader 1.0.3.0
+- Feature: Add Trace DB to log setting.
+- Feature: Add Job Completion notification dialog.
+- Feature: Implement Edit Batch Job item.
+- Feature: Add download member avatar for Download by member in setting.
+- Feature: Add separate file name format for manga and avatar.
+- Feature: Add option to enable network compression.
+- Feature: Add option to overwrite only different size (Additional overhead if compression enabled).
+- Feature: Add option to backup old file.
+- Feature: Add option to enable saving image info to DB.
+- Feature: Add option to change log level.
+- Enhancement: Add DB lock when inserting.
+- Enhancement: Move Add Job as dialog window.
+- Bug Fix: Skip locked image in batch mode.
+- Bug Fix: Fix date time parser for image.
+- Bug Fix: Change header for Batch Download tab.
+- Bug Fix: Fix download by member to follow limit.
+
 Nijie Downloader 1.0.2.0
 - Experimental: Add HTTPS support.
 - Feature: Add settings to change Concurent Job (require restart).

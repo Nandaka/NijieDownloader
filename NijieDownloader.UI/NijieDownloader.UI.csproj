@@ -130,6 +130,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="JobStatusToVisibilityConverter.cs" />
     <Compile Include="MainWindow.JobHelper.cs" />
     <Compile Include="Main\BatchDownloadPage.xaml.cs">
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>

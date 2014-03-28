@@ -181,6 +181,17 @@ namespace NijieDownloader.UI
 
                     processImage(job, memberPage, imageTemp);
                     ++job.DownloadCount;
+
+                    if (job.CurrentPage > job.EndPage && job.EndPage != 0)
+                    {
+                        job.Message = "Page limit reached: " + job.EndPage;
+                        return;
+                    }
+                    else if (job.DownloadCount > job.Limit && job.Limit != 0)
+                    {
+                        job.Message = "Image limit reached: " + job.Limit;
+                        return;
+                    }
                 }
             }
             catch (NijieException ne)
@@ -213,13 +224,14 @@ namespace NijieDownloader.UI
                 job.Message = "Image only for Gold Membership";
                 return;
             }
-
+            bool downloaded = false;
             if (image.IsManga)
             {
                 Log.Debug("Processing Manga Images:" + imageTemp.ImageId);
 
                 for (int i = 0; i < image.ImageUrls.Count; ++i)
                 {
+                    downloaded = false;
                     if (isJobCancelled(job)) return;
                     job.PauseEvent.WaitOne(Timeout.Infinite);
 
@@ -235,7 +247,7 @@ namespace NijieDownloader.UI
 
                     if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
                     {
-                        downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
+                        downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
                     }
                     lastFilename = pagefilename;
                 }
@@ -251,12 +263,12 @@ namespace NijieDownloader.UI
                 filename = rootPath + Path.DirectorySeparatorChar + Util.SanitizeFilename(filename);
                 if (canDownloadFile(job, image.BigImageUrl, filename))
                 {
-                    downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                    downloaded = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
                 }
                 lastFilename = filename;
             }
 
-            if(Properties.Settings.Default.SaveDB)
+            if(Properties.Settings.Default.SaveDB && downloaded)
                 SaveImageToDB(job, image, lastFilename);
         }
 
@@ -362,7 +374,7 @@ namespace NijieDownloader.UI
         /// <param name="url"></param>
         /// <param name="referer"></param>
         /// <param name="filename"></param>
-        private static void downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        private static bool downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
             filename = Util.SanitizeFilename(filename);
             url = Util.FixUrl(url);
@@ -371,7 +383,9 @@ namespace NijieDownloader.UI
             int retry = 0;
             while (retry < 3)
             {
-                if (isJobCancelled(job)) return;
+                if (isJobCancelled(job)) 
+                    return false;
+                
                 try
                 {
                     job.Message = "Saving to: " + filename;
@@ -383,9 +397,12 @@ namespace NijieDownloader.UI
                         {
                             job.Message = x;
                         });
-                    //job.Message = "Saved to: " + filename;
-
                     break;
+                }
+                catch (NijieException nex)
+                {
+                    Log.Warn(nex.Message);
+                    return false;
                 }
                 catch (Exception ex)
                 {
@@ -395,10 +412,12 @@ namespace NijieDownloader.UI
                     {
                         job.Message = ex.Message + " retry: " + retry + " wait: " + i;
                         Thread.Sleep(1000);
-                        if (job.CancelToken.IsCancellationRequested) return;
+                        if (job.CancelToken.IsCancellationRequested) return false;
                     }
                 }
             }
+
+            return true;
         }
 
         public static void NotifyAllCompleted(Action action)

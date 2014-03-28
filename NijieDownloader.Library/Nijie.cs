@@ -62,6 +62,17 @@ namespace NijieDownloader.Library
             return new Tuple<HtmlDocument, WebResponse>(doc, client.Response);
         }
 
+        /// <summary>
+        /// Download image
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="referer"></param>
+        /// <param name="filename"></param>
+        /// <param name="overwrite"></param>
+        /// <param name="overwriteOnlyIfDifferentSize"></param>
+        /// <param name="makeBackup"></param>
+        /// <param name="progressChanged"></param>
+        /// <returns></returns>
         public string Download(string url, string referer, string filename, bool overwrite, bool overwriteOnlyIfDifferentSize, bool makeBackup, Action<string> progressChanged)
         {
             String message = "";
@@ -76,7 +87,7 @@ namespace NijieDownloader.Library
                     Log.Warn(message);
                     if(progressChanged != null) 
                         progressChanged(message);
-                    return message;
+                    throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                 }
             }
 
@@ -118,7 +129,7 @@ namespace NijieDownloader.Library
                                 Log.Warn(message);
                                 if (progressChanged != null)
                                     progressChanged(message);
-                                return message;
+                                throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                             }
                         }
                         else
@@ -157,7 +168,7 @@ namespace NijieDownloader.Library
 
                                 // delete downloaded file
                                 File.Delete(tempFilename);
-                                return message;
+                                throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                             }
                         }
                         else if (makeBackup)
