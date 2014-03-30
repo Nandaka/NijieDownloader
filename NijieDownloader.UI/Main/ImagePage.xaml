@@ -12,7 +12,6 @@
     <Page.Resources>
         <local:IsMangaToVisibilityConverter x:Key="isMangaToVisibilityConverter" />
     </Page.Resources>
-
     <Grid Style="{StaticResource ContentRoot}">
         <StackPanel>
             <TextBlock Text="Process Image" Style="{StaticResource Heading2}" />
@@ -20,80 +19,94 @@
                 <Grid SizeChanged="Grid_SizeChanged" >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="150" />
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-
-                    <ScrollViewer>
-                        <StackPanel Orientation="Vertical" Grid.Column="0">
-                            <TextBlock Text="Image ID" Margin="5,5,5,0"/>
-                            <TextBox Name="txtImageID" Height="25" Text="{Binding Path=Image.ImageId}"/>
-
-                            <TextBlock Text="Member ID" Margin="5,5,5,0"/>
-                            <TextBlock Margin="5,5,5,5">
+                    <DockPanel Grid.ColumnSpan="2">
+                        <TextBlock Text="Image ID" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <TextBox Name="txtImageID" Height="25" Text="{Binding Path=Image.ImageId}" MinWidth="150" DockPanel.Dock="Left"/>
+                        <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,5" IsDefault="True" DockPanel.Dock="Left">Fetch Image</Button>
+                        <Button Name="btnAddBatch" Margin="5,5,5,5" Click="btnAddBatch_Click" DockPanel.Dock="Left">Add to Batch Job</Button>
+                        <TextBlock Text="Status: " TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <TextBlock Text="{Binding Path=Message, FallbackValue=N/A}" TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <StackPanel Margin="5,5,5,0" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                                    Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
+                            <Button Name="btnPrev" Content="&lt;" Click="btnPrev_Click" />
+                            <TextBlock Text="{Binding Path=Page, FallbackValue=0}" Margin="5,5,5,0" />
+                            <TextBlock Text="of" Margin="0,5,0,0"/>
+                            <TextBlock Text="{Binding Path=Image.ImageUrls.Count, FallbackValue=0}" Margin="5,5,5,0" />
+                            <Button Name="btnNext" Content="&gt;" Click="btnNext_Click" />
+                        </StackPanel>
+                    </DockPanel>
+                    <Expander ExpandDirection="Left" Grid.Row="1" Grid.Column="0" 
+                              IsExpanded="True" Margin="0,0,-15,0" Padding="0,0,-15,0">
+                        <Expander.Header>
+                            <TextBlock Text="Image Info" RenderTransformOrigin="0.5,0.5" Margin="0,25,0,0">
+                                <TextBlock.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="-90"/>
+                                     </TransformGroup>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+                        </Expander.Header>
+                        <ScrollViewer>
+                            <StackPanel Orientation="Vertical" >
+                                <TextBlock Text="Member ID" Margin="5,5,5,0"/>
+                                <TextBlock Margin="5,5,5,5">
                                 <Hyperlink NavigateUri="{Binding Path=Image.Member.MemberId}">
                                     <Label Name="lblMember"  Content="{Binding Path=Image.Member.MemberId}" MouseDown="lblMember_MouseDown" />
                                 </Hyperlink>
-                            </TextBlock>
+                                </TextBlock>
 
-                            <TextBlock Text="Title" Margin="5,5,5,0" />
-                            <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
+                                <TextBlock Text="Title" Margin="5,5,5,0" />
+                                <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
 
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Good" Margin="5,5,5,0" />
-                                <TextBlock Height="25" Margin="5,5,5,0"  Text="{Binding Path=Image.GoodCount}"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="抜いた" Margin="5,5,5,0" />
-                                <TextBlock Height="25" Margin="5,5,5,0" Text="{Binding Path=Image.NuitaCount}"/>
-                            </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Good" Margin="5,5,5,0" />
+                                    <TextBlock Height="25" Margin="5,5,5,0"  Text="{Binding Path=Image.GoodCount}"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="抜いた" Margin="5,5,5,0" />
+                                    <TextBlock Height="25" Margin="5,5,5,0" Text="{Binding Path=Image.NuitaCount}"/>
+                                </StackPanel>
 
-                            <TextBlock Text="Description" Margin="5,5,5,0" />
-                            <TextBox Name="txtDescription" Height="25" 
+                                <TextBlock Text="Description" Margin="5,5,5,0" />
+                                <TextBox Name="txtDescription" Height="25" 
                                      Text="{Binding Path=Image.Description}" ToolTip="{Binding Path=Image.Description}" 
                                      TextWrapping="Wrap"/>
 
-                            <TextBlock Text="Work Date" Margin="5,5,5,0" />
-                            <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=Image.WorkDate}"/>
+                                <TextBlock Text="Work Date" Margin="5,5,5,0" />
+                                <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=Image.WorkDate}"/>
 
-                            <TextBlock Text="Tags" Margin="5,5,5,0" />
+                                <TextBlock Text="Tags" Margin="5,5,5,0" />
 
-                            <ListBox ItemsSource="{Binding Path=Image.Tags}">
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel IsItemsHost="True" Width="150"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Margin="5,0,0,5">
+                                <ListBox ItemsSource="{Binding Path=Image.Tags}">
+                                    <ListBox.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel IsItemsHost="True" Width="150"/>
+                                        </ItemsPanelTemplate>
+                                    </ListBox.ItemsPanel>
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Margin="5,0,0,5">
                                             <Hyperlink NavigateUri="{Binding Path=Name}" RequestNavigate="Hyperlink_RequestNavigate">
                                                 <Label Content="{Binding Path=Name}" />
                                             </Hyperlink>
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel  Margin="5,5,5,0" Orientation="Horizontal" 
-                                     Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
-                                <Button Name="btnPrev" Content="&lt;" Click="btnPrev_Click" />
-                                <TextBlock Text="{Binding Path=Page, FallbackValue=0}" Margin="5,5,5,0" />
-                                <TextBlock Text="of" Margin="0,5,0,0"/>
-                                <TextBlock Text="{Binding Path=Image.ImageUrls.Count, FallbackValue=0}" Margin="5,5,5,0" />
-                                <Button Name="btnNext" Content="&gt;" Click="btnNext_Click" />
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                                                                
+                                <TextBlock Text="{Binding Path=ImageStatus}" />
                             </StackPanel>
-
-                            <Button Name="btnFetch" Click="btnFetch_Click" Margin="5,5,5,0" IsDefault="True">Fetch Image</Button>
-                            <Button Name="btnAddBatch" Margin="5,5,5,0" Click="btnAddBatch_Click">Add to Batch Job</Button>
-                            <TextBlock Text="{Binding Path=ImageStatus}" />
-                            <TextBlock Text="{Binding Path=Message}" TextWrapping="Wrap" />                            
-                        </StackPanel>
-                    </ScrollViewer>
-                    <DockPanel Grid.Column="1" >
+                        </ScrollViewer>
+                    </Expander>
+                    <DockPanel Grid.Column="1" Grid.Row="1" >
                         <ListBox DockPanel.Dock="Right" Name="lbxMangaThumb"
-                                 Visibility="{Binding Path=Image.IsManga, FallbackValue=Visible, Converter={StaticResource isMangaToVisibilityConverter}}"
+                                 Visibility="{Binding Path=Image.IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}"
                                  ItemsSource="{Binding Path=MangaImage}" SelectionChanged="ListBox_SelectionChanged" MinWidth="100">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
