@@ -15,6 +15,12 @@ namespace NijieDownloader.UI.ViewModel
 {
     public class NijieImageViewModel : INotifyPropertyChanged
     {
+        #region ctor
+        public NijieImageViewModel()
+        {
+            setup(new NijieImage(0, Properties.Settings.Default.UseHttps));
+        }
+
         public NijieImageViewModel(int imageId)
         {
             setup(new NijieImage(imageId, Properties.Settings.Default.UseHttps));
@@ -24,6 +30,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             setup(image);
         }
+        #endregion
 
         private void setup(NijieImage image)
         {
@@ -53,6 +60,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private List<string> _mangaImageStatus;
+        
         private ObservableCollection<BitmapImage> _mangaImage;
         public ObservableCollection<BitmapImage> MangaImage
         {
@@ -239,7 +247,6 @@ namespace NijieDownloader.UI.ViewModel
                         ));
         }
 
-
         private void LoadMangaImage(string url, int i)
         {
             if (String.IsNullOrWhiteSpace(url)) return;
@@ -343,7 +350,6 @@ namespace NijieDownloader.UI.ViewModel
             }
             private set { }
         }
-
 
         private static BitmapImage _queued;
         public static BitmapImage Queued

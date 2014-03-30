@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.ComponentModel;
-using System.Xml.Serialization;
 using System.Threading;
+using System.Xml.Serialization;
 using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
