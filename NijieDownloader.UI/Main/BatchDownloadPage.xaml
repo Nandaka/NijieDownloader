@@ -9,7 +9,7 @@
       xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800">
+      d:DesignHeight="600" d:DesignWidth="800" Loaded="Page_Loaded">
     <Page.Resources>
         <local:JobStatusToVisibilityConverter x:Key="JobStatusConverter" />
         <Style TargetType="ProgressBar">

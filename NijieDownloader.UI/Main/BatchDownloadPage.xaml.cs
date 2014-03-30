@@ -47,13 +47,16 @@ namespace NijieDownloader.UI
 
             ViewData = new ObservableCollection<JobDownloadViewModel>();
             dgvJobList.DataContext = this;
+            
+            Application.Current.Exit += new ExitEventHandler(Current_Exit);
+        }
 
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
             if (Properties.Settings.Default.AutoSaveBatchList)
             {
                 if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME)) LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
             }
-
-            Application.Current.Exit += new ExitEventHandler(Current_Exit);
         }
 
         void Current_Exit(object sender, ExitEventArgs e)
