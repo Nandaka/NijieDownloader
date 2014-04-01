@@ -155,7 +155,6 @@ namespace NijieDownloader.Library
                     else item.IsDownloaded = false;
                 }
             }
-
             return list;
         }
     }

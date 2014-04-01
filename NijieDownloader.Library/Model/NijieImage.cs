@@ -1,10 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using NijieDownloader.Library.DAL;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using System.Linq;
 using Nandaka.Common;
+using NijieDownloader.Library.DAL;
+using System.Diagnostics;
 
 namespace NijieDownloader.Library.Model
 {
@@ -57,8 +60,8 @@ namespace NijieDownloader.Library.Model
             {
                 return _isDownloaded;
             }
-            set 
-            { 
+            set
+            {
                 _isDownloaded = value;
             }
         }
@@ -77,6 +80,45 @@ namespace NijieDownloader.Library.Model
             this.ImageId = imageId;
             this.WorkDate = DateTime.MinValue;
             this.UseHttps = useHttps;
+        }
+
+        public void SaveToDb(bool suppressSave = false)
+        {
+            using (var dao = new NijieContext())
+            {
+                var member = (from x in dao.Members
+                              where x.MemberId == this.Member.MemberId
+                              select x).FirstOrDefault();
+                if (member != null)
+                {
+                    this.Member = member;
+                }
+
+                var temp = new List<NijieTag>();
+                for (int i = 0; i < this.Tags.Count; ++i)
+                {
+                    var t = this.Tags.ElementAt(i);
+                    var x = (from a in dao.Tags
+                             where a.Name == t.Name
+                             select a).FirstOrDefault();
+                    if (x != null)
+                    {
+                        temp.Add(x);
+                    }
+                    else
+                    {
+                        temp.Add(t);
+                    }
+                }
+                this.Tags = temp;
+
+                dao.Images.AddOrUpdate(this);
+
+                if (!suppressSave)
+                    dao.SaveChanges();
+
+                Debug.Assert(this.WorkDate != DateTime.MinValue, "Works Date cannot be set to DateTime.MinValue");
+            }
         }
     }
 }

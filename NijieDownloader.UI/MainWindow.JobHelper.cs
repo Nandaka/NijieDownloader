@@ -22,6 +22,7 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Collections.Generic;
 using System.Windows.Threading;
+using System.Transactions;
 
 namespace NijieDownloader.UI
 {
@@ -281,39 +282,16 @@ namespace NijieDownloader.UI
                 {
                     using (var dao = new NijieContext())
                     {
-                        if (Properties.Settings.Default.TraceDB)
-                            dao.Database.Log = MainWindow.Log.Debug;
-
-                        image.SavedFilename = lastFilename;
-                        var member = from x in dao.Members
-                                     where x.MemberId == image.Member.MemberId
-                                     select x;
-                        if (member.FirstOrDefault() != null)
+                        using (TransactionScope scope = new TransactionScope())
                         {
-                            image.Member = member.FirstOrDefault();
-                        }
+                            if (Properties.Settings.Default.TraceDB)
+                                dao.Database.Log = MainWindow.Log.Debug;
 
-                        var temp = new List<NijieTag>();
-                        for (int i = 0; i < image.Tags.Count; ++i)
-                        {
-                            var t = image.Tags.ElementAt(i);
-                            var x = from a in dao.Tags
-                                    where a.Name == t.Name
-                                    select a;
-                            if (x.FirstOrDefault() != null)
-                            {
-                                temp.Add(x.FirstOrDefault());
-                            }
-                            else
-                            {
-                                temp.Add(t);
-                            }
+                            image.SavedFilename = lastFilename;
+                            image.SaveToDb();
+                            dao.SaveChanges();
+                            scope.Complete();
                         }
-                        image.Tags = temp;
-
-                        dao.Images.AddOrUpdate(image);
-                        dao.ChangeTracker.DetectChanges();
-                        dao.SaveChanges();
                     }
                 }
             }

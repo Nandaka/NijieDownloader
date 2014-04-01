@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Data.Entity.Migrations;
 using Nandaka.Common;
 using NijieDownloader.Library.Model;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Nijie.Test
 {
@@ -29,35 +31,77 @@ namespace Nijie.Test
         [TestMethod]
         public void TestMethod1()
         {
+            int MEMBER_COUNT = 10;
+            int IMAGE_COUNT = 10;
+            int TAG_COUNT = 10;
+            object _lock = new object();
+
             using (var ctx = new NijieContext())
             {
-                var img = ctx.Images.Create();
-                img.ImageId = 10;
-                img.Title = "dummy";
-                img.WorkDate = DateTime.Now;
-                img.SavedFilename = @"C:\haha.jpg";
+                Assert.IsTrue(ctx.Images.Count() == 0);
+            }
 
-                img.Tags = new List<NijieTag>();
-                for (int i = 0; i < 10; ++i)
+            LimitedConcurrencyLevelTaskScheduler scheduler = new LimitedConcurrencyLevelTaskScheduler(3, 3);
+            TaskFactory jobFactory = new TaskFactory(scheduler);
+            List<Task> tasks = new List<Task>();
+            for (int m = 0; m < MEMBER_COUNT; m++)
+            {
+                int tempM = m;
+                var task = jobFactory.StartNew(() =>
                 {
-                    img.Tags.Add(new NijieTag() {Name  = "Tag-" + i});
-                }
+                    //Thread.Sleep(1000);
+                    //lock (_lock)
+                    //{
+                        Debug.WriteLine(String.Format("Task {0} running...", tempM));
+                        using (var ctx = new NijieContext())
+                        {
+                            var mbr = ctx.Members.Create();
+                            mbr.MemberId = tempM;
+                            mbr.UserName = "Dummy member";
 
-                ctx.Images.AddOrUpdate(img);
-                ctx.SaveChanges();
+                            for (int i = 0; i < IMAGE_COUNT; i++)
+                            {
+                                var img = ctx.Images.Create();
+                                img.ImageId = i;
+                                img.Title = "Dummy Image";
+                                img.WorkDate = DateTime.Now;
+                                img.SavedFilename = @"C:\haha.jpg";
+                                img.Member = mbr;
 
+                                img.Tags = new List<NijieTag>();
+                                for (int t = 0; t < TAG_COUNT; ++t)
+                                {
+                                    img.Tags.Add(new NijieTag() { Name = "Tag-" + t });
+                                }
+                                lock (_lock)
+                                {
+                                    img.SaveToDb();
+                                }
+                            }
+                        //}
+                        Debug.WriteLine(String.Format("Task {0} completed...", tempM));
+                    }
+                });
+                tasks.Add(task);
+            }
+
+            Task.WaitAll(tasks.ToArray());
+            using (var ctx = new NijieContext())
+            {
                 var images = from x in ctx.Images.Include("Tags")
-                            select x;
+                             select x;
 
                 foreach (var item in images)
                 {
                     Debug.WriteLine(String.Format("Image {0}: {1} ==> {2}", item.ImageId, item.ViewUrl, item.SavedFilename));
-                    foreach(var tag in item.Tags) {
+                    Debug.WriteLine(String.Format("DateTime: {0}", item.WorkDate));
+                    foreach (var tag in item.Tags)
+                    {
                         Debug.WriteLine(String.Format("\t - {0}", tag.Name));
                     }
-                }
 
-                Assert.IsTrue(true);
+                    Assert.IsTrue(item.WorkDate != DateTime.MinValue);
+                }
             }
         }
 
