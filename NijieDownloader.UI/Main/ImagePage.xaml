@@ -62,7 +62,7 @@
                                 </TextBlock>
 
                                 <TextBlock Text="Title" Margin="5,5,5,0" />
-                                <TextBox Name="txtTitle" Height="25" Text="{Binding Path=Image.Title}"/>
+                                <TextBox Name="txtTitle" MinHeight="25" Text="{Binding Path=Image.Title}" TextWrapping="Wrap"/>
 
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Good" Margin="5,5,5,0" />
@@ -74,7 +74,7 @@
                                 </StackPanel>
 
                                 <TextBlock Text="Description" Margin="5,5,5,0" />
-                                <TextBox Name="txtDescription" Height="25" 
+                                <TextBox Name="txtDescription" MinHeight="25" MaxWidth="150"
                                      Text="{Binding Path=Image.Description}" ToolTip="{Binding Path=Image.Description}" 
                                      TextWrapping="Wrap"/>
 

@@ -85,7 +85,7 @@ namespace NijieDownloader.Library
                 {
                     message += ", skipping...";
                     Log.Warn(message);
-                    if(progressChanged != null) 
+                    if (progressChanged != null)
                         progressChanged(message);
                     throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                 }
@@ -132,19 +132,23 @@ namespace NijieDownloader.Library
                                 throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                             }
                         }
+
+                        // file size different or don't care about file size
+                        // make backup for the old file
+                        if (makeBackup)
+                        {
+                            var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
+                            message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
+                            Log.Info(message);
+                            if (progressChanged != null)
+                                progressChanged(message);
+                            File.Move(filename, backupFilename);
+                        }
                         else
                         {
-                            // make backup for the old file
-                            if (makeBackup)
-                            {
-                                var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
-                                message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
-                                Log.Info(message);
-                                if (progressChanged != null)
-                                    progressChanged(message);
-                                File.Move(filename, backupFilename);
-                            }
+                            File.Delete(filename);
                         }
+
                     }
                     using (var f = File.Create(tempFilename))
                     {

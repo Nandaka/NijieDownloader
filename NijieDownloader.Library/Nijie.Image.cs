@@ -133,7 +133,11 @@ namespace NijieDownloader.Library
                     var dateCheck = re_date.Match(dateStr);
                     if (dateCheck.Success)
                     {
-                        image.WorkDate = DateTime.ParseExact(dateCheck.Groups[1].Value, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        var tempDate = DateTime.ParseExact(dateCheck.Groups[1].Value, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+                        if (tempDate != DateTime.MinValue)
+                        {
+                            image.WorkDate = tempDate;
+                        }
                         Log.Debug("Works Date: " + dateStr + " ==>" + image.WorkDate.ToString("yyyy-MM-dd HH:mm:ss"));
                     }
                     else

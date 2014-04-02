@@ -24,7 +24,22 @@ namespace NijieDownloader.Library.Model
 
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime WorkDate { get; set; }
+
+        // to avoid overflow problem
+        private DateTime _workDate;
+        public DateTime WorkDate
+        {
+            get
+            {
+                if (_workDate == DateTime.MinValue)
+                    _workDate = System.Data.SqlTypes.SqlDateTime.MinValue.Value;
+                return _workDate;
+            }
+            set
+            {
+                _workDate = value;
+            }
+        }
 
         public bool IsManga { get; set; }
 
@@ -58,6 +73,8 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
+                if (_workDate == System.Data.SqlTypes.SqlDateTime.MinValue.Value || !_isDownloaded) 
+                    return false;
                 return _isDownloaded;
             }
             set
@@ -72,13 +89,11 @@ namespace NijieDownloader.Library.Model
         public NijieImage()
         {
             this.ImageId = -1;
-            this.WorkDate = DateTime.MinValue;
         }
 
         public NijieImage(int imageId, bool useHttps)
         {
             this.ImageId = imageId;
-            this.WorkDate = DateTime.MinValue;
             this.UseHttps = useHttps;
         }
 
@@ -115,7 +130,9 @@ namespace NijieDownloader.Library.Model
                 dao.Images.AddOrUpdate(this);
 
                 if (!suppressSave)
+                {
                     dao.SaveChanges();
+                }
 
                 Debug.Assert(this.WorkDate != DateTime.MinValue, "Works Date cannot be set to DateTime.MinValue");
             }

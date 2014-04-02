@@ -40,6 +40,8 @@ namespace NijieDownloader.UI
         {
             job.Status = Status.Queued;
             job.CancelToken = cancelSource.Token;
+            job.DownloadCount = 0;
+            job.CurrentPage = 1;
 
             tasks.Add(JobFactory.StartNew(() =>
             {
@@ -269,7 +271,7 @@ namespace NijieDownloader.UI
                 lastFilename = filename;
             }
 
-            if(Properties.Settings.Default.SaveDB && downloaded)
+            if (Properties.Settings.Default.SaveDB && downloaded)
                 SaveImageToDB(job, image, lastFilename);
         }
 
@@ -280,19 +282,8 @@ namespace NijieDownloader.UI
             {
                 lock (_dbLock)
                 {
-                    using (var dao = new NijieContext())
-                    {
-                        using (TransactionScope scope = new TransactionScope())
-                        {
-                            if (Properties.Settings.Default.TraceDB)
-                                dao.Database.Log = MainWindow.Log.Debug;
-
-                            image.SavedFilename = lastFilename;
-                            image.SaveToDb();
-                            dao.SaveChanges();
-                            scope.Complete();
-                        }
-                    }
+                    image.SavedFilename = lastFilename;
+                    image.SaveToDb();
                 }
             }
             catch (Exception ex)
@@ -300,7 +291,7 @@ namespace NijieDownloader.UI
                 Log.Error("Failed to save to DB: " + image.ImageId, ex);
                 job.Message += ex.Message;
             }
-        
+
         }
 
         private static bool isJobCancelled(JobDownloadViewModel job)
@@ -361,9 +352,9 @@ namespace NijieDownloader.UI
             int retry = 0;
             while (retry < 3)
             {
-                if (isJobCancelled(job)) 
+                if (isJobCancelled(job))
                     return false;
-                
+
                 try
                 {
                     job.Message = "Saving to: " + filename;
