@@ -10,7 +10,7 @@ using NijieDownloader.Library.Model;
 namespace NijieDownloader.UI.ViewModel
 {
     [Serializable]
-    public class JobDownloadViewModel : INotifyPropertyChanged, ICloneable
+    public class JobDownloadViewModel : ViewModelBase, ICloneable
     {
         private bool _isSelected;
         [XmlIgnoreAttribute]
@@ -173,18 +173,7 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("SearchTag");
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void onPropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-                PropertyChanged(this, new PropertyChangedEventArgs("Name"));
-            }
-        }
-
+        
         private int _startPage = 1;
         public int StartPage
         {

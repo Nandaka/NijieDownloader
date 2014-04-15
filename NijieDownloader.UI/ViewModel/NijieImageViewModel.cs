@@ -10,150 +10,54 @@ using Nandaka.Common;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Input;
+using NijieDownloader.Library.DAL;
+using NijieDownloader.Library;
 
 namespace NijieDownloader.UI.ViewModel
 {
-    public class NijieImageViewModel : INotifyPropertyChanged
+    public class NijieImageViewModel : ViewModelBase
     {
+        private NijieImage _image;
+        private List<string> _mangaImageStatus = null;
+
         #region ctor
-        public NijieImageViewModel()
-        {
-            setup(new NijieImage(0, Properties.Settings.Default.UseHttps));
-        }
+        /// <summary>
+        /// Default constructor for Data Binding
+        /// </summary>
+        public NijieImageViewModel() { }
 
-        public NijieImageViewModel(int imageId)
+        /// <summary>
+        /// Used in Search and Member page.
+        /// </summary>
+        /// <param name="image"></param>
+        public NijieImageViewModel(NijieImage image) 
         {
-            setup(new NijieImage(imageId, Properties.Settings.Default.UseHttps));
-        }
-
-        public NijieImageViewModel(NijieImage image)
-        {
-            setup(image);
+            _image = image;
+            this.ImageId = image.ImageId;
         }
         #endregion
 
-        private void setup(NijieImage image)
+        #region properties
+        private int _imageId;
+        public int ImageId
         {
-            this.Image = image;
-            _page = 0;
-            _status = "N/A";
-
-            if (image.IsManga)
-            {
-                _mangaImage = new ObservableCollection<BitmapImage>();
-                _mangaImageStatus = new List<string>();
-            }
-        }
-
-        private NijieImage _image;
-        public NijieImage Image
-        {
-            get
-            {
-                return _image;
-            }
-            private set
-            {
-                _image = value;
-                onPropertyChanged("Image");
-            }
-        }
-
-        private List<string> _mangaImageStatus;
-        
-        private ObservableCollection<BitmapImage> _mangaImage;
-        public ObservableCollection<BitmapImage> MangaImage
-        {
-            get
-            {
-                if (Image != null && Image.IsManga && this.ImageStatus != MainWindow.IMAGE_LOADED )
-                {
-                    while (_mangaImage.Count < Image.ImageUrls.Count)
-                    {
-                        _mangaImage.Add(NijieImageViewModelHelper.Queued);
-                        _mangaImageStatus.Add(MainWindow.IMAGE_QUEUED);
-                    }
-
-                    for (int i = 0; i < Image.ImageUrls.Count; ++i)
-                    {
-                        if (_mangaImageStatus[i] == MainWindow.IMAGE_LOADED || _mangaImageStatus[i] == MainWindow.IMAGE_LOADING)
-                            continue;
-                        LoadMangaImage(Image.ImageUrls[i], i);
-                    }
-                }
-                return _mangaImage;
-            }
+            get { return _imageId; }
             set
             {
-                _mangaImage = value;
-                onPropertyChanged("MangaImage");
+                _imageId = value;
+                onPropertyChanged("ImageId");
             }
         }
 
-        private BitmapImage _bigImage;
-        public BitmapImage BigImage
+        private bool _isSelected;
+        public bool IsSelected
         {
-            get
-            {
-                if (Image.IsFriendOnly)
-                {
-                    this.ImageStatus = MainWindow.IMAGE_LOADED;
-                    return NijieImageViewModelHelper.FriendOnly;
-                }
-
-                if (Image.IsDownloaded)
-                {
-                    if (File.Exists(Image.SavedFilename))
-                    {
-                        _bigImage = new BitmapImage(new Uri(Image.SavedFilename));
-                        _bigImage.Freeze();
-                        return _bigImage;
-                    }
-                }
-
-                if (_bigImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
-                {
-                    if (!Image.IsManga)
-                    {
-                        LoadBigImage(Image.BigImageUrl);
-                    }
-                    return NijieImageViewModelHelper.Loading;
-                }
-                return _bigImage;
-            }
+            get { return _isSelected; }
             set
             {
-                _bigImage = value;
-                onPropertyChanged("BigImage");
-            }
-        }
-
-        private BitmapImage _thumbImage;
-        public BitmapImage ThumbImage
-        {
-            get
-            {
-                if (_thumbImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
-                {
-                    this.ImageStatus = MainWindow.IMAGE_LOADING;
-
-                    MainWindow.LoadImage(Image.ThumbImageUrl, Image.Referer,
-                        new Action<BitmapImage, string>((image, status) =>
-                        {
-                            this.ThumbImage = null;
-                            this.ThumbImage = image;
-                            this.ImageStatus = status;
-                            this.Message = status;
-                        }
-                    ));
-                    return NijieImageViewModelHelper.Queued;
-                }
-                return _thumbImage;
-            }
-            set
-            {
-                _thumbImage = value;
-                onPropertyChanged("ThumbImage");
+                _isSelected = value;
+                onPropertyChanged("IsSelected");
             }
         }
 
@@ -179,16 +83,80 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void onPropertyChanged(string name)
+        private BitmapImage _bigImage;
+        public BitmapImage BigImage
         {
-            if (PropertyChanged != null)
+            get
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
+                if (_image == null) 
+                    return null;
+
+                if (_image.IsFriendOnly)
+                {
+                    this.ImageStatus = MainWindow.IMAGE_LOADED;
+                    return ViewModelHelper.FriendOnly;
+                }
+
+                if (_image.IsDownloaded)
+                {
+                    if (File.Exists(_image.SavedFilename))
+                    {
+                        _bigImage = new BitmapImage(new Uri(_image.SavedFilename));
+                        _bigImage.Freeze();
+                        return _bigImage;
+                    }
+                }
+
+                if (_bigImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
+                {
+                    if (!_image.IsManga)
+                    {
+                        LoadBigImage(_image.BigImageUrl);
+                    }
+                    return ViewModelHelper.Loading;
+                }
+                return _bigImage;
+            }
+            set
+            {
+                _bigImage = value;
+                onPropertyChanged("BigImage");
             }
         }
 
+        private BitmapImage _thumbImage;
+        public BitmapImage ThumbImage
+        {
+            get
+            {
+                if (_image == null)
+                    return null;
+
+                if (_thumbImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
+                {
+                    this.ImageStatus = MainWindow.IMAGE_LOADING;
+
+                    MainWindow.LoadImage(_image.ThumbImageUrl, _image.Referer,
+                        new Action<BitmapImage, string>((image, status) =>
+                        {
+                            this.ThumbImage = null;
+                            this.ThumbImage = image;
+                            this.ImageStatus = status;
+                            this.Message = status;
+                        }
+                    ));
+                    return ViewModelHelper.Queued;
+                }
+                return _thumbImage;
+            }
+            set
+            {
+                _thumbImage = value;
+                onPropertyChanged("ThumbImage");
+            }
+        }
+
+        /* Manga Related */
         private int _page = 0;
         public int Page
         {
@@ -200,12 +168,161 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private ObservableCollection<BitmapImage> _mangaImage;
+        public ObservableCollection<BitmapImage> MangaImage
+        {
+            get
+            {
+                if (_image == null)
+                    return null;
+
+                if (_image != null && _image.IsManga && this.ImageStatus != MainWindow.IMAGE_LOADED)
+                {
+                    while (_mangaImage.Count < _image.ImageUrls.Count)
+                    {
+                        _mangaImage.Add(ViewModelHelper.Queued);
+                        _mangaImageStatus.Add(MainWindow.IMAGE_QUEUED);
+                    }
+
+                    for (int i = 0; i < _image.ImageUrls.Count; ++i)
+                    {
+                        if (_mangaImageStatus[i] == MainWindow.IMAGE_LOADED || _mangaImageStatus[i] == MainWindow.IMAGE_LOADING)
+                            continue;
+                        LoadMangaImage(_image.ImageUrls[i], i);
+                    }
+                }
+                return _mangaImage;
+            }
+            set
+            {
+                _mangaImage = value;
+                onPropertyChanged("MangaImage");
+            }
+        }
+
+        public int? MemberId
+        {
+            get
+            {
+                if (_image != null) return _image.Member.MemberId;
+                return null;
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                if (_image != null) return _image.Title;
+                return null;
+            }
+        }
+
+        public int? GoodCount
+        {
+            get
+            {
+                if (_image != null) return _image.GoodCount;
+                return null;
+            }
+        }
+
+        public int? NuitaCount
+        {
+            get
+            {
+                if (_image != null) return _image.NuitaCount;
+                return null;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                if (_image != null) return _image.Description;
+                return null;
+            }
+        }
+
+        public DateTime? WorkDate
+        {
+            get
+            {
+                if (_image != null) return _image.WorkDate;
+                return null;
+            }
+        }
+
+        public ICollection<NijieTag> Tags
+        {
+            get
+            {
+                if (_image != null) return _image.Tags;
+                return null;
+            }
+        }
+
+        public bool IsManga
+        {
+            get
+            {
+                if (_image != null) return _image.IsManga;
+                return false;
+            }
+        }
+
+        public int PageCount
+        {
+            get
+            {
+                if (_image != null) return _image.ImageUrls.Count;
+                return 0;
+            }
+        }
+        #endregion
+
+        public void GetImage()
+        {
+            MainWindow.Log.Debug("Loading Image: " + this.ImageId);
+
+            NijieImage temp = null;
+            // TODO: need to implement manga
+            using (var ctx = new NijieContext())
+            {
+                temp = (from x in ctx.Images.Include("Member").Include("Tags")
+                        where x.ImageId == this.ImageId && x.IsManga == false
+                        select x).FirstOrDefault();
+                if (temp != null)
+                {
+                    temp.IsDownloaded = true;
+                }
+            }
+            if (temp == null)
+            {
+                try
+                {
+                    var result = MainWindow.Bot.ParseImage(this.ImageId, Properties.Settings.Default.UseHttps);
+                    temp = result;
+                }
+                catch (NijieException ne)
+                {
+                    this.Message = "Error: " + ne.Message;
+                    this.ImageStatus = MainWindow.IMAGE_ERROR;
+                    this.BigImage = ViewModelHelper.Error;
+                    MainWindow.Log.Error(ne.Message, ne.InnerException);
+                }
+            }
+
+            this._mangaImageStatus = new List<string>();
+        }
+                
         public int Prev()
         {
-            if (this.Page > 0)
+            if (_image != null && this.Page > 0)
             {
                 --this.Page;
-                LoadBigImage(Image.ImageUrls[this.Page]);
+                LoadBigImage(_image.ImageUrls[this.Page]);
 
             }
             return this.Page;
@@ -213,20 +330,20 @@ namespace NijieDownloader.UI.ViewModel
 
         public int Next()
         {
-            if (this.Page < Image.ImageUrls.Count - 1)
+            if (_image != null && this.Page < _image.ImageUrls.Count - 1)
             {
                 ++this.Page;
-                LoadBigImage(Image.ImageUrls[this.Page]);
+                LoadBigImage(_image.ImageUrls[this.Page]);
             }
             return this.Page;
         }
 
         public int JumpTo(int page)
         {
-            if (page >= 0 && page < Image.ImageUrls.Count)
+            if (_image != null && page >= 0 && page < _image.ImageUrls.Count)
             {
                 this.Page = page;
-                LoadBigImage(Image.ImageUrls[this.Page]);
+                LoadBigImage(_image.ImageUrls[this.Page]);
             }
             return this.Page;
         }
@@ -236,7 +353,7 @@ namespace NijieDownloader.UI.ViewModel
             if (String.IsNullOrWhiteSpace(url)) return;
 
             this.ImageStatus = MainWindow.IMAGE_LOADING;
-            MainWindow.LoadImage(url, Image.Referer,
+            MainWindow.LoadImage(url, _image.Referer,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.BigImage = null;
@@ -254,7 +371,7 @@ namespace NijieDownloader.UI.ViewModel
             this._mangaImageStatus[i] = MainWindow.IMAGE_LOADING;
             try
             {
-                MainWindow.LoadImage(url, Image.Referer,
+                MainWindow.LoadImage(url, _image.Referer,
                                 new Action<BitmapImage, string>((image, status) =>
                                 {
                                     Application.Current.Dispatcher.BeginInvoke(
@@ -291,79 +408,5 @@ namespace NijieDownloader.UI.ViewModel
                 MainWindow.Log.Error(ex.Message, ex);
             }
         }
-
-        private bool _isSelected;
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                _isSelected = value;
-                onPropertyChanged("IsSelected");
-            }
-        }
-    }
-
-    public class NijieImageViewModelHelper
-    {
-        private static BitmapImage _loading;
-        public static BitmapImage Loading
-        {
-            get
-            {
-                if (_loading == null)
-                {
-                    _loading = new BitmapImage(new Uri("pack://application:,,,/Resources/loading.png"));
-                    _loading.Freeze();
-                }
-                return _loading;
-            }
-            private set { }
-        }
-
-        private static BitmapImage _friendOnly;
-        public static BitmapImage FriendOnly
-        {
-            get
-            {
-                if (_friendOnly == null)
-                {
-                    _friendOnly = new BitmapImage(new Uri("pack://application:,,,/Resources/friends.png"));
-                    _friendOnly.Freeze();
-                }
-                return _friendOnly;
-            }
-            private set { }
-        }
-
-        private static BitmapImage _error;
-        public static BitmapImage Error
-        {
-            get
-            {
-                if (_error == null)
-                {
-                    _error = new BitmapImage(new Uri("pack://application:,,,/Resources/error_icon.png"));
-                    _error.Freeze();
-                }
-                return _error;
-            }
-            private set { }
-        }
-
-        private static BitmapImage _queued;
-        public static BitmapImage Queued
-        {
-            get
-            {
-                if (_queued == null)
-                {
-                    _queued = new BitmapImage(new Uri("pack://application:,,,/Resources/queued.png"));
-                    _queued.Freeze();
-                }
-                return _queued;
-            }
-            private set { }
-        }
-    }
+    }    
 }

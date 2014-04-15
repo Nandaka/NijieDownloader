@@ -149,10 +149,12 @@
       <DependentUpon>Network.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.UIHelper.cs" />
+    <Compile Include="ViewModel\ViewModelHelper.cs" />
     <Compile Include="ViewModel\JobDownloadViewModel.cs" />
     <Compile Include="ViewModel\NijieSearchViewModel.cs" />
     <Compile Include="ViewModel\NijieImageViewModel.cs" />
     <Compile Include="ViewModel\NijieMemberViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="ZoomBorder.cs" />
     <Page Include="Main\BatchDownloadPage.xaml">
       <SubType>Designer</SubType>

@@ -69,7 +69,7 @@ namespace NijieDownloader.UI
             {
                 if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
                 {
-                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].Image.ImageId);
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace NijieDownloader.UI
         {
             var selected = from l in ViewData.Images
                            where l.IsSelected == true
-                           select l.Image.ImageId.ToString();
+                           select l.ImageId.ToString();
 
             var join = String.Join(",", selected.ToList<String>());
             if (!String.IsNullOrWhiteSpace(join))

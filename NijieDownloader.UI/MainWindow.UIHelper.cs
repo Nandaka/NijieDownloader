@@ -176,7 +176,7 @@ namespace NijieDownloader.UI
                 {
                     try
                     {
-                        action(NijieImageViewModelHelper.Loading, IMAGE_LOADING);
+                        action(ViewModelHelper.Loading, IMAGE_LOADING);
 
                         Log.Debug("Loading image: " + url);
                         var result = MainWindow.Bot.DownloadData(url, referer);

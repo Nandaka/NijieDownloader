@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace NijieDownloader.UI.ViewModel
 {
-    public class NijieSearchViewModel : INotifyPropertyChanged
+    public class NijieSearchViewModel : ViewModelBase
     {
         public NijieSearchViewModel(NijieSearch search)
         {
@@ -127,16 +127,5 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Images");
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void onPropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
     }
 }

@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace NijieDownloader.UI.ViewModel
 {
-    public class NijieMemberViewModel : INotifyPropertyChanged
+    public class NijieMemberViewModel : ViewModelBase
     {
         private NijieMember _member;
         public NijieMember Member
@@ -65,17 +65,7 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Images");
             }
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void onPropertyChanged(string name)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(name));
-            }
-        }
-
+        
         public NijieMemberViewModel(NijieMember member)
         {
             this.Member = member;

@@ -29,64 +29,25 @@ namespace NijieDownloader.UI
 
         public ImagePage()
         {
+            ViewData = new NijieImageViewModel();
             InitializeComponent();
 #if DEBUG
-            //ViewData = new NijieImageViewModel(15880);
-            ViewData = new NijieImageViewModel(67940);
 
-            this.DataContext = ViewData;
-            //txtImageID.Text = "15880";
+            //iewData.ImageId = 15880;
+            ViewData.ImageId = 67940;
 #endif
-        }
-
-        private void LoadImage(int imageId)
-        {
-            MainWindow.Log.Debug("Loading Image: " + imageId);
-
-            // TODO: need to implement manga
-            using (var ctx = new NijieContext())
-            {
-                var i = (from x in ctx.Images.Include("Member").Include("Tags")
-                         where x.ImageId == imageId && x.IsManga == false
-                         select x).FirstOrDefault();
-                if (i != null)
-                {
-                    i.IsDownloaded = true;
-                    ViewData = new NijieImageViewModel(i);
-                    this.DataContext = ViewData;
-                    return;
-                }
-            }
-            
-            try
-            {
-                var result = MainWindow.Bot.ParseImage(imageId, Properties.Settings.Default.UseHttps);
-                ViewData = new NijieImageViewModel(result);
-            }
-            catch (NijieException ne)
-            {
-                if (ViewData == null) ViewData = new NijieImageViewModel(imageId);
-                ViewData.Message = "Error: " + ne.Message;
-                ViewData.ImageStatus = MainWindow.IMAGE_ERROR;
-                ViewData.BigImage = NijieImageViewModelHelper.Error;
-                MainWindow.Log.Error(ne.Message, ne.InnerException);
-            }
-            
             this.DataContext = ViewData;
         }
 
-        private void btnFetch_Click(object sender, RoutedEventArgs e)
-        {
-            LoadImage(Int32.Parse(txtImageID.Text));
-        }
-
+        #region navigation
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(e.Fragment))
             {
                 var pair = e.Fragment.Split('=');
                 txtImageID.Text = pair[1];
-                LoadImage(Int32.Parse(txtImageID.Text));
+                ViewData.ImageId = Int32.Parse(txtImageID.Text);
+                ExecuteGetImageCommand(this, null);
             }
         }
 
@@ -104,33 +65,9 @@ namespace NijieDownloader.UI
         {
 
         }
-
-        private void btnAddBatch_Click(object sender, RoutedEventArgs e)
-        {
-            e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + txtImageID.Text);
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
-        }
-
-        private void btnPrev_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewData != null)
-            {
-                lbxMangaThumb.SelectedIndex = ViewData.Prev();
-            }
-        }
-
-        private void btnNext_Click(object sender, RoutedEventArgs e)
-        {
-            if (ViewData != null)
-            {
-                lbxMangaThumb.SelectedIndex = ViewData.Next();
-            }
-        }
-
+        #endregion
+        
+        #region UI events
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var h = MainWindow.GetWindow(imgBigImage).Height - 200;
@@ -138,7 +75,45 @@ namespace NijieDownloader.UI
             imgBigImage.Height = h;
             lbxMangaThumb.Height = h;
         }
+
+        #endregion
+
+        #region Commands
+        public static RoutedCommand GetImageCommand = new RoutedCommand();
+        private void ExecuteGetImageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.GetImage();
+            this.DataContext = ViewData;
+        }
+
+        public static RoutedCommand AddToBatchCommand = new RoutedCommand();
+        private void ExecuteAddToBatchCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + ViewData.ImageId);
+        }
         
+        private void CanExecuteImageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !Validation.GetHasError(txtImageID) && ViewData.ImageId > 0 ? true : false;
+        }
+
+        public static RoutedCommand MangaPrevCommand = new RoutedCommand();
+        private void ExecuteMangaPrevCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            lbxMangaThumb.SelectedIndex = ViewData.Prev();
+        }
+
+        public static RoutedCommand MangaNextCommand = new RoutedCommand();
+        private void ExecuteMangaNextCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            lbxMangaThumb.SelectedIndex = ViewData.Next();
+        }
+
+        private void CanExecuteMangaCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.IsManga;
+        }
+
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
@@ -148,5 +123,12 @@ namespace NijieDownloader.UI
         {
             e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + lblMember.Content);
         }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
+        }
+
+        #endregion
     }
 }
