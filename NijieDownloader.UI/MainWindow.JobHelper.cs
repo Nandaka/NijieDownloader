@@ -84,7 +84,6 @@ namespace NijieDownloader.UI
             {
                 NijieImage image = new NijieImage(job.ImageId, Properties.Settings.Default.UseHttps);
                 processImage(job, null, image);
-                Thread.Sleep(1000); //delay 1 s
             }
             catch (NijieException ne)
             {

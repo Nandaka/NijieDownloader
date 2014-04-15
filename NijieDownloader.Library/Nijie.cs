@@ -109,21 +109,23 @@ namespace NijieDownloader.Library
                 using (var stream = client.OpenRead(url))
                 {
                     var isCompressionEnabled = ExtendedWebClient.EnableCompression;
+                    Int64 bytes_total = -1;
 
+                    // if compression enabled, the content-length is the compressed size.
+                    // so need to check after download to get the real size.
                     if (fileExist && !isCompressionEnabled)
                     {
-                        // if compression enabled, the content-length is the compressed size.
                         FileInfo oldFileInfo = new FileInfo(filename);
-                        Int64 bytes_total = -1;
                         if (client.ResponseHeaders["Content-Length"] != null)
                             bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
 
                         Log.Debug("Content-Length Filesize: " + bytes_total);
 
-                        if (bytes_total != -1 && oldFileInfo.Length == bytes_total)
+                        // If have Content-length size, do pre-check.
+                        if (bytes_total > 0)
                         {
                             // skip download if the filesize are the same.
-                            if (overwriteOnlyIfDifferentSize)
+                            if (oldFileInfo.Length == bytes_total && overwriteOnlyIfDifferentSize)
                             {
                                 message += ", Identical size: " + bytes_total + ", skipping...";
                                 Log.Warn(message);
@@ -131,49 +133,45 @@ namespace NijieDownloader.Library
                                     progressChanged(message);
                                 throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                             }
-                        }
 
-                        // file size different or don't care about file size
-                        // make backup for the old file
-                        if (makeBackup)
-                        {
-                            var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
-                            message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
-                            Log.Info(message);
-                            if (progressChanged != null)
-                                progressChanged(message);
-                            File.Move(filename, backupFilename);
+                            // make backup for the old file
+                            if (makeBackup)
+                            {
+                                var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
+                                message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
+                                Log.Info(message);
+                                if (progressChanged != null)
+                                    progressChanged(message);
+                                File.Move(filename, backupFilename);
+                            }
+                            else
+                            {
+                                File.Delete(filename);
+                            }
                         }
-                        else
-                        {
-                            File.Delete(filename);
-                        }
-
                     }
                     using (var f = File.Create(tempFilename))
                     {
                         stream.CopyTo(f);
                     }
 
-                    // if compression is enabled, check after downloaded.
-                    if (fileExist && isCompressionEnabled)
+                    // if compression is enabled or Content Length is unknown, check after downloaded.
+                    if (fileExist && (isCompressionEnabled || bytes_total <= 0))
                     {
                         FileInfo oldFileInfo = new FileInfo(filename);
                         FileInfo newFileInfo = new FileInfo(tempFilename);
 
-                        if (oldFileInfo.Length == newFileInfo.Length)
+                        // delete the new file if filesize are the same
+                        if (oldFileInfo.Length == newFileInfo.Length && overwriteOnlyIfDifferentSize)
                         {
-                            if (overwriteOnlyIfDifferentSize)
-                            {
-                                message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
-                                Log.Warn(message);
-                                if (progressChanged != null)
-                                    progressChanged(message);
+                            message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
+                            Log.Warn(message);
+                            if (progressChanged != null)
+                                progressChanged(message);
 
-                                // delete downloaded file
-                                File.Delete(tempFilename);
-                                throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
-                            }
+                            // delete downloaded file
+                            File.Delete(tempFilename);
+                            throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
                         }
                         else if (makeBackup)
                         {
@@ -186,12 +184,12 @@ namespace NijieDownloader.Library
                         }
                     }
                 }
-                //client.DownloadFile(url, tempFilename);
             }
             catch (Exception ex)
             {
                 throw new NijieException(string.Format("Error when downloading: {0} to {1}", url, tempFilename), ex, NijieException.DOWNLOAD_ERROR);
             }
+
             Thread.Sleep(100); // delay before renaming
             File.Move(tempFilename, filename);
             message = "Saved to: " + filename;

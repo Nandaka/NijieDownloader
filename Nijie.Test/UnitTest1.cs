@@ -49,36 +49,32 @@ namespace Nijie.Test
                 int tempM = m;
                 var task = jobFactory.StartNew(() =>
                 {
-                    //Thread.Sleep(1000);
-                    //lock (_lock)
-                    //{
-                        Debug.WriteLine(String.Format("Task {0} running...", tempM));
-                        using (var ctx = new NijieContext())
+                    Debug.WriteLine(String.Format("Task {0} running...", tempM));
+                    using (var ctx = new NijieContext())
+                    {
+                        var mbr = ctx.Members.Create();
+                        mbr.MemberId = tempM;
+                        mbr.UserName = "Dummy member";
+
+                        for (int i = 0; i < IMAGE_COUNT; i++)
                         {
-                            var mbr = ctx.Members.Create();
-                            mbr.MemberId = tempM;
-                            mbr.UserName = "Dummy member";
+                            var img = ctx.Images.Create();
+                            img.ImageId = i;
+                            img.Title = "Dummy Image";
+                            img.WorkDate = DateTime.Now;
+                            img.SavedFilename = @"C:\haha.jpg";
+                            img.Member = mbr;
 
-                            for (int i = 0; i < IMAGE_COUNT; i++)
+                            img.Tags = new List<NijieTag>();
+                            for (int t = 0; t < TAG_COUNT; ++t)
                             {
-                                var img = ctx.Images.Create();
-                                img.ImageId = i;
-                                img.Title = "Dummy Image";
-                                img.WorkDate = DateTime.Now;
-                                img.SavedFilename = @"C:\haha.jpg";
-                                img.Member = mbr;
-
-                                img.Tags = new List<NijieTag>();
-                                for (int t = 0; t < TAG_COUNT; ++t)
-                                {
-                                    img.Tags.Add(new NijieTag() { Name = "Tag-" + t });
-                                }
-                                lock (_lock)
-                                {
-                                    img.SaveToDb();
-                                }
+                                img.Tags.Add(new NijieTag() { Name = "Tag-" + t });
                             }
-                        //}
+                            lock (_lock)
+                            {
+                                img.SaveToDb();
+                            }
+                        }
                         Debug.WriteLine(String.Format("Task {0} completed...", tempM));
                     }
                 });
