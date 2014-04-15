@@ -26,6 +26,10 @@ namespace NijieDownloader.UI.ViewModel
             get { return _sortType; }
             set
             {
+                if (value != _sortType)
+                {
+                    Page = 1;
+                }
                 _sortType = value;
                 onPropertyChanged("Sort");
                 onPropertyChanged("QueryUrl");
@@ -37,6 +41,10 @@ namespace NijieDownloader.UI.ViewModel
             get { return _query; }
             set
             {
+                if (value != _query)
+                {
+                    Page = 1;
+                }
                 _query = value;
                 onPropertyChanged("Query");
                 onPropertyChanged("QueryUrl");
@@ -60,6 +68,10 @@ namespace NijieDownloader.UI.ViewModel
             get { return _searchMode; }
             set
             {
+                if (value != _searchMode)
+                {
+                    Page = 1;
+                } 
                 _searchMode = value;
                 onPropertyChanged("SearchBy");
                 onPropertyChanged("QueryUrl");
@@ -71,6 +83,10 @@ namespace NijieDownloader.UI.ViewModel
             get { return _searchType; }
             set
             {
+                if (value != _searchType)
+                {
+                    Page = 1;
+                } 
                 _searchType = value;
                 onPropertyChanged("Matching");
                 onPropertyChanged("QueryUrl");

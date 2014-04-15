@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.ComponentModel;
 using FirstFloor.ModernUI.Windows;
 using NijieDownloader.Library;
+using FirstFloor.ModernUI.Windows.Controls;
 
 namespace NijieDownloader.UI
 {
@@ -66,6 +67,7 @@ namespace NijieDownloader.UI
                 var uri = new Uri("http://localhost/?" + fragment);
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
                 ViewData.Query = query.Get("query");
+                SearchCommand.Execute(null, btnFetch);
             }
         }
         #endregion
@@ -109,15 +111,49 @@ namespace NijieDownloader.UI
                 e.Handled = true;
             }
         }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
+        private void lbxImages_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+            {
+                e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
+            }
+        }
         #endregion
 
         #region Commands
         public static RoutedCommand SearchCommand = new RoutedCommand();
         private void ExecuteSearchCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            ViewData.DoSearch();
-            this.DataContext = ViewData;
+            // note: different way to refresh the binding.
+            ModernDialog d = new ModernDialog();
+            d.Content = "Loading data...";
+            d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+            
+            System.Threading.ThreadPool.QueueUserWorkItem(
+             (x) =>
+             {
+                 ViewData.DoSearch();
+                 this.Dispatcher.BeginInvoke(
+                     new Action<SearchPage>((y) =>
+                     {
+                         this.DataContext = null;
+                         this.DataContext = ViewData;
+                         d.Close();
+                     }),
+                     new object[] { this }
+                  );
+             }, null
+            );
+            d.ShowDialog();
         }
+
         private void CanExecuteSearchCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = !String.IsNullOrWhiteSpace(ViewData.Query);
@@ -183,23 +219,5 @@ namespace NijieDownloader.UI
             }
         }
         #endregion
-
-        private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount >= 2)
-            {
-                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
-                {
-                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
-                }
-            }
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
-        }
-
     }
 }

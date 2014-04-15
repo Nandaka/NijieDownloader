@@ -176,6 +176,9 @@ namespace NijieDownloader.UI.ViewModel
                 if (_image == null)
                     return null;
 
+                if (_mangaImage == null)
+                    _mangaImage = new ObservableCollection<BitmapImage>();
+
                 if (_image != null && _image.IsManga && this.ImageStatus != MainWindow.IMAGE_LOADED)
                 {
                     while (_mangaImage.Count < _image.ImageUrls.Count)
@@ -272,11 +275,20 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        public bool IsAnimated
+        {
+            get
+            {
+                if (_image != null) return _image.IsAnimated;
+                return false;
+            }
+        }
+
         public int PageCount
         {
             get
             {
-                if (_image != null) return _image.ImageUrls.Count;
+                if (_image != null && _image.IsManga) return _image.ImageUrls.Count;
                 return 0;
             }
         }
@@ -323,7 +335,9 @@ namespace NijieDownloader.UI.ViewModel
                 }
             }
 
+            this._image = temp;
             this._mangaImageStatus = new List<string>();
+            this.Message = "Image parsed, loading image...";
         }
                 
         public int Prev()

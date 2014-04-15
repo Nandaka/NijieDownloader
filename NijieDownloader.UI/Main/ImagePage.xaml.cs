@@ -46,8 +46,9 @@ namespace NijieDownloader.UI
             {
                 var pair = e.Fragment.Split('=');
                 txtImageID.Text = pair[1];
+
                 ViewData.ImageId = Int32.Parse(txtImageID.Text);
-                ExecuteGetImageCommand(this, null);
+                GetImageCommand.Execute(null, btnFetch);
             }
         }
 
@@ -76,12 +77,23 @@ namespace NijieDownloader.UI
             lbxMangaThumb.Height = h;
         }
 
+        private void lblMember_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + lblMember.Content);
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
+        }
+
         #endregion
 
         #region Commands
         public static RoutedCommand GetImageCommand = new RoutedCommand();
         private void ExecuteGetImageCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            ViewData = new NijieImageViewModel() { ImageId = ViewData.ImageId };
             ViewData.GetImage();
             this.DataContext = ViewData;
         }
@@ -118,17 +130,6 @@ namespace NijieDownloader.UI
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
         }
-
-        private void lblMember_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + lblMember.Content);
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
-        }
-
         #endregion
     }
 }

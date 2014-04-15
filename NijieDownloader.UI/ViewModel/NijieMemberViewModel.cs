@@ -35,6 +35,7 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private string _avatarImageStatus;
         private BitmapImage _avatarImage;
         public BitmapImage AvatarImage
         {
@@ -43,17 +44,20 @@ namespace NijieDownloader.UI.ViewModel
                 if (_avatarImage == null)
                 {
                     var loading = ViewModelHelper.NoAvatar;
-                    if (_member != null)
+                    if (_member != null && _avatarImageStatus != MainWindow.IMAGE_LOADING)
                     {
+                        loading = ViewModelHelper.Loading;
+                        _avatarImageStatus = MainWindow.IMAGE_LOADING;
                         MainWindow.LoadImage(_member.AvatarUrl, _member.MemberUrl,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.AvatarImage = null;
                                 this.AvatarImage = image;
+                                _avatarImageStatus = status;
                             }
                         ));
                     }
-                    _avatarImage = loading;
+                    return loading;
                 }
                 return _avatarImage;
             }
@@ -121,6 +125,8 @@ namespace NijieDownloader.UI.ViewModel
                         var temp = new NijieImageViewModel(image);
                         _images.Add(temp);
                     }
+
+                    this.Status = String.Format("Loaded: {0} images.", _member.Images.Count);
                 }
             }
             catch (NijieException ne)

@@ -48,7 +48,8 @@
                         <Button Name="btnAddBatch" Command="{x:Static local:ImagePage.AddToBatchCommand}"
                                 Margin="5,5,5,5" DockPanel.Dock="Left">Add to Batch Job</Button>
                         <TextBlock Text="Status: " TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"/>
-                        <TextBlock Text="{Binding Path=Message, FallbackValue=N/A}" TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <TextBlock TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"
+                                   Text="{Binding Path=Message, FallbackValue=N/A}" />
                         <StackPanel Margin="5,5,5,0" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right"
                                     Visibility="{Binding Path=IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
                             <Button Name="btnPrev" Content="&lt;"

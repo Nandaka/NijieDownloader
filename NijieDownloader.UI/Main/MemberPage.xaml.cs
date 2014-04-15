@@ -49,7 +49,7 @@ namespace NijieDownloader.UI
                 int memberId = 0;
                 Int32.TryParse(temp, out memberId);
                 ViewData.MemberId = memberId;
-                ExecuteGetMemberCommand(this, null);
+                GetMemberCommand.Execute(null, btnFetch);
             }
         }
 
@@ -94,12 +94,35 @@ namespace NijieDownloader.UI
                 TileColumns = 1;
         }
 
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
+        private void lbxImages_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+            {
+                e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
+            }
+        }
+
+        private void lbxImages_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+            {
+                ViewData.Images[lbxImages.SelectedIndex].IsSelected = !ViewData.Images[lbxImages.SelectedIndex].IsSelected;
+                e.Handled = true;
+            }
+        }
         #endregion
 
         #region Commands
         public static RoutedCommand GetMemberCommand = new RoutedCommand();
         private void ExecuteGetMemberCommand(object sender, ExecutedRoutedEventArgs e)
         {
+            ViewData = new NijieMemberViewModel() { MemberId = ViewData.MemberId };
             ViewData.GetMember();
             this.DataContext = ViewData;
         }
@@ -144,22 +167,5 @@ namespace NijieDownloader.UI
             }
         }
         #endregion
-
-        private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount >= 2)
-            {
-                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
-                {
-                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
-                }
-            }
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
-        }        
     }
 }
