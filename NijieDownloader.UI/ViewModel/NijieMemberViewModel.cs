@@ -31,6 +31,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _memberId = value;
                 onPropertyChanged("MemberId");
+                onPropertyChanged("MemberUrl");
             }
         }
 
@@ -102,7 +103,7 @@ namespace NijieDownloader.UI.ViewModel
             get
             {
                 if (_member != null) return _member.MemberUrl;
-                return null;
+                return NijieMember.GenerateMemberUrl(MemberId, Properties.Settings.Default.UseHttps);
             }
         }
         #endregion

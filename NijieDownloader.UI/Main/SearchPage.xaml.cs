@@ -28,110 +28,18 @@ namespace NijieDownloader.UI
     public partial class SearchPage : Page, IContent
     {
         public NijieSearchViewModel ViewData { get; set; }
-        public int TileColumns
-        {
-            get { return (int)GetValue(TileColumnsProperty); }
-            set { SetValue(TileColumnsProperty, value); }
-        }
-        public static readonly DependencyProperty TileColumnsProperty =
-            DependencyProperty.Register("TileColumns", typeof(int), typeof(SearchPage), new PropertyMetadata(3));
 
         public SearchPage()
         {
+            ViewData = new NijieSearchViewModel();
             InitializeComponent();
 #if DEBUG
-            txtQuery.Text = "無修正";
+            ViewData.Query = "無修正";
 #endif
-            if (ViewData == null) ViewData = new NijieSearchViewModel();
             this.DataContext = ViewData;
         }
 
-        private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ClickCount >= 2)
-            {
-                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
-                {
-                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
-                }
-            }
-        }
-
-        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
-        }
-
-        private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            var h = e.NewSize.Height - 280;
-            if (h > 0)
-                lbxImages.MaxHeight = h;
-            else
-                lbxImages.MaxHeight = 1;
-
-            int tileCount = (int)(e.NewSize.Width / 140);
-            if (tileCount > 1)
-                TileColumns = tileCount;
-            else
-                TileColumns = 1;
-        }
-
-        private void doSearch()
-        {
-            try
-            {
-                var option = new NijieSearchOption()
-                {
-                    Query = ViewData.Query,
-                    Page = ViewData.Page,
-                    Sort = ViewData.Sort,
-                    Matching = ViewData.Matching,
-                    SearchBy = ViewData.SearchBy
-                };
-                var result = MainWindow.Bot.Search(option);
-                ViewData = new NijieSearchViewModel(result);
-                this.DataContext = ViewData;
-            }
-            catch (NijieException ne)
-            {
-                ViewData.Status = "Error: " + ne.Message;
-            }
-        }
-
-        private void btnPrev_Click(object sender, RoutedEventArgs e)
-        {
-            ViewData.Page -= 1;
-            doSearch();
-        }
-
-        private void btnFetch_Click(object sender, RoutedEventArgs e)
-        {
-            doSearch();
-        }
-
-        private void btnNext_Click(object sender, RoutedEventArgs e)
-        {
-            ViewData.Page += 1;
-            doSearch();
-        }
-
-        private void btnAddBatchJob_Click(object sender, RoutedEventArgs e)
-        {
-            if (!string.IsNullOrWhiteSpace(txtQuery.Text))
-            {
-                string target = string.Format("/Main/BatchDownloadPage.xaml#type=search&tags={0}&page={1}&sort={2}&mode={3}&searchType={4}",
-                    txtQuery.Text,
-                    txtPage.Text,
-                    cbxSort.SelectedValue,
-                    cbxMode.SelectedValue,
-                    cbxType.SelectedValue);
-
-                e.Handled = MainWindow.NavigateTo(this, target);
-            }
-        }
-
+        #region navigation
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             ProcessNavigation(e.Fragment);
@@ -160,8 +68,98 @@ namespace NijieDownloader.UI
                 ViewData.Query = query.Get("query");
             }
         }
+        #endregion
 
-        private void btnAddSelectedJob_Click(object sender, RoutedEventArgs e)
+        #region UI related
+        public static readonly DependencyProperty TileColumnsProperty =
+            DependencyProperty.Register("TileColumns", typeof(int), typeof(SearchPage), new PropertyMetadata(3));
+
+        public int TileColumns
+        {
+            get { return (int)GetValue(TileColumnsProperty); }
+            set { SetValue(TileColumnsProperty, value); }
+        }
+
+        private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var h = e.NewSize.Height - 280;
+            if (h > 0)
+                lbxImages.MaxHeight = h;
+            else
+                lbxImages.MaxHeight = 1;
+
+            int tileCount = (int)(e.NewSize.Width / 140);
+            if (tileCount > 1)
+                TileColumns = tileCount;
+            else
+                TileColumns = 1;
+        }
+
+        /// <summary>
+        /// Check the box using spacebar
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StackPanel_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Space)
+            {
+                var image = ViewData.Images[lbxImages.SelectedIndex];
+                image.IsSelected = !(image.IsSelected);
+                e.Handled = true;
+            }
+        }
+        #endregion
+
+        #region Commands
+        public static RoutedCommand SearchCommand = new RoutedCommand();
+        private void ExecuteSearchCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.DoSearch();
+            this.DataContext = ViewData;
+        }
+        private void CanExecuteSearchCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = !String.IsNullOrWhiteSpace(ViewData.Query);
+        }
+
+        public static RoutedCommand SearchNextPageCommand = new RoutedCommand();
+        private void ExecuteSearchNextPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page += 1;
+            ExecuteSearchCommand(sender, e);
+        }
+        private void CanExecuteSearchNextPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.IsNextPageAvailable;
+        }
+
+        public static RoutedCommand SearchPrevPageCommand = new RoutedCommand();
+        private void ExecuteSearchPrevPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page -= 1;
+            ExecuteSearchCommand(sender, e);
+        }
+        private void CanExecuteSearchPrevPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.Page > 1 ? true : false;
+        }
+
+        public static RoutedCommand AddBatchCommand = new RoutedCommand();
+        private void ExecuteAddBatchCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            string target = string.Format("/Main/BatchDownloadPage.xaml#type=search&tags={0}&page={1}&sort={2}&mode={3}&searchType={4}",
+                txtQuery.Text,
+                txtPage.Text,
+                cbxSort.SelectedValue,
+                cbxMode.SelectedValue,
+                cbxType.SelectedValue);
+
+            e.Handled = MainWindow.NavigateTo(this, target);
+        }
+
+        public static RoutedCommand AddImagesToBatchCommand = new RoutedCommand();
+        private void ExecuteAddImagesToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             var selected = from l in ViewData.Images
                            where l.IsSelected == true
@@ -173,15 +171,35 @@ namespace NijieDownloader.UI
                 e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
-        
-        private void StackPanel_KeyDown(object sender, KeyEventArgs e)
+        private void CanExecuteAddImagesToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Key == Key.Space)
+            e.CanExecute = false;
+            if (ViewData.Images != null)
             {
-                var image = ViewData.Images[lbxImages.SelectedIndex];
-                image.IsSelected = !(image.IsSelected);
-                e.Handled = true;
+                var selected = (from l in ViewData.Images
+                                where l.IsSelected == true
+                                select l.ImageId).Count();
+                if (selected > 0) e.CanExecute = true;
             }
         }
+        #endregion
+
+        private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount >= 2)
+            {
+                if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
+                {
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
+                }
+            }
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
+            e.Handled = true;
+        }
+
     }
 }

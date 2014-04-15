@@ -6,50 +6,20 @@ using NijieDownloader.Library.Model;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
+using NijieDownloader.Library;
 
 namespace NijieDownloader.UI.ViewModel
 {
     public class NijieSearchViewModel : ViewModelBase
     {
-        public NijieSearchViewModel(NijieSearch search)
-        {
-            this.Search = search;
-            _images = new ObservableCollection<NijieImageViewModel>();
-            foreach (var image in search.Images)
-            {
-                var temp = new NijieImageViewModel(image);
-                _images.Add(temp);
-            }
-            this.Sort = search.Option.Sort;
-            this.Query = search.Option.Query;
-            this.Page = search.Option.Page;
-            this.SearchBy = search.Option.SearchBy;
-            this.Matching = search.Option.Matching;
-        }
+        private NijieSearch _search;
 
-        public NijieSearchViewModel(NijieSearchOption option)
-        {
-            this.Search = new NijieSearch(option, Properties.Settings.Default.UseHttps);
-            this.Sort = option.Sort;
-            this.Query = option.Query;
-            this.Page = option.Page;
-            this.SearchBy = option.SearchBy;
-            this.Matching = option.Matching;
-        }
-
+        #region ctor
         public NijieSearchViewModel() { }
 
-        private NijieSearch _search;
-        public NijieSearch Search
-        {
-            get { return _search; }
-            private set
-            {
-                _search = value;
-                onPropertyChanged("Search");
-            }
-        }
+        #endregion
 
+        #region properties
         private SortType _sortType;
         public SortType Sort
         {
@@ -58,6 +28,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _sortType = value;
                 onPropertyChanged("Sort");
+                onPropertyChanged("QueryUrl");
             }
         }
 
@@ -68,6 +39,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _query = value;
                 onPropertyChanged("Query");
+                onPropertyChanged("QueryUrl");
             }
         }
 
@@ -79,6 +51,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _page = value;
                 onPropertyChanged("Page");
+                onPropertyChanged("QueryUrl");
             }
         }
 
@@ -89,6 +62,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _searchMode = value;
                 onPropertyChanged("SearchBy");
+                onPropertyChanged("QueryUrl");
             }
         }
 
@@ -99,6 +73,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _searchType = value;
                 onPropertyChanged("Matching");
+                onPropertyChanged("QueryUrl");
             }
         }
 
@@ -126,6 +101,59 @@ namespace NijieDownloader.UI.ViewModel
                 _images = value;
                 onPropertyChanged("Images");
             }
+        }
+
+        public bool IsNextPageAvailable
+        {
+            get
+            {
+                if (_search != null) return _search.IsNextAvailable;
+                return false;
+            }
+        }
+
+        public string QueryUrl
+        {
+            get
+            {
+                if (_search != null) return _search.QueryUrl;
+
+                NijieSearchOption option = new NijieSearchOption();
+                option.Sort = Sort;
+                option.Query = Query;
+                option.Page = Page;
+                option.SearchBy = SearchBy;
+                option.Matching = Matching;
+                return NijieSearch.GenerateQueryUrl(option, Properties.Settings.Default.UseHttps);
+            }
+        }
+        #endregion
+
+        public void DoSearch()
+        {
+            NijieSearchOption option = new NijieSearchOption();
+            option.Sort = Sort;
+            option.Query = Query;
+            option.Page = Page;
+            option.SearchBy = SearchBy;
+            option.Matching = Matching;
+
+            try
+            {
+                _search = MainWindow.Bot.Search(option);
+
+                _images = new ObservableCollection<NijieImageViewModel>();
+                foreach (var image in _search.Images)
+                {
+                    var temp = new NijieImageViewModel(image);
+                    _images.Add(temp);
+                }
+            }
+            catch (NijieException ne)
+            {
+                Status = "Error: " + ne.Message;
+            }
+            
         }
     }
 }

@@ -17,13 +17,12 @@ namespace NijieDownloader.Library.Model
         
         public virtual ICollection<NijieImage> Images { get; set; }
         
-
         [NotMapped]
         public string MemberUrl
         {
             get
             {
-                return Util.FixUrl("//nijie.info/members_illust.php?id=" + MemberId, UseHttps);
+                return GenerateMemberUrl(MemberId, UseHttps);
             }
             private set { }
         }
@@ -46,6 +45,11 @@ namespace NijieDownloader.Library.Model
         {
             this.MemberId = memberId;
             this.UseHttps = useHttps;
+        }
+
+        public static string GenerateMemberUrl(int memberId, bool useHttps)
+        {
+            return Util.FixUrl("//nijie.info/members_illust.php?id=" + memberId, useHttps);
         }
     }
 }

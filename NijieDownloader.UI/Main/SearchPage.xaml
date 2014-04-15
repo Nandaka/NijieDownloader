@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+      xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
@@ -63,6 +64,23 @@
             </StackPanel>
         </DataTemplate>
     </Page.Resources>
+    <Page.CommandBindings>
+        <CommandBinding Command="{x:Static local:SearchPage.SearchCommand}"
+                        Executed="ExecuteSearchCommand"
+                        CanExecute="CanExecuteSearchCommand"/>
+        <CommandBinding Command="{x:Static local:SearchPage.SearchNextPageCommand}"
+                        Executed="ExecuteSearchNextPageCommand"
+                        CanExecute="CanExecuteSearchNextPageCommand"/>
+        <CommandBinding Command="{x:Static local:SearchPage.SearchPrevPageCommand}"
+                        Executed="ExecuteSearchPrevPageCommand"
+                        CanExecute="CanExecuteSearchPrevPageCommand"/>
+        <CommandBinding Command="{x:Static local:SearchPage.AddBatchCommand}"
+                        Executed="ExecuteAddBatchCommand"
+                        CanExecute="CanExecuteSearchCommand"/>
+        <CommandBinding Command="{x:Static local:SearchPage.AddImagesToBatchCommand}"
+                        Executed="ExecuteAddImagesToBatchCommand"
+                        CanExecute="CanExecuteAddImagesToBatchCommand"/>
+    </Page.CommandBindings>
     <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
         <Grid Style="{StaticResource ContentRoot}" x:Name="root">
             <DockPanel>
@@ -91,9 +109,11 @@
                                       SelectedItem="{Binding Path=Matching}"/>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Name="btnPrev" Margin="5,5,5,5" Click="btnPrev_Click" IsEnabled="{Binding Path=Search.IsPrevAvailable}" Content="&lt;" />
+                            <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;" 
+                                    Command="{x:Static local:SearchPage.SearchPrevPageCommand}"/>
                             <TextBox Name="txtPage" Height="25" Text="{Binding Path=Page}" MinWidth="50"/>
-                            <Button Name="btnNext" Margin="5,5,5,5" Click="btnNext_Click" IsEnabled="{Binding Path=Search.IsNextAvailable}" Content="&gt;"/>
+                            <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
+                                    Command="{x:Static local:SearchPage.SearchNextPageCommand}"/>
                         </StackPanel>
                         <TextBlock Width="Auto"/>
                     </DockPanel>
@@ -101,15 +121,18 @@
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
                             <TextBlock Text="Search Url" HorizontalAlignment="Left" Margin="5,5,5,0" />
                             <TextBlock Name="txtUrl" Height="25" Width="Auto">
-                                <Hyperlink NavigateUri="{Binding Path=Search.QueryUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                                    <Label Content="{Binding Path=Search.QueryUrl}" />
+                                <Hyperlink NavigateUri="{Binding Path=QueryUrl}" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Label Content="{Binding Path=QueryUrl}" />
                                 </Hyperlink>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                            <Button Width="120" Margin="5,5,5,5" Name="btnFetch" Click="btnFetch_Click" IsDefault="True">Search</Button>
-                            <Button Width="120" Margin="5,5,5,5" Name="btnAddBatchJob" Click="btnAddBatchJob_Click">Add To Batch</Button>
-                            <Button Width="120" Margin="5,5,5,5" Name="btnAddSelectedJob" Click="btnAddSelectedJob_Click">Add Selected</Button>
+                            <Button Width="120" Margin="5,5,5,5" Name="btnFetch" IsDefault="True"
+                                    Command="{x:Static local:SearchPage.SearchCommand}">Search</Button>
+                            <Button Width="120" Margin="5,5,5,5" Name="btnAddBatchJob" 
+                                    Command="{x:Static local:SearchPage.AddBatchCommand}">Add To Batch</Button>
+                            <Button Width="120" Margin="5,5,5,5" Name="btnAddSelectedJob" 
+                                    Command="{x:Static local:SearchPage.AddImagesToBatchCommand}">Add Selected</Button>
                         </StackPanel>
                         <TextBlock Width="Auto"/>
                     </DockPanel>
