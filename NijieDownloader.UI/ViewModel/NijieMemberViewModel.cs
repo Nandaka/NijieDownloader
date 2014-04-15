@@ -6,19 +6,31 @@ using NijieDownloader.Library.Model;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using System.Collections.ObjectModel;
+using NijieDownloader.Library;
 
 namespace NijieDownloader.UI.ViewModel
 {
     public class NijieMemberViewModel : ViewModelBase
     {
         private NijieMember _member;
-        public NijieMember Member
+
+        #region ctor
+        public NijieMemberViewModel() { }
+
+        #endregion
+
+        #region properties
+        private int _memberId;
+        public int MemberId
         {
-            get { return _member; }
-            private set
+            get
             {
-                _member = value;
-                onPropertyChanged("Member");
+                return _memberId;
+            }
+            set
+            {
+                _memberId = value;
+                onPropertyChanged("MemberId");
             }
         }
 
@@ -29,11 +41,10 @@ namespace NijieDownloader.UI.ViewModel
             {
                 if (_avatarImage == null)
                 {
-                    var loading = new BitmapImage(new Uri("pack://application:,,,/Resources/no_avatar.jpg"));
-                    loading.Freeze();
-                    if (Member != null)
+                    var loading = ViewModelHelper.NoAvatar;
+                    if (_member != null)
                     {
-                        MainWindow.LoadImage(Member.AvatarUrl, Member.MemberUrl,
+                        MainWindow.LoadImage(_member.AvatarUrl, _member.MemberUrl,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.AvatarImage = null;
@@ -65,20 +76,6 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Images");
             }
         }
-        
-        public NijieMemberViewModel(NijieMember member)
-        {
-            this.Member = member;
-            if (member != null && member.Images != null)
-            {
-                _images = new ObservableCollection<NijieImageViewModel>();
-                foreach (var image in member.Images)
-                {
-                    var temp = new NijieImageViewModel(image);
-                    _images.Add(temp);
-                }
-            }
-        }
 
         private string _status;
         public string Status
@@ -89,6 +86,47 @@ namespace NijieDownloader.UI.ViewModel
                 _status = value;
                 onPropertyChanged("Status");
             }
+        }
+
+        public string UserName
+        {
+            get
+            {
+                if (_member != null) return _member.UserName;
+                return null;
+            }
+        }
+
+        public string MemberUrl
+        {
+            get
+            {
+                if (_member != null) return _member.MemberUrl;
+                return null;
+            }
+        }
+        #endregion
+
+        public void GetMember()
+        {
+            try
+            {
+                _member = MainWindow.Bot.ParseMember(this.MemberId);
+                if (_member.Images != null)
+                {
+                    _images = new ObservableCollection<NijieImageViewModel>();
+                    foreach (var image in _member.Images)
+                    {
+                        var temp = new NijieImageViewModel(image);
+                        _images.Add(temp);
+                    }
+                }
+            }
+            catch (NijieException ne)
+            {
+                this.Status = "Error: " + ne.Message;
+            }
+            
         }
     }
 }

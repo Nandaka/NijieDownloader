@@ -67,5 +67,20 @@ namespace NijieDownloader.UI.ViewModel
             }
             private set { }
         }
+
+        private static BitmapImage _noAvatar;
+        public static BitmapImage NoAvatar
+        {
+            get
+            {
+                if (_noAvatar == null)
+                {
+                    _noAvatar = new BitmapImage(new Uri("pack://application:,,,/Resources/no_avatar.jpg"));
+                    _noAvatar.Freeze();
+                }
+                return _noAvatar;
+            }
+            private set { }
+        }
     }
 }

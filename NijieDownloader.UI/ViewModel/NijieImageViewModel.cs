@@ -280,6 +280,15 @@ namespace NijieDownloader.UI.ViewModel
                 return 0;
             }
         }
+
+        public bool IsDownloaded
+        {
+            get
+            {
+                if (_image != null) return _image.IsDownloaded;
+                return false;
+            }
+        }
         #endregion
 
         public void GetImage()
