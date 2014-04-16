@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using NijieDownloader.Library.Model;
-using System.Windows.Media.Imaging;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using Nandaka.Common;
-using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
 using System.Windows;
-using System.Windows.Threading;
 using System.Windows.Input;
-using NijieDownloader.Library.DAL;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+using Nandaka.Common;
 using NijieDownloader.Library;
+using NijieDownloader.Library.DAL;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -22,24 +22,30 @@ namespace NijieDownloader.UI.ViewModel
         private List<string> _mangaImageStatus = null;
 
         #region ctor
+
         /// <summary>
         /// Default constructor for Data Binding
         /// </summary>
-        public NijieImageViewModel() { }
+        public NijieImageViewModel()
+        {
+        }
 
         /// <summary>
         /// Used in Search and Member page.
         /// </summary>
         /// <param name="image"></param>
-        public NijieImageViewModel(NijieImage image) 
+        public NijieImageViewModel(NijieImage image)
         {
             _image = image;
             this.ImageId = image.ImageId;
         }
-        #endregion
+
+        #endregion ctor
 
         #region properties
+
         private int _imageId;
+
         public int ImageId
         {
             get { return _imageId; }
@@ -51,6 +57,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private bool _isSelected;
+
         public bool IsSelected
         {
             get { return _isSelected; }
@@ -62,6 +69,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _status;
+
         public string Message
         {
             get { return _status; }
@@ -73,6 +81,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _imageStatus;
+
         public string ImageStatus
         {
             get { return _imageStatus; }
@@ -84,11 +93,12 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private BitmapImage _bigImage;
+
         public BitmapImage BigImage
         {
             get
             {
-                if (_image == null) 
+                if (_image == null)
                     return null;
 
                 if (_image.IsFriendOnly)
@@ -125,6 +135,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private BitmapImage _thumbImage;
+
         public BitmapImage ThumbImage
         {
             get
@@ -134,6 +145,11 @@ namespace NijieDownloader.UI.ViewModel
 
                 if (_thumbImage == null && !(this.ImageStatus == ImageLoader.IMAGE_LOADED || this.ImageStatus == ImageLoader.IMAGE_ERROR))
                 {
+                    if (!Properties.Settings.Default.LoadThumbnail)
+                    {
+                        return ViewModelHelper.NoAvatar;
+                    }
+
                     this.ImageStatus = ImageLoader.IMAGE_LOADING;
 
                     ImageLoader.LoadImage(_image.ThumbImageUrl, _image.Referer,
@@ -158,6 +174,7 @@ namespace NijieDownloader.UI.ViewModel
 
         /* Manga Related */
         private int _page = 0;
+
         public int Page
         {
             get { return _page; }
@@ -169,6 +186,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private ObservableCollection<BitmapImage> _mangaImage;
+
         public ObservableCollection<BitmapImage> MangaImage
         {
             get
@@ -301,7 +319,8 @@ namespace NijieDownloader.UI.ViewModel
                 return false;
             }
         }
-        #endregion
+
+        #endregion properties
 
         public void GetImage()
         {
@@ -339,14 +358,13 @@ namespace NijieDownloader.UI.ViewModel
             this._mangaImageStatus = new List<string>();
             this.Message = "Image parsed, loading image...";
         }
-                
+
         public int Prev()
         {
             if (_image != null && this.Page > 0)
             {
                 --this.Page;
                 LoadBigImage(_image.ImageUrls[this.Page]);
-
             }
             return this.Page;
         }
@@ -431,5 +449,5 @@ namespace NijieDownloader.UI.ViewModel
                 MainWindow.Log.Error(ex.Message, ex);
             }
         }
-    }    
+    }
 }

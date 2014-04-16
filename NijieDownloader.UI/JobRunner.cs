@@ -33,6 +33,7 @@ namespace NijieDownloader.UI
         }
 
         #region main job method.
+
         /// <summary>
         /// Run job on Task factory
         /// </summary>
@@ -55,6 +56,7 @@ namespace NijieDownloader.UI
                 if (isJobCancelled(job))
                     return;
 
+                long start = DateTime.Now.Ticks;
                 job.Status = JobStatus.Running;
                 job.Message = "Starting job...";
                 switch (job.JobType)
@@ -75,7 +77,7 @@ namespace NijieDownloader.UI
                 if (job.Status != JobStatus.Error && job.Status != JobStatus.Cancelled)
                 {
                     job.Status = JobStatus.Completed;
-                    MainWindow.Log.Debug("Job completed: " + job.Name);
+                    MainWindow.Log.Debug(String.Format("Job completed: {0} in {1}s", job.Name, new TimeSpan(DateTime.Now.Ticks - start).TotalSeconds));
                 }
             }
             , cancelSource.Token
@@ -251,9 +253,11 @@ namespace NijieDownloader.UI
                 return false;
             }
         }
-        #endregion
+
+        #endregion main job method.
 
         #region actual download image related
+
         /// <summary>
         /// Parse the image page
         /// - Illustration
@@ -436,7 +440,7 @@ namespace NijieDownloader.UI
                     {
                         job.Message = ex.Message + " retry: " + retry + " wait: " + i;
                         Thread.Sleep(1000);
-                        if (job.CancelToken.IsCancellationRequested) 
+                        if (job.CancelToken.IsCancellationRequested)
                             return false;
                     }
                 }
@@ -444,7 +448,8 @@ namespace NijieDownloader.UI
 
             return true;
         }
-        #endregion
+
+        #endregion actual download image related
 
         private static void HandleJobException(JobDownloadViewModel job, NijieException ne)
         {

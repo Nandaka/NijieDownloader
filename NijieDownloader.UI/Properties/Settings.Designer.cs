@@ -298,5 +298,17 @@ namespace NijieDownloader.UI.Properties {
                 this["EnableCompression"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool LoadThumbnail {
+            get {
+                return ((bool)(this["LoadThumbnail"]));
+            }
+            set {
+                this["LoadThumbnail"] = value;
+            }
+        }
     }
 }
