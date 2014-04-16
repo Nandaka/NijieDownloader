@@ -79,7 +79,7 @@ namespace NijieDownloader.UI
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Member;
             newJob.MemberId = memberId;
-            newJob.Status = Status.Added;
+            newJob.Status = JobStatus.Added;
             var result = ShowAddJobDialog(newJob);
             if (result != null)
             {
@@ -92,7 +92,7 @@ namespace NijieDownloader.UI
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Tags;
             newJob.SearchTag = option.Query;
-            newJob.Status = Status.Added;
+            newJob.Status = JobStatus.Added;
             newJob.StartPage = option.Page;
             newJob.Sort = option.Sort;
             newJob.Matching = option.Matching;
@@ -109,7 +109,7 @@ namespace NijieDownloader.UI
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Image;
             newJob.ImageId = p;
-            newJob.Status = Status.Added;
+            newJob.Status = JobStatus.Added;
             AddJob(newJob);
         }
         #region navigation
@@ -198,9 +198,9 @@ namespace NijieDownloader.UI
             if (ok)
             {
                 ViewData.Add(newJob);
-                if (MainWindow.BatchStatus == Status.Running)
+                if (JobRunner.BatchStatus == JobStatus.Running)
                 {
-                    MainWindow.DoJob(newJob, cancelToken);
+                    JobRunner.DoJob(newJob, cancelToken);
                 }
             }
         }
@@ -313,17 +313,17 @@ namespace NijieDownloader.UI
         private void ExecuteStartCommand(object sender, ExecutedRoutedEventArgs e)
         {
             cancelToken = new CancellationTokenSource();
-            MainWindow.BatchStatus = Status.Running;
+            JobRunner.BatchStatus = JobStatus.Running;
             foreach (var job in ViewData)
             {
-                if (job.Status != Status.Completed)
+                if (job.Status != JobStatus.Completed)
                 {
-                    MainWindow.DoJob(job, cancelToken);
+                    JobRunner.DoJob(job, cancelToken);
                     job.PauseEvent.Set();
                 }
             }
             // notify when all done
-            MainWindow.NotifyAllCompleted(() =>
+            JobRunner.NotifyAllCompleted(() =>
             {
 
                 ModernDialog d = new ModernDialog();
@@ -335,9 +335,9 @@ namespace NijieDownloader.UI
                 int cancelled = 0;
                 foreach (var job in ViewData)
                 {
-                    if (job.Status == Status.Completed) ++completed;
-                    else if (job.Status == Status.Error) ++error;
-                    else if (job.Status == Status.Cancelled) ++cancelled;
+                    if (job.Status == JobStatus.Completed) ++completed;
+                    else if (job.Status == JobStatus.Error) ++error;
+                    else if (job.Status == JobStatus.Cancelled) ++cancelled;
                 }
                 sb.Append("\tCompleted : " + completed);
                 sb.Append(Environment.NewLine);
@@ -346,7 +346,7 @@ namespace NijieDownloader.UI
                 sb.Append("\tCancelled : " + cancelled);
                 d.Content = sb.ToString();
                 d.ShowDialog();
-                MainWindow.BatchStatus = Status.Completed;
+                JobRunner.BatchStatus = JobStatus.Completed;
             });
 
         }
@@ -357,16 +357,16 @@ namespace NijieDownloader.UI
 
             if (target != null)
             {
-                if (MainWindow.BatchStatus != Status.Running &&
-                   MainWindow.BatchStatus != Status.Paused &&
-                   MainWindow.BatchStatus != Status.Canceling)
+                if (JobRunner.BatchStatus != JobStatus.Running &&
+                   JobRunner.BatchStatus != JobStatus.Paused &&
+                   JobRunner.BatchStatus != JobStatus.Canceling)
                     e.CanExecute = true;
             }
         }
 
         private void ExecuteStopCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            MainWindow.BatchStatus = Status.Canceling;
+            JobRunner.BatchStatus = JobStatus.Canceling;
 
             if (cancelToken != null)
             {
@@ -375,12 +375,12 @@ namespace NijieDownloader.UI
 
             foreach (var item in ViewData)
             {
-                if (item.Status != Status.Completed && item.Status != Status.Error && item.Status != Status.Queued)
+                if (item.Status != JobStatus.Completed && item.Status != JobStatus.Error && item.Status != JobStatus.Queued)
                 {
-                    item.Status = Status.Canceling;
+                    item.Status = JobStatus.Canceling;
                 }
             }
-            //MainWindow.BatchStatus = Status.Cancelled;
+            //MainWindow.BatchStatus = JobStatus.Cancelled;
         }
         private void CanExecuteStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
@@ -390,7 +390,7 @@ namespace NijieDownloader.UI
 
             if (target != null)
             {
-                if (MainWindow.BatchStatus == Status.Running)
+                if (JobRunner.BatchStatus == JobStatus.Running)
                     e.CanExecute = true;
             }
         }
@@ -399,7 +399,7 @@ namespace NijieDownloader.UI
         {
             if (btnPause.Content.ToString() == "Pause")
             {
-                MainWindow.BatchStatus = Status.Paused;
+                JobRunner.BatchStatus = JobStatus.Paused;
                 foreach (var item in ViewData)
                 {
                     item.Pause();
@@ -408,7 +408,7 @@ namespace NijieDownloader.UI
             }
             else
             {
-                MainWindow.BatchStatus = Status.Running;
+                JobRunner.BatchStatus = JobStatus.Running;
                 foreach (var item in ViewData)
                 {
                     item.Resume();
@@ -422,12 +422,12 @@ namespace NijieDownloader.UI
 
             if (target != null)
             {
-                if (MainWindow.BatchStatus == Status.Running ||
-                    MainWindow.BatchStatus == Status.Paused)
+                if (JobRunner.BatchStatus == JobStatus.Running ||
+                    JobRunner.BatchStatus == JobStatus.Paused)
                 {
                     e.CanExecute = true;
                 }
-                if (MainWindow.BatchStatus == Status.Canceling)
+                if (JobRunner.BatchStatus == JobStatus.Canceling)
                 {
                     e.CanExecute = false;
                 }
@@ -463,7 +463,7 @@ namespace NijieDownloader.UI
         private void CanExecuteEditJobCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
-            if (MainWindow.BatchStatus == Status.Running)
+            if (JobRunner.BatchStatus == JobStatus.Running)
             {
                 e.CanExecute = false;
             }

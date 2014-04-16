@@ -12,11 +12,11 @@ namespace NijieDownloader.UI
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            Status val = (Status)value;
+            JobStatus val = (JobStatus)value;
             
             if (targetType == typeof(Visibility))
             {
-                if (val == Status.Running || val == Status.Canceling)
+                if (val == JobStatus.Running || val == JobStatus.Canceling)
                     return Visibility.Visible;
                 else
                     return Visibility.Collapsed;

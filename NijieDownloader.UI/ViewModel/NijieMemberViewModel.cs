@@ -44,11 +44,11 @@ namespace NijieDownloader.UI.ViewModel
                 if (_avatarImage == null)
                 {
                     var loading = ViewModelHelper.NoAvatar;
-                    if (_member != null && _avatarImageStatus != MainWindow.IMAGE_LOADING)
+                    if (_member != null && _avatarImageStatus != ImageLoader.IMAGE_LOADING)
                     {
                         loading = ViewModelHelper.Loading;
-                        _avatarImageStatus = MainWindow.IMAGE_LOADING;
-                        MainWindow.LoadImage(_member.AvatarUrl, _member.MemberUrl,
+                        _avatarImageStatus = ImageLoader.IMAGE_LOADING;
+                        ImageLoader.LoadImage(_member.AvatarUrl, _member.MemberUrl,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.AvatarImage = null;

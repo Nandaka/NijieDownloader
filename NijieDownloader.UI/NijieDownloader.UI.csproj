@@ -123,12 +123,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ImageLoader.cs" />
     <Compile Include="JobStatusToVisibilityConverter.cs" />
-    <Compile Include="MainWindow.JobHelper.cs" />
+    <Compile Include="JobRunner.cs" />
     <Compile Include="Main\BatchDownloadPage.xaml.cs">
       <DependentUpon>BatchDownloadPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="EnumHelper.cs" />
     <Compile Include="JobTypeToVisibilityConverter.cs" />
     <Compile Include="Main\Popup\AddJobPopup.xaml.cs">
       <DependentUpon>AddJobPopup.xaml</DependentUpon>
@@ -149,6 +149,7 @@
       <DependentUpon>Network.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.UIHelper.cs" />
+    <Compile Include="ViewModel\JobDownloadViewModelComparer.cs" />
     <Compile Include="ViewModel\ViewModelHelper.cs" />
     <Compile Include="ViewModel\JobDownloadViewModel.cs" />
     <Compile Include="ViewModel\NijieSearchViewModel.cs" />

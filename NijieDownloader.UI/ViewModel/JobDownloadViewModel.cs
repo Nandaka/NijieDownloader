@@ -12,18 +12,8 @@ namespace NijieDownloader.UI.ViewModel
     [Serializable]
     public class JobDownloadViewModel : ViewModelBase, ICloneable
     {
-        private bool _isSelected;
-        [XmlIgnoreAttribute]
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                _isSelected = value;
-                onPropertyChanged("IsSelected");
-            }
-        }
 
+        #region serialized data
         private JobType _jobType;
         public JobType JobType
         {
@@ -32,112 +22,6 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _jobType = value;
                 onPropertyChanged("JobType");
-            }
-        }
-
-        private string _saveFilenameFormat;
-        public string SaveFilenameFormat
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_saveFilenameFormat))
-                {
-                    _saveFilenameFormat = Properties.Settings.Default.FilenameFormat;
-                }
-                return _saveFilenameFormat;
-            }
-            set
-            {
-                _saveFilenameFormat = value;
-                onPropertyChanged("SaveFilenameFormat");
-            }
-        }
-
-        private string _saveMangaFilenameFormat;
-        public string SaveMangaFilenameFormat
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_saveMangaFilenameFormat))
-                {
-                    _saveMangaFilenameFormat = Properties.Settings.Default.MangaFilenameFormat;
-                }
-                return _saveMangaFilenameFormat;
-            }
-            set
-            {
-                _saveMangaFilenameFormat = value;
-                onPropertyChanged("SaveMangaFilenameFormat");
-            }
-        }
-
-        private string _saveAvatarFilenameFormat;
-        public string SaveAvatarFilenameFormat
-        {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_saveAvatarFilenameFormat))
-                {
-                    _saveAvatarFilenameFormat = Properties.Settings.Default.AvatarFilenameFormat;
-                }
-                return _saveAvatarFilenameFormat;
-            }
-            set
-            {
-                _saveAvatarFilenameFormat = value;
-                onPropertyChanged("SaveAvatarFilenameFormat");
-            }
-        }
-
-        [XmlIgnoreAttribute]
-        public string Name
-        {
-            get
-            {
-                switch (JobType)
-                {
-                    case JobType.Image:
-                        return String.Format("Image ID: {0}", ImageId);
-                    case JobType.Member:
-                        return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
-                    case JobType.Tags:
-                        return String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
-                }
-                return "N/A";
-            }
-            private set {  }
-        }
-
-        private Status _status;
-        [XmlIgnoreAttribute]
-        public Status Status
-        {
-            get
-            {
-                return _status;
-            }
-            set
-            {
-                _status = value;
-                onPropertyChanged("Status");
-            }
-        }
-
-        private string _message;
-        [XmlIgnoreAttribute]
-        public string Message
-        {
-            get
-            {
-                if (JobType == JobType.Tags || JobType == JobType.Member)
-                    return String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
-                else
-                    return _message + Environment.NewLine;
-            }
-            set
-            {
-                _message = value;
-                onPropertyChanged("Message");
             }
         }
 
@@ -173,7 +57,7 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("SearchTag");
             }
         }
-        
+
         private int _startPage = 1;
         public int StartPage
         {
@@ -248,6 +132,59 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Matching");
             }
         }
+        private string _saveFilenameFormat;
+        public string SaveFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveFilenameFormat))
+                {
+                    _saveFilenameFormat = Properties.Settings.Default.FilenameFormat;
+                }
+                return _saveFilenameFormat;
+            }
+            set
+            {
+                _saveFilenameFormat = value;
+                onPropertyChanged("SaveFilenameFormat");
+            }
+        }
+
+        private string _saveMangaFilenameFormat;
+        public string SaveMangaFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveMangaFilenameFormat))
+                {
+                    _saveMangaFilenameFormat = Properties.Settings.Default.MangaFilenameFormat;
+                }
+                return _saveMangaFilenameFormat;
+            }
+            set
+            {
+                _saveMangaFilenameFormat = value;
+                onPropertyChanged("SaveMangaFilenameFormat");
+            }
+        }
+
+        private string _saveAvatarFilenameFormat;
+        public string SaveAvatarFilenameFormat
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_saveAvatarFilenameFormat))
+                {
+                    _saveAvatarFilenameFormat = Properties.Settings.Default.AvatarFilenameFormat;
+                }
+                return _saveAvatarFilenameFormat;
+            }
+            set
+            {
+                _saveAvatarFilenameFormat = value;
+                onPropertyChanged("SaveAvatarFilenameFormat");
+            }
+        }
 
         private int _downloadCount;
         [XmlIgnoreAttribute]
@@ -278,7 +215,74 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("CurrentPage");
             }
         }
+        #endregion
 
+        #region UI data
+        private bool _isSelected;
+        [XmlIgnoreAttribute]
+        public bool IsSelected
+        {
+            get { return _isSelected; }
+            set
+            {
+                _isSelected = value;
+                onPropertyChanged("IsSelected");
+            }
+        }
+
+        [XmlIgnoreAttribute]
+        public string Name
+        {
+            get
+            {
+                switch (JobType)
+                {
+                    case JobType.Image:
+                        return String.Format("Image ID: {0}", ImageId);
+                    case JobType.Member:
+                        return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
+                    case JobType.Tags:
+                        return String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
+                }
+                return "N/A";
+            }
+        }
+
+        private JobStatus _status;
+        [XmlIgnoreAttribute]
+        public JobStatus Status
+        {
+            get
+            {
+                return _status;
+            }
+            set
+            {
+                _status = value;
+                onPropertyChanged("JobStatus");
+            }
+        }
+
+        private string _message;
+        [XmlIgnoreAttribute]
+        public string Message
+        {
+            get
+            {
+                if (JobType == JobType.Tags || JobType == JobType.Member)
+                    return String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
+                else
+                    return _message + Environment.NewLine;
+            }
+            set
+            {
+                _message = value;
+                onPropertyChanged("Message");
+            }
+        }
+        #endregion
+
+        #region Job control related
         private ManualResetEvent _pause;
         [XmlIgnoreAttribute]
         public ManualResetEvent PauseEvent
@@ -289,13 +293,12 @@ namespace NijieDownloader.UI.ViewModel
                     _pause = new ManualResetEvent(false);
                 return _pause;
             }
-            private set { }
         }
 
         [XmlIgnoreAttribute]
         public CancellationToken CancelToken { get; set; }
 
-        private Status _prevStatus;
+        private JobStatus _prevStatus;
         private string _prevMessage;
 
         public void Pause()
@@ -304,12 +307,12 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _prevStatus = this.Status;
                 _prevMessage = this.Message;
-                if (this.Status == Status.Running || this.Status == Status.Queued)
+                if (this.Status == JobStatus.Running || this.Status == JobStatus.Queued)
                 {
                     this.Message = "Pausing...";
                     this.PauseEvent.Reset();
                     this.Message = "Paused.";
-                    this.Status = Status.Paused;
+                    this.Status = JobStatus.Paused;
                 }
             }
         }
@@ -318,7 +321,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             lock (this)
             {
-                if (this.Status == Status.Paused)
+                if (this.Status == JobStatus.Paused)
                 {
                     this.Message = "Resuming...";
                     this.PauseEvent.Set();
@@ -327,54 +330,12 @@ namespace NijieDownloader.UI.ViewModel
                 }
             }
         }
-        
+
+        #endregion
+
         public object Clone()
         {
             return this.MemberwiseClone();
-        }
-    }
-
-    public class JobDownloadViewModelComparer : IComparer<JobDownloadViewModel> , IEqualityComparer<JobDownloadViewModel>
-    {
-        public int Compare(JobDownloadViewModel x, JobDownloadViewModel other)
-        {
-            if (x.JobType == other.JobType)
-            {
-                switch (x.JobType)
-                {
-                    case JobType.Image:
-                        if (x.ImageId == other.ImageId)
-                            return 0;
-                        break;
-                    case JobType.Member:
-                        if (x.MemberId == other.MemberId &&
-                            x.StartPage == other.StartPage &&
-                            x.EndPage == other.EndPage &&
-                            x.Limit == other.Limit)
-                            return 0;
-                        break;
-                    case JobType.Tags:
-                        if (x.SearchTag == other.SearchTag &&
-                            x.StartPage == other.StartPage &&
-                            x.EndPage == other.EndPage &&
-                            x.Limit == other.Limit)
-                            return 0;
-                        break;
-                    default:
-                        return 1;
-                }
-            }
-            return 1;
-        }
-
-        public bool Equals(JobDownloadViewModel x, JobDownloadViewModel y)
-        {
-            return Compare(x, y) == 0 ? true : false;
-        }
-
-        public int GetHashCode(JobDownloadViewModel obj)
-        {
-            return obj.GetHashCode();
         }
     }
 
@@ -385,7 +346,7 @@ namespace NijieDownloader.UI.ViewModel
         Tags
     }
     
-    public enum Status
+    public enum JobStatus
     {
         Added,
         Queued,

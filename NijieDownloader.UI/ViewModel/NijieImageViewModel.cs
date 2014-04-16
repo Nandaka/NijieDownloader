@@ -93,7 +93,7 @@ namespace NijieDownloader.UI.ViewModel
 
                 if (_image.IsFriendOnly)
                 {
-                    this.ImageStatus = MainWindow.IMAGE_LOADED;
+                    this.ImageStatus = ImageLoader.IMAGE_LOADED;
                     return ViewModelHelper.FriendOnly;
                 }
 
@@ -107,7 +107,7 @@ namespace NijieDownloader.UI.ViewModel
                     }
                 }
 
-                if (_bigImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
+                if (_bigImage == null && !(this.ImageStatus == ImageLoader.IMAGE_LOADED || this.ImageStatus == ImageLoader.IMAGE_ERROR))
                 {
                     if (!_image.IsManga)
                     {
@@ -132,11 +132,11 @@ namespace NijieDownloader.UI.ViewModel
                 if (_image == null)
                     return null;
 
-                if (_thumbImage == null && !(this.ImageStatus == MainWindow.IMAGE_LOADED || this.ImageStatus == MainWindow.IMAGE_ERROR))
+                if (_thumbImage == null && !(this.ImageStatus == ImageLoader.IMAGE_LOADED || this.ImageStatus == ImageLoader.IMAGE_ERROR))
                 {
-                    this.ImageStatus = MainWindow.IMAGE_LOADING;
+                    this.ImageStatus = ImageLoader.IMAGE_LOADING;
 
-                    MainWindow.LoadImage(_image.ThumbImageUrl, _image.Referer,
+                    ImageLoader.LoadImage(_image.ThumbImageUrl, _image.Referer,
                         new Action<BitmapImage, string>((image, status) =>
                         {
                             this.ThumbImage = null;
@@ -179,17 +179,17 @@ namespace NijieDownloader.UI.ViewModel
                 if (_mangaImage == null)
                     _mangaImage = new ObservableCollection<BitmapImage>();
 
-                if (_image != null && _image.IsManga && this.ImageStatus != MainWindow.IMAGE_LOADED)
+                if (_image != null && _image.IsManga && this.ImageStatus != ImageLoader.IMAGE_LOADED)
                 {
                     while (_mangaImage.Count < _image.ImageUrls.Count)
                     {
                         _mangaImage.Add(ViewModelHelper.Queued);
-                        _mangaImageStatus.Add(MainWindow.IMAGE_QUEUED);
+                        _mangaImageStatus.Add(ImageLoader.IMAGE_QUEUED);
                     }
 
                     for (int i = 0; i < _image.ImageUrls.Count; ++i)
                     {
-                        if (_mangaImageStatus[i] == MainWindow.IMAGE_LOADED || _mangaImageStatus[i] == MainWindow.IMAGE_LOADING)
+                        if (_mangaImageStatus[i] == ImageLoader.IMAGE_LOADED || _mangaImageStatus[i] == ImageLoader.IMAGE_LOADING)
                             continue;
                         LoadMangaImage(_image.ImageUrls[i], i);
                     }
@@ -329,7 +329,7 @@ namespace NijieDownloader.UI.ViewModel
                 catch (NijieException ne)
                 {
                     this.Message = "Error: " + ne.Message;
-                    this.ImageStatus = MainWindow.IMAGE_ERROR;
+                    this.ImageStatus = ImageLoader.IMAGE_ERROR;
                     this.BigImage = ViewModelHelper.Error;
                     MainWindow.Log.Error(ne.Message, ne.InnerException);
                 }
@@ -375,8 +375,8 @@ namespace NijieDownloader.UI.ViewModel
         {
             if (String.IsNullOrWhiteSpace(url)) return;
 
-            this.ImageStatus = MainWindow.IMAGE_LOADING;
-            MainWindow.LoadImage(url, _image.Referer,
+            this.ImageStatus = ImageLoader.IMAGE_LOADING;
+            ImageLoader.LoadImage(url, _image.Referer,
                             new Action<BitmapImage, string>((image, status) =>
                             {
                                 this.BigImage = null;
@@ -391,10 +391,10 @@ namespace NijieDownloader.UI.ViewModel
         {
             if (String.IsNullOrWhiteSpace(url)) return;
 
-            this._mangaImageStatus[i] = MainWindow.IMAGE_LOADING;
+            this._mangaImageStatus[i] = ImageLoader.IMAGE_LOADING;
             try
             {
-                MainWindow.LoadImage(url, _image.Referer,
+                ImageLoader.LoadImage(url, _image.Referer,
                                 new Action<BitmapImage, string>((image, status) =>
                                 {
                                     Application.Current.Dispatcher.BeginInvoke(
@@ -404,13 +404,13 @@ namespace NijieDownloader.UI.ViewModel
                                                   this.Message = "Manga [" + i + "]: " + status;
                                                   this._mangaImageStatus[i] = status;
 
-                                                  if (status == MainWindow.IMAGE_LOADED && i == Page)
+                                                  if (status == ImageLoader.IMAGE_LOADED && i == Page)
                                                       this.BigImage = this.MangaImage[i];
 
                                                   var allLoaded = true;
                                                   foreach (var item in this._mangaImageStatus)
                                                   {
-                                                      if (item != MainWindow.IMAGE_LOADED)
+                                                      if (item != ImageLoader.IMAGE_LOADED)
                                                       {
                                                           allLoaded = false;
                                                           break;
@@ -418,10 +418,10 @@ namespace NijieDownloader.UI.ViewModel
                                                   }
                                                   if (allLoaded)
                                                   {
-                                                      this.ImageStatus = MainWindow.IMAGE_LOADED;
+                                                      this.ImageStatus = ImageLoader.IMAGE_LOADED;
                                                   }
                                                   else
-                                                      this.ImageStatus = MainWindow.IMAGE_LOADING;
+                                                      this.ImageStatus = ImageLoader.IMAGE_LOADING;
                                               }));
                                 }
                             ));

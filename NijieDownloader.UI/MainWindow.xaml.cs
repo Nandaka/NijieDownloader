@@ -1,25 +1,13 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Specialized;
 using System.Diagnostics;
-using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.Caching;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 using FirstFloor.ModernUI.Windows.Controls;
-using FirstFloor.ModernUI.Windows.Navigation;
 using log4net;
 using Nandaka.Common;
 using NijieDownloader.Library;
 using NijieDownloader.Library.DAL;
-using NijieDownloader.Library.Model;
-using NijieDownloader.UI.ViewModel;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 
 namespace NijieDownloader.UI
 {
@@ -29,16 +17,7 @@ namespace NijieDownloader.UI
     public partial class MainWindow : ModernWindow
     {
         public static Nijie Bot { get; private set; }
-        public static TaskFactory Factory { get; private set; }
-        public static TaskFactory JobFactory { get; private set; }
-        private static LimitedConcurrencyLevelTaskScheduler jobScheduler;
-
-        public const string IMAGE_LOADING = "Loading";
-        public const string IMAGE_LOADED = "Done";
-        public const string IMAGE_ERROR = "Error";
-        public const string IMAGE_QUEUED = "Queued";
-
-        private static ObjectCache cache;
+                     
         private static ILog _log;
         public static ILog Log
         {
@@ -86,30 +65,23 @@ namespace NijieDownloader.UI
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
             checkUpgrade();
             InitializeComponent();
-            Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
-            ExtendedWebClient.EnableCompression = Properties.Settings.Default.EnableCompression;
-            Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
 
-            Factory = new TaskFactory(new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentImageLoad, 8));
-
-            jobScheduler = new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentJob, 8);
-            JobFactory = new TaskFactory(jobScheduler);
+            ConfigureBot();
             
-
-            var config = new NameValueCollection();
-            config.Add("pollingInterval", "00:05:00");
-            config.Add("physicalMemoryLimitPercentage", "0");
-            config.Add("cacheMemoryLimitMegabytes", Properties.Settings.Default.cacheMemoryLimitMegabytes);
-            cache = new MemoryCache("CustomCache", config);
-
             Log.Info(AppName + " started.");
 
             using (var ctx = new NijieContext())
             {
                 var count = ctx.Images.Count();
                 Log.Info(string.Format("Tracking {0} image(s)", count));
-
             }
+        }
+
+        private void ConfigureBot()
+        {
+            Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
+            ExtendedWebClient.EnableCompression = Properties.Settings.Default.EnableCompression;
+            Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
         }
 
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -141,23 +113,9 @@ namespace NijieDownloader.UI
             }
         }
 
-        private void Nijie_LoggingEventHandler(object sender, bool e)
-        {
-            if (e)
-            {
-                Log.Info("Logged In");
-                tlLogin.DisplayName = "Logout";
-            }
-            else
-            {
-                Log.Info("Loggged Out");
-                tlLogin.DisplayName = "Login";
-            }
-        }
-
         private void ModernWindow_Closed(object sender, EventArgs e)
         {
             Log.Info(AppName + " closed.");
-        }        
+        }
     }
 }

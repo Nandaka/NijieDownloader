@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Specialized;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Threading;
@@ -18,13 +20,13 @@ using NijieDownloader.Library;
 using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 
 namespace NijieDownloader.UI
 {
     public partial class MainWindow : ModernWindow
     {
+
+        #region filename related
         public const string FILENAME_FORMAT_MEMBER_ID = "{memberId}";
         public const string FILENAME_FORMAT_IMAGE_ID = "{imageId}";
         public const string FILENAME_FORMAT_PAGE = "{page}";
@@ -48,9 +50,9 @@ namespace NijieDownloader.UI
                                                     "{serverFilename}\t= Original numeric filename as the image is kept on server.";
 
         public enum FilenameFormatType
-	{
+	    {
 	         Image, Manga, Avatar
-	}
+	    }
 
         /// <summary>
         /// Create Filename based on format on job and image information.
@@ -139,7 +141,8 @@ namespace NijieDownloader.UI
                 throw new NijieException("Failed when renaming", ex, NijieException.RENAME_ERROR);
             }
         }
-        
+        #endregion
+
         /// <summary>
         /// Navigate to specific page.
         /// </summary>
@@ -159,55 +162,21 @@ namespace NijieDownloader.UI
         }
 
         /// <summary>
-        /// Load image from cache if available, else start new task to download the image.
+        /// Logging In/Out handler.
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="referer"></param>
-        /// <param name="action"></param>
-        public static void LoadImage(string url, string referer, Action<BitmapImage, string> action)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Nijie_LoggingEventHandler(object sender, bool e)
         {
-            if (String.IsNullOrWhiteSpace(url)) return;
-            url = Util.FixUrl(url);
-            referer = Util.FixUrl(referer);
-
-            if (!cache.Contains(url))
+            if (e)
             {
-                Factory.StartNew(() =>
-                {
-                    try
-                    {
-                        action(ViewModelHelper.Loading, IMAGE_LOADING);
-
-                        Log.Debug("Loading image: " + url);
-                        var result = MainWindow.Bot.DownloadData(url, referer);
-                        using (var ms = new MemoryStream(result))
-                        {
-                            var t = new BitmapImage();
-                            t.BeginInit();
-                            t.CacheOption = BitmapCacheOption.OnLoad;
-                            t.StreamSource = ms;
-                            t.EndInit();
-                            t.Freeze();
-                            action(t, IMAGE_LOADED);
-
-                            CacheItemPolicy policy = new CacheItemPolicy();
-                            policy.SlidingExpiration = new TimeSpan(1, 0, 0);
-
-                            cache.Set(url, t, policy);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        action(null, IMAGE_ERROR);
-                        Log.Error(String.Format("Error when loading image: {0}", ex.Message), ex);
-                        if (ex.InnerException != null) Log.Error(ex.InnerException.Message, ex.InnerException);
-                    }
-                });
+                Log.Info("Logged In");
+                tlLogin.DisplayName = "Logout";
             }
             else
             {
-                Log.Debug("Loaded from cache: " + url);
-                action((BitmapImage)cache.Get(url), IMAGE_LOADED);
+                Log.Info("Loggged Out");
+                tlLogin.DisplayName = "Login";
             }
         }
     }
