@@ -333,7 +333,7 @@ namespace NijieDownloader.UI.ViewModel
                 temp = (from x in ctx.Images.Include("Member").Include("Tags")
                         where x.ImageId == this.ImageId && x.IsManga == false
                         select x).FirstOrDefault();
-                if (temp != null)
+                if (temp != null && !String.IsNullOrWhiteSpace(temp.SavedFilename))
                 {
                     temp.IsDownloaded = true;
                 }

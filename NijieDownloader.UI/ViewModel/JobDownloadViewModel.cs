@@ -259,7 +259,7 @@ namespace NijieDownloader.UI.ViewModel
             set
             {
                 _status = value;
-                onPropertyChanged("JobStatus");
+                onPropertyChanged("Status");
             }
         }
 

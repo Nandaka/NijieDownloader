@@ -151,7 +151,7 @@ namespace NijieDownloader.Library
                     var r = (from x in ctx.Images
                              where x.ImageId == item.ImageId
                              select x).FirstOrDefault();
-                    if (r != null) item.IsDownloaded = true;
+                    if (r != null && !String.IsNullOrWhiteSpace(r.SavedFilename)) item.IsDownloaded = true;
                     else item.IsDownloaded = false;
                 }
             }
