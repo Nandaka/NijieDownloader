@@ -168,9 +168,18 @@ namespace NijieDownloader.Library
                 {
                     image.IsManga = true;
                     image.ImageUrls = new List<string>();
+                    image.MangaPages = new List<NijieMangaInfo>();
+                    int p = 1;
                     foreach (var bigImage in bigImageLinks)
                     {
                         image.ImageUrls.Add(bigImage.Attributes["href"].Value);
+
+                        var page = new NijieMangaInfo();
+                        page.Image = image;
+                        page.ImageId = image.ImageId;
+                        page.Page = p++;
+                        page.ImageUrl = bigImage.Attributes["href"].Value;
+                        image.MangaPages.Add(page);
                     }
                 }
                 else

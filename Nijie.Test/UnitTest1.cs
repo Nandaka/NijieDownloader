@@ -72,7 +72,10 @@ namespace Nijie.Test
                             }
                             lock (_lock)
                             {
-                                img.SaveToDb();
+                                using (var dao = new NijieContext())
+                                {
+                                    img.SaveToDb(dao);
+                                }
                             }
                         }
                         Debug.WriteLine(String.Format("Task {0} completed...", tempM));

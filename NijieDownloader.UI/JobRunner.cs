@@ -9,6 +9,7 @@ using Nandaka.Common;
 using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
+using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.UI
 {
@@ -311,18 +312,20 @@ namespace NijieDownloader.UI
             if (canDownloadFile(job, image.BigImageUrl, filename))
             {
                 result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+                image.SavedFilename = filename;
+                image.ServerFilename = Util.ExtractFilenameFromUrl(image.BigImageUrl);
+                image.Filesize = new FileInfo(filename).Length;
             }
 
             if (Properties.Settings.Default.SaveDB && result)
-                SaveImageToDB(job, image, filename);
+                SaveImageToDB(job, image);
         }
 
         private static void processManga(JobDownloadViewModel job, NijieImage image)
         {
             var downloaded = false;
-            var lastFilename = "";
             MainWindow.Log.Debug("Processing Manga Images:" + image.ImageId);
-
+            string lastFilename = "", lastUrl = "";
             for (int i = 0; i < image.ImageUrls.Count; ++i)
             {
                 downloaded = false;
@@ -340,25 +343,40 @@ namespace NijieDownloader.UI
                 pagefilename += "." + Util.ParseExtension(image.ImageUrls[i]);
                 pagefilename = Properties.Settings.Default.RootDirectory + Path.DirectorySeparatorChar + Util.SanitizeFilename(pagefilename);
 
+                var pages = image.MangaPages as List<NijieMangaInfo>;
                 if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
                 {
                     downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
+                    pages[i].SavedFilename = pagefilename;
+                    pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
+                    pages[i].Filesize = new FileInfo(pagefilename).Length;
                 }
+                
                 lastFilename = pagefilename;
+                lastUrl = image.ImageUrls[i];
             }
+            image.SavedFilename = lastFilename;
+            image.ServerFilename = Util.ExtractFilenameFromUrl(lastUrl);
+            image.Filesize = new FileInfo(lastFilename).Length;
 
             if (Properties.Settings.Default.SaveDB && downloaded)
-                SaveImageToDB(job, image, lastFilename);
+                SaveImageToDB(job, image);
         }
 
-        private static void SaveImageToDB(JobDownloadViewModel job, NijieImage image, string lastFilename)
+        private static void SaveImageToDB(JobDownloadViewModel job, NijieImage image)
         {
             try
             {
                 lock (_dbLock)
                 {
-                    image.SavedFilename = lastFilename;
-                    image.SaveToDb();
+                    using (var dao = new NijieContext())
+                    {
+                        if (Properties.Settings.Default.TraceDB)
+                        {
+                            dao.Database.Log = MainWindow.Log.Debug;
+                        }
+                        image.SaveToDb(dao);
+                    }
                 }
             }
             catch (Exception ex)

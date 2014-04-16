@@ -76,6 +76,7 @@
       <DependentUpon>201404021353243_1.0.3.1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Model\NijieMangaInfo.cs" />
     <Compile Include="Model\NijieSearch.cs" />
     <Compile Include="Model\NijieSearchOption.cs" />
     <Compile Include="Model\NijieTag.cs" />
