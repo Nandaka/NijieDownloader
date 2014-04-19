@@ -47,7 +47,7 @@ namespace NijieDownloader.Library
                     doc.Save(filename);
                 }
 
-                throw new NijieException("Error when processing member: " + memberId, ex, NijieException.MEMBER_UNKNOWN_ERROR);
+                throw new NijieException(String.Format("Error when processing member: {0} ==> {1}", memberId, ex.Message), ex, NijieException.MEMBER_UNKNOWN_ERROR);
             }
         }
 

@@ -187,7 +187,7 @@ namespace NijieDownloader.Library
             }
             catch (Exception ex)
             {
-                throw new NijieException(string.Format("Error when downloading: {0} to {1}", url, tempFilename), ex, NijieException.DOWNLOAD_ERROR);
+                throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
             }
 
             Thread.Sleep(100); // delay before renaming
@@ -208,7 +208,7 @@ namespace NijieDownloader.Library
             }
             catch (Exception ex)
             {
-                throw new NijieException("Error when downloading data: " + url, ex, NijieException.DOWNLOAD_ERROR); ;
+                throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR); ;
             }
         }
     }

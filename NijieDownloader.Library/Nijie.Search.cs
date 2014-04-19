@@ -70,7 +70,7 @@ namespace NijieDownloader.Library
                     doc.Save(filename);
                 }
 
-                throw new NijieException(string.Format("Error when processing search: {0} Page {1}", option.Query, option.Page), ex, NijieException.SEARCH_UNKNOWN_ERROR);
+                throw new NijieException(string.Format("Error when processing search: {0} Page {1} ==> {2}", option.Query, option.Page, ex.Message), ex, NijieException.SEARCH_UNKNOWN_ERROR);
             }
         }
     }

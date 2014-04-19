@@ -71,7 +71,7 @@ namespace NijieDownloader.Library
                     doc.Save(filename);
                 }
 
-                throw new NijieException("Error when processing image: " + image.ImageId, ex, NijieException.IMAGE_UNKNOWN_ERROR);
+                throw new NijieException(String.Format("Error when processing image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_UNKNOWN_ERROR);
             }
         }
 
@@ -271,7 +271,7 @@ namespace NijieDownloader.Library
                     doc.Save(filename);
                 }
                 Log.Error("Failed to process big image: " + image.ImageId, ex);
-                throw new NijieException("Failed to process big image: " + image.ImageId, ex, NijieException.IMAGE_BIG_PARSE_ERROR);
+                throw new NijieException(String.Format("Failed to process big image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_BIG_PARSE_ERROR);
             }
         }
 

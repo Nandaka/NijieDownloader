@@ -447,7 +447,7 @@ namespace NijieDownloader.UI
                 }
                 catch (NijieException nex)
                 {
-                    MainWindow.Log.Warn(nex.Message);
+                    MainWindow.Log.Error(nex.Message);
                     return false;
                 }
                 catch (Exception ex)
