@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Linq.Expressions;
 using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
 using System.Threading;
 
 namespace Nandaka.Common
@@ -109,7 +109,6 @@ namespace Nandaka.Common
 
             for (int i = 0; i < inString.Length; i++)
             {
-
                 ch = inString[i];
 
                 if (!char.IsControl(ch))
@@ -190,6 +189,19 @@ namespace Nandaka.Common
             }
 
             return result;
+        }
+
+        public static string GetAllInnerExceptionMessage(Exception ex)
+        {
+            List<string> messages = new List<string>();
+
+            while (ex != null)
+            {
+                messages.Add(ex.Message);
+                ex = ex.InnerException;
+            }
+
+            return string.Join(Environment.NewLine, messages.ToArray());
         }
     }
 }

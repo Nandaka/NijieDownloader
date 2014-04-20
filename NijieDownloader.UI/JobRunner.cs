@@ -7,9 +7,9 @@ using System.Windows;
 using System.Windows.Threading;
 using Nandaka.Common;
 using NijieDownloader.Library;
+using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
-using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.UI
 {
@@ -48,38 +48,52 @@ namespace NijieDownloader.UI
 
             tasks.Add(_jobFactory.StartNew(() =>
             {
-                if (Properties.Settings.Default.JobDelay > 0)
-                {
-                    MainWindow.Log.Debug(String.Format("Delay before starting job: {0}ms", Properties.Settings.Default.JobDelay));
-                    Thread.Sleep(Properties.Settings.Default.JobDelay);
-                }
-
-                if (isJobCancelled(job))
-                    return;
-
                 long start = DateTime.Now.Ticks;
-                job.Status = JobStatus.Running;
-                job.Message = "Starting job...";
-                switch (job.JobType)
+                double totalSecond = 0;
+                try
                 {
-                    case JobType.Member:
-                        doMemberJob(job);
-                        break;
+                    if (Properties.Settings.Default.JobDelay > 0)
+                    {
+                        MainWindow.Log.Debug(String.Format("Delay before starting job: {0}ms", Properties.Settings.Default.JobDelay));
+                        Thread.Sleep(Properties.Settings.Default.JobDelay);
+                    }
 
-                    case JobType.Tags:
-                        doSearchJob(job);
-                        break;
+                    if (isJobCancelled(job))
+                        return;
 
-                    case JobType.Image:
-                        doImageJob(job);
-                        break;
+                    job.Status = JobStatus.Running;
+                    job.Message = "Starting job...";
+                    switch (job.JobType)
+                    {
+                        case JobType.Member:
+                            doMemberJob(job);
+                            break;
+
+                        case JobType.Tags:
+                            doSearchJob(job);
+                            break;
+
+                        case JobType.Image:
+                            doImageJob(job);
+                            break;
+                    }
+
+                    totalSecond = new TimeSpan(DateTime.Now.Ticks - start).TotalSeconds;
                 }
-
-                if (job.Status != JobStatus.Error && job.Status != JobStatus.Cancelled)
+                catch (Exception ex)
                 {
-                    job.Status = JobStatus.Completed;
-                    MainWindow.Log.Debug(String.Format("Job completed: {0} in {1}s", job.Name, new TimeSpan(DateTime.Now.Ticks - start).TotalSeconds));
+                    job.Status = JobStatus.Error;
+                    job.Message = Util.GetAllInnerExceptionMessage(ex);
                 }
+                finally
+                {
+                    if (job.Status != JobStatus.Error && job.Status != JobStatus.Cancelled)
+                    {
+                        job.Status = JobStatus.Completed;
+                        job.Message = String.Format("Job completed in {0}s", totalSecond);
+                    }
+                }
+                MainWindow.Log.Debug(String.Format("Job completed: {0} in {1}s", job.Name, totalSecond));
             }
             , cancelSource.Token
             , TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness
@@ -274,6 +288,11 @@ namespace NijieDownloader.UI
 
             MainWindow.Log.Debug("Processing Image:" + imageTemp.ImageId);
 
+            // skip if exists in DB
+            if (Properties.Settings.Default.SkipIfExistsInDB)
+            {
+            }
+
             var image = MainWindow.Bot.ParseImage(imageTemp, memberPage);
 
             if (image.IsFriendOnly)
@@ -351,7 +370,7 @@ namespace NijieDownloader.UI
                     pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
                     pages[i].Filesize = new FileInfo(pagefilename).Length;
                 }
-                
+
                 lastFilename = pagefilename;
                 lastUrl = image.ImageUrls[i];
             }
@@ -472,9 +491,7 @@ namespace NijieDownloader.UI
         private static void HandleJobException(JobDownloadViewModel job, NijieException ne)
         {
             job.Status = JobStatus.Error;
-            job.Message = ne.Message;
-            if (ne.InnerException != null)
-                job.Message += Environment.NewLine + ne.InnerException.Message;
+            job.Message = Util.GetAllInnerExceptionMessage(ne);
         }
     }
 }

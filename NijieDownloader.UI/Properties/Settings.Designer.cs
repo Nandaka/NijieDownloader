@@ -310,5 +310,17 @@ namespace NijieDownloader.UI.Properties {
                 this["LoadThumbnail"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SkipIfExistsInDB {
+            get {
+                return ((bool)(this["SkipIfExistsInDB"]));
+            }
+            set {
+                this["SkipIfExistsInDB"] = value;
+            }
+        }
     }
 }
