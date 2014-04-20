@@ -289,8 +289,17 @@ namespace NijieDownloader.UI
             MainWindow.Log.Debug("Processing Image:" + imageTemp.ImageId);
 
             // skip if exists in DB
-            if (Properties.Settings.Default.SkipIfExistsInDB)
+            if (Properties.Settings.Default.SkipIfExistsInDB && !Properties.Settings.Default.Overwrite)
             {
+                using (var dao = new NijieContext())
+                {
+                    var result = NijieImage.IsDownloadedInDB(imageTemp.ImageId);
+                    if (result)
+                    {
+                        job.Message = String.Format("Image {0} already downloaded in DB", imageTemp.ImageId);
+                        return;
+                    }
+                }
             }
 
             var image = MainWindow.Bot.ParseImage(imageTemp, memberPage);

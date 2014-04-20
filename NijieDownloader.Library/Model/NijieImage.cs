@@ -4,16 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Diagnostics;
 using System.Linq;
 using Nandaka.Common;
 using NijieDownloader.Library.DAL;
-using System.Diagnostics;
 
 namespace NijieDownloader.Library.Model
 {
     public class NijieImage
     {
         #region ctor
+
         public NijieImage()
         {
             this.ImageId = -1;
@@ -24,22 +25,28 @@ namespace NijieDownloader.Library.Model
             this.ImageId = imageId;
             this.UseHttps = useHttps;
         }
-        #endregion
+
+        #endregion ctor
 
         #region db colums
+
         [Key]
         [DatabaseGenerated(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.None)]
         public int ImageId { get; set; }
 
         public string BigImageUrl { get; set; }
+
         public string MediumImageUrl { get; set; }
+
         public string ThumbImageUrl { get; set; }
 
         public string Title { get; set; }
+
         public string Description { get; set; }
 
         // to avoid overflow problem
         private DateTime _workDate;
+
         public DateTime WorkDate
         {
             get
@@ -55,40 +62,50 @@ namespace NijieDownloader.Library.Model
         }
 
         public string Referer { get; set; }
+
         public bool IsFriendOnly { get; set; }
+
         public bool IsGoldenMember { get; set; }
 
         public int NuitaCount { get; set; }
+
         public int GoodCount { get; set; }
+
         public bool IsAnimated { get; set; }
 
         public string SavedFilename { get; set; }
+
         public string ServerFilename { get; set; }
+
         public long Filesize { get; set; }
 
         // manga related
         public bool IsManga { get; set; }
+
         public List<string> ImageUrls { get; set; }
+
         public virtual ICollection<NijieMangaInfo> MangaPages { get; set; }
 
         public virtual ICollection<NijieTag> Tags { get; set; }
+
         public NijieMember Member { get; set; }
 
-        #endregion
+        #endregion db colums
 
         #region not mapped
+
         [NotMapped]
         public string ViewUrl
         {
             get
             {
-
                 return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, UseHttps);
             }
             private set { }
         }
 
         private bool _isDownloaded;
+
         [NotMapped]
         public bool IsDownloaded
         {
@@ -106,7 +123,8 @@ namespace NijieDownloader.Library.Model
 
         [NotMapped]
         public bool UseHttps { get; set; }
-        #endregion
+
+        #endregion not mapped
 
         public void SaveToDb(NijieContext dao, bool suppressSave = false)
         {
@@ -144,6 +162,22 @@ namespace NijieDownloader.Library.Model
             }
 
             Debug.Assert(this.WorkDate != DateTime.MinValue, "Works Date cannot be set to DateTime.MinValue");
+        }
+
+        public static bool IsDownloadedInDB(int imageId)
+        {
+            using (var dao = new NijieContext())
+            {
+                var image = (from i in dao.Images
+                             where i.ImageId == imageId
+                             select i).FirstOrDefault();
+                if (image != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(image.SavedFilename))
+                        return true;
+                }
+            }
+            return false;
         }
     }
 }

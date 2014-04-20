@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="NijieDownloader.UI.Settings.Download"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:np="clr-namespace:NijieDownloader.UI.Properties"
              xmlns:local="clr-namespace:NijieDownloader.UI"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800">
     <Grid Style="{StaticResource ContentRoot}">
         <ScrollViewer>
@@ -14,33 +14,33 @@
                 <TextBlock Text="Download" Style="{StaticResource Heading2}" />
                 <StackPanel Orientation="Vertical">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="100" Text="Root Directory" Margin="5,5,5,0"/>
-                        <TextBox Height="25" Margin="10,0,0,0" MinWidth="290" 
+                        <TextBlock Width="100" Text="Root Directory" Margin="5,5,5,0" />
+                        <TextBox Height="25" Margin="10,0,0,0" MinWidth="290"
                                 Text="{Binding Source={x:Static np:Settings.Default}, Path=RootDirectory, Mode=TwoWay}" Name="txtRootDir" />
                         <Button Width="100" Name="btnBrowse" Content="Browse" Margin="5,2,5,2" Click="btnBrowse_Click" />
                         <Button Width="100" Name="btnOpen" Content="Open" Margin="5,2,5,2" Click="btnOpen_Click" />
                     </StackPanel>
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="100" Text="Filename Format" Margin="5,5,5,0"/>
+                            <TextBlock Width="100" Text="Filename Format" Margin="5,5,5,0" />
                             <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="100" Text="Manga Format" Margin="5,5,5,0"/>
+                            <TextBlock Width="100" Text="Manga Format" Margin="5,5,5,0" />
                             <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=MangaFilenameFormat, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=MangaFilenameFormat, Mode=TwoWay}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Width="100" Text="Avatar Format" Margin="5,5,5,0"/>
+                            <TextBlock Width="100" Text="Avatar Format" Margin="5,5,5,0" />
                             <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=AvatarFilenameFormat, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=AvatarFilenameFormat, Mode=TwoWay}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>
@@ -49,55 +49,58 @@
                             <TextBlock MinWidth="100" />
                             <TextBlock Text="{x:Static local:MainWindow.FILENAME_FORMAT_TOOLTIP}" />
                         </StackPanel>
-                        <CheckBox Margin="120,0,0,0" Content="Download Avatar" HorizontalAlignment="Left" 
-                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DownloadAvatar, Mode=TwoWay}"/>
+                        <CheckBox Margin="120,0,0,0" Content="Download Avatar" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DownloadAvatar, Mode=TwoWay}" />
                         <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
                             <CheckBox Margin="0,0,5,0" Content="Overwrite" HorizontalAlignment="Left" Name="cbxOverwrite"
-                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}"/>
+                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}" />
                             <CheckBox Margin="0,0,5,0" Content="Only if different in size" HorizontalAlignment="Left" Name="cbxOOIFDS"
                                       IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=OverwriteOnlyIfDifferentSize, Mode=TwoWay}"
-                                      IsEnabled="{Binding ElementName=cbxOverwrite, Path=IsChecked}"/>
-                            <CheckBox Margin="0,0,5,0" Content="Backup old file" HorizontalAlignment="Left" 
+                                      IsEnabled="{Binding ElementName=cbxOverwrite, Path=IsChecked}" />
+                            <CheckBox Margin="0,0,5,0" Content="Backup old file" HorizontalAlignment="Left"
                                       IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=MakeBackupOldFile, Mode=TwoWay}"
-                                      IsEnabled="{Binding ElementName=cbxOOIFDS, Path=IsChecked}"/>
+                                      IsEnabled="{Binding ElementName=cbxOOIFDS, Path=IsChecked}" />
                         </StackPanel>
                     </StackPanel>
-                    <CheckBox Margin="120,0,0,0" Content="Auto Save Batch List" HorizontalAlignment="Left" 
-                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}"/>
+                    <CheckBox Margin="120,0,0,0" Content="Skip if already downloaded in DB" HorizontalAlignment="Left"
+                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=SkipIfExistsInDB, Mode=TwoWay}"
+                              ToolTip="Ignored if Overwrite flag is enabled." />
+                    <CheckBox Margin="120,0,0,0" Content="Auto Save Batch List" HorizontalAlignment="Left"
+                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}" />
                     <StackPanel Orientation="Horizontal" ToolTip="Restart required.">
-                        <TextBlock Width="100" Text="Concurrent Thumb Loader" Margin="5,5,5,0"/>
+                        <TextBlock Width="100" Text="Concurrent Thumb Loader" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                  Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentImageLoad, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="100" Text="Concurrent Job" Margin="5,5,5,0"/>
+                        <TextBlock Width="100" Text="Concurrent Job" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentJob, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentJob, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="100" Text="Job Delay" Margin="5,5,5,0"/>
+                        <TextBlock Width="100" Text="Job Delay" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=JobDelay, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=JobDelay, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="100" Text="Retry Delay" Margin="5,5,5,0"/>
+                        <TextBlock Width="100" Text="Retry Delay" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}"/>
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
-                        <CheckBox Margin="0,5,0,0" Content="Save Image Info to DB" HorizontalAlignment="Left" 
-                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=SaveDB, Mode=TwoWay}"/>
-                        <CheckBox Margin="0,5,0,0" Content="Trace DB to Log" HorizontalAlignment="Left" 
-                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=TraceDB, Mode=TwoWay}"/>
+                        <CheckBox Margin="0,5,0,0" Content="Save Image Info to DB" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=SaveDB, Mode=TwoWay}" />
+                        <CheckBox Margin="0,5,0,0" Content="Trace DB to Log" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=TraceDB, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
-                        <TextBlock Width="100" Text="Log Level" Margin="5,5,5,0"/>
+                        <TextBlock Width="100" Text="Log Level" Margin="5,5,5,0" />
                         <ComboBox Margin="5,5,5,0" MinWidth="100" Name="cbxLogLevel"
                                   ItemsSource="{Binding Path=LogLevel}"
-                                  SelectedItem="{Binding Source={x:Static np:Settings.Default}, Path=LogLevel, Mode=TwoWay}">                            
+                                  SelectedItem="{Binding Source={x:Static np:Settings.Default}, Path=LogLevel, Mode=TwoWay}">
                         </ComboBox>
                     </StackPanel>
-                    
+
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button Width="100" Name="btnSave" Click="btnSave_Click" Margin="5,0,5,0">Save</Button>
                         <Button Width="100" Name="btnReset" Margin="5,0,5,0" Click="btnReset_Click">Reset</Button>
