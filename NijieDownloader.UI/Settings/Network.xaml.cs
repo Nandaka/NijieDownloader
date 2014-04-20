@@ -25,12 +25,11 @@ namespace NijieDownloader.UI.Settings
         public Network()
         {
             InitializeComponent();
-            
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            Nandaka.Common.Properties.Settings.Default.Save();
+            MainWindow.SaveAllSettings();
             var proxy = ExtendedWebClient.GlobalProxy;
             if (proxy != null) proxy.ToString();
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NijieDownloader.Library.Model;
 using HtmlAgilityPack;
 using NijieDownloader.Library.DAL;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.Library
 {
@@ -16,7 +16,7 @@ namespace NijieDownloader.Library
             try
             {
                 canOperate();
-                NijieMember member = new NijieMember(memberId, UseHttps);
+                NijieMember member = new NijieMember(memberId);
                 var result = getPage(member.MemberUrl);
                 var res = result.Item2;
                 if (res.ResponseUri.ToString() != member.MemberUrl)
@@ -93,7 +93,7 @@ namespace NijieDownloader.Library
                     var res = re_image.Match(imageId);
                     if (res.Success)
                     {
-                        NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value), UseHttps);
+                        NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
                         image.Referer = referer;
 
                         var div = new HtmlDocument();

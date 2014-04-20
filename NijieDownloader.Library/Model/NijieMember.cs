@@ -13,16 +13,17 @@ namespace NijieDownloader.Library.Model
         public int MemberId { get; set; }
 
         public string UserName { get; set; }
+
         public string AvatarUrl { get; set; }
-        
+
         public virtual ICollection<NijieImage> Images { get; set; }
-        
+
         [NotMapped]
         public string MemberUrl
         {
             get
             {
-                return GenerateMemberUrl(MemberId, UseHttps);
+                return GenerateMemberUrl(MemberId);
             }
             private set { }
         }
@@ -32,7 +33,7 @@ namespace NijieDownloader.Library.Model
 
         [NotMapped]
         public string Status { get; set; }
-        
+
         [NotMapped]
         public bool UseHttps { get; set; }
 
@@ -41,15 +42,14 @@ namespace NijieDownloader.Library.Model
             this.MemberId = -1;
         }
 
-        public NijieMember(int memberId, bool useHttps)
+        public NijieMember(int memberId)
         {
             this.MemberId = memberId;
-            this.UseHttps = useHttps;
         }
 
-        public static string GenerateMemberUrl(int memberId, bool useHttps)
+        public static string GenerateMemberUrl(int memberId)
         {
-            return Util.FixUrl("//nijie.info/members_illust.php?id=" + memberId, useHttps);
+            return Util.FixUrl("//nijie.info/members_illust.php?id=" + memberId, Properties.Settings.Default.UseHttps);
         }
     }
 }

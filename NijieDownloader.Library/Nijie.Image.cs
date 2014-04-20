@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using NijieDownloader.Library.Model;
 using Nandaka.Common;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.Library
 {
@@ -12,14 +12,15 @@ namespace NijieDownloader.Library
         private Regex re_date = new Regex(@"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})");
         private Regex re_image = new Regex(@"id=(\d+)");
 
-        public NijieImage ParseImage(int imageId, bool useHttps, string referer = null)
+        public NijieImage ParseImage(int imageId, string referer = null)
         {
             if (string.IsNullOrWhiteSpace(referer))
             {
-                referer = Util.FixUrl(NijieConstants.NIJIE_INDEXx, useHttps);
+                referer = Util.FixUrl(NijieConstants.NIJIE_INDEXx, Properties.Settings.Default.UseHttps);
             }
+
             canOperate();
-            NijieImage image = new NijieImage(imageId, UseHttps);
+            NijieImage image = new NijieImage(imageId);
             image.Referer = referer;
             return ParseImage(image);
         }
@@ -193,7 +194,6 @@ namespace NijieDownloader.Library
             {
                 image = ParseImagePopups(image);
             }
-
         }
 
         private NijieMember ParseMemberFromImage(HtmlDocument doc)
@@ -202,7 +202,7 @@ namespace NijieDownloader.Library
             var split = memberUrl.Split('?');
             int memberId = Int32.Parse(split[1].Replace("id=", ""));
 
-            NijieMember member = new NijieMember(memberId, UseHttps);
+            NijieMember member = new NijieMember(memberId);
             var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
             if (profileDiv != null)
             {
@@ -274,6 +274,5 @@ namespace NijieDownloader.Library
                 throw new NijieException(String.Format("Failed to process big image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_BIG_PARSE_ERROR);
             }
         }
-
     }
 }

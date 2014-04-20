@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using Nandaka.Common;
-using System.Collections.Specialized;
-using NijieDownloader.Library.Model;
-using HtmlAgilityPack;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.ComponentModel;
+using HtmlAgilityPack;
+using Nandaka.Common;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.Library
 {
@@ -21,7 +21,7 @@ namespace NijieDownloader.Library
             {
                 canOperate();
                 if (option.Page < 1) option.Page = 1;
-                NijieSearch search = new NijieSearch(option, UseHttps);
+                NijieSearch search = new NijieSearch(option);
                 var result = getPage(search.QueryUrl);
 
                 if (result.Item2.ResponseUri.ToString() != search.QueryUrl)

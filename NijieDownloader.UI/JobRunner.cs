@@ -126,7 +126,7 @@ namespace NijieDownloader.UI
             MainWindow.Log.Debug("Running Image Job: " + job.Name);
             try
             {
-                NijieImage image = new NijieImage(job.ImageId, Properties.Settings.Default.UseHttps);
+                NijieImage image = new NijieImage(job.ImageId);
                 processImage(job, null, image);
             }
             catch (NijieException ne)
@@ -475,7 +475,33 @@ namespace NijieDownloader.UI
                 }
                 catch (NijieException nex)
                 {
+                    job.Message = Util.GetAllInnerExceptionMessage(nex);
                     MainWindow.Log.Error(nex.Message);
+
+                    var webException = nex.InnerException as System.Net.WebException;
+                    if (webException != null)
+                    {
+                        var response = webException.Response as System.Net.HttpWebResponse;
+                        if (response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout ||
+                            response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
+                        {
+                            ++retry;
+                            MainWindow.Log.Error(String.Format("Failed to download url: {0}, retrying {1} of {2}", url, retry, 3), webException);
+                            for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
+                            {
+                                job.Message = webException.Message + " retry: " + retry + " wait: " + i;
+                                Thread.Sleep(1000);
+                                if (job.CancelToken.IsCancellationRequested)
+                                {
+                                    addException(job, nex, url, filename);
+                                    return false;
+                                }
+                            }
+                            continue;
+                        }
+                    }
+
+                    addException(job, nex, url, filename);
                     return false;
                 }
                 catch (Exception ex)
@@ -487,12 +513,32 @@ namespace NijieDownloader.UI
                         job.Message = ex.Message + " retry: " + retry + " wait: " + i;
                         Thread.Sleep(1000);
                         if (job.CancelToken.IsCancellationRequested)
+                        {
+                            var nex = new NijieException(ex.Message, ex, NijieException.DOWNLOAD_ERROR);
+                            addException(job, nex, url, filename);
                             return false;
+                        }
                     }
                 }
             }
 
             return true;
+        }
+
+        private static void addException(JobDownloadViewModel job, NijieException nex, string url, string filename)
+        {
+            Application.Current.Dispatcher.BeginInvoke(
+                 new Action<BatchDownloadPage>((y) =>
+                 {
+                     if (nex.ErrorCode != NijieException.DOWNLOAD_SKIPPED)
+                     {
+                         nex.Url = url;
+                         nex.Filename = filename;
+                         job.Exceptions.Add(nex);
+                     }
+                 }),
+                 new object[] { null }
+              );
         }
 
         #endregion actual download image related

@@ -17,8 +17,9 @@ namespace NijieDownloader.UI
     public partial class MainWindow : ModernWindow
     {
         public static Nijie Bot { get; private set; }
-                     
+
         private static ILog _log;
+
         public static ILog Log
         {
             get
@@ -45,6 +46,7 @@ namespace NijieDownloader.UI
         }
 
         private string _appName;
+
         public string AppName
         {
             get
@@ -67,7 +69,7 @@ namespace NijieDownloader.UI
             InitializeComponent();
 
             ConfigureBot();
-            
+
             Log.Info(AppName + " started.");
 
             using (var ctx = new NijieContext())
@@ -79,12 +81,12 @@ namespace NijieDownloader.UI
 
         private void ConfigureBot()
         {
-            Bot = new Nijie(Log, Properties.Settings.Default.UseHttps);
+            Bot = new Nijie(Log);
             ExtendedWebClient.EnableCompression = Properties.Settings.Default.EnableCompression;
             Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
         }
 
-        void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Error("Unexpected Error: " + e.Exception.Message, e.Exception);
             if (e.Exception.InnerException != null)

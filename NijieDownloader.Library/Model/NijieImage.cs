@@ -20,10 +20,9 @@ namespace NijieDownloader.Library.Model
             this.ImageId = -1;
         }
 
-        public NijieImage(int imageId, bool useHttps)
+        public NijieImage(int imageId)
         {
             this.ImageId = imageId;
-            this.UseHttps = useHttps;
         }
 
         #endregion ctor
@@ -99,7 +98,7 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, UseHttps);
+                return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, Properties.Settings.Default.UseHttps);
             }
             private set { }
         }
@@ -120,9 +119,6 @@ namespace NijieDownloader.Library.Model
                 _isDownloaded = value;
             }
         }
-
-        [NotMapped]
-        public bool UseHttps { get; set; }
 
         #endregion not mapped
 

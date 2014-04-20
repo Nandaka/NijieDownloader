@@ -25,8 +25,8 @@ namespace NijieDownloader.UI
 {
     public partial class MainWindow : ModernWindow
     {
-
         #region filename related
+
         public const string FILENAME_FORMAT_MEMBER_ID = "{memberId}";
         public const string FILENAME_FORMAT_IMAGE_ID = "{imageId}";
         public const string FILENAME_FORMAT_PAGE = "{page}";
@@ -50,9 +50,9 @@ namespace NijieDownloader.UI
                                                     "{serverFilename}\t= Original numeric filename as the image is kept on server.";
 
         public enum FilenameFormatType
-	    {
-	         Image, Manga, Avatar
-	    }
+        {
+            Image, Manga, Avatar
+        }
 
         /// <summary>
         /// Create Filename based on format on job and image information.
@@ -66,11 +66,14 @@ namespace NijieDownloader.UI
             try
             {
                 string filenameFormat = null;
-                switch(type) {
+                switch (type)
+                {
                     case FilenameFormatType.Image: filenameFormat = job.SaveFilenameFormat;
                         break;
+
                     case FilenameFormatType.Manga: filenameFormat = job.SaveMangaFilenameFormat;
                         break;
+
                     case FilenameFormatType.Avatar: filenameFormat = job.SaveAvatarFilenameFormat;
                         break;
                 }
@@ -141,7 +144,8 @@ namespace NijieDownloader.UI
                 throw new NijieException("Failed when renaming", ex, NijieException.RENAME_ERROR);
             }
         }
-        #endregion
+
+        #endregion filename related
 
         /// <summary>
         /// Navigate to specific page.
@@ -178,6 +182,13 @@ namespace NijieDownloader.UI
                 Log.Info("Loggged Out");
                 tlLogin.DisplayName = "Login";
             }
+        }
+
+        public static void SaveAllSettings()
+        {
+            Nandaka.Common.Properties.Settings.Default.Save();
+            NijieDownloader.Library.Properties.Settings.Default.Save();
+            NijieDownloader.UI.Properties.Settings.Default.Save();
         }
     }
 }

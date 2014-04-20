@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using NijieDownloader.Library.Model;
-using System.ComponentModel;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
 using NijieDownloader.Library;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -15,12 +15,17 @@ namespace NijieDownloader.UI.ViewModel
         private NijieSearch _search;
 
         #region ctor
-        public NijieSearchViewModel() { }
 
-        #endregion
+        public NijieSearchViewModel()
+        {
+        }
+
+        #endregion ctor
 
         #region properties
+
         private SortType _sortType;
+
         public SortType Sort
         {
             get { return _sortType; }
@@ -37,7 +42,9 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _query;
-        public string Query {
+
+        public string Query
+        {
             get { return _query; }
             set
             {
@@ -52,6 +59,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _page = 1;
+
         public int Page
         {
             get { return _page; }
@@ -64,14 +72,16 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private SearchMode _searchMode;
-        public SearchMode SearchBy {
+
+        public SearchMode SearchBy
+        {
             get { return _searchMode; }
             set
             {
                 if (value != _searchMode)
                 {
                     Page = 1;
-                } 
+                }
                 _searchMode = value;
                 onPropertyChanged("SearchBy");
                 onPropertyChanged("QueryUrl");
@@ -79,14 +89,16 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private SearchType _searchType;
-        public SearchType Matching {
+
+        public SearchType Matching
+        {
             get { return _searchType; }
             set
             {
                 if (value != _searchType)
                 {
                     Page = 1;
-                } 
+                }
                 _searchType = value;
                 onPropertyChanged("Matching");
                 onPropertyChanged("QueryUrl");
@@ -94,6 +106,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _status;
+
         public string Status
         {
             get
@@ -106,6 +119,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private ObservableCollection<NijieImageViewModel> _images;
+
         public ObservableCollection<NijieImageViewModel> Images
         {
             get
@@ -140,10 +154,11 @@ namespace NijieDownloader.UI.ViewModel
                 option.Page = Page;
                 option.SearchBy = SearchBy;
                 option.Matching = Matching;
-                return NijieSearch.GenerateQueryUrl(option, Properties.Settings.Default.UseHttps);
+                return NijieSearch.GenerateQueryUrl(option);
             }
         }
-        #endregion
+
+        #endregion properties
 
         public void DoSearch()
         {
@@ -169,7 +184,6 @@ namespace NijieDownloader.UI.ViewModel
             {
                 Status = "Error: " + ne.Message;
             }
-            
         }
     }
 }

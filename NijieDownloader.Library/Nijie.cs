@@ -2,16 +2,17 @@
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 using HtmlAgilityPack;
 using log4net;
 using Nandaka.Common;
-using System.Threading;
 
 namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
         private ILog _log;
+
         public ILog Log
         {
             get
@@ -31,17 +32,25 @@ namespace NijieDownloader.Library
             }
         }
 
-        public bool UseHttps { get; set; }
+        private static Nijie _instance;
 
-        public Nijie(ILog _log, bool useHttps)
+        public static Nijie GetInstance(ILog _log, bool useHttps)
+        {
+            if (_instance == null)
+            {
+                _instance = new Nijie(_log);
+            }
+            return _instance;
+        }
+
+        public Nijie(ILog _log)
         {
             this.Log = _log;
             ExtendedWebClient.EnableCompression = true;
             ExtendedWebClient.EnableCookie = true;
             var proxy = ExtendedWebClient.GlobalProxy;
             Log.Debug("Proxy= " + proxy);
-            UseHttps = useHttps;
-            Log.Debug("UseHttps= " + useHttps);
+            Log.Debug("UseHttps= " + Properties.Settings.Default.UseHttps);
         }
 
         private void canOperate()
@@ -184,6 +193,10 @@ namespace NijieDownloader.Library
                         }
                     }
                 }
+            }
+            catch (NijieException)
+            {
+                throw;
             }
             catch (Exception ex)
             {

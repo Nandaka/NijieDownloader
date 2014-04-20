@@ -1,3 +1,13 @@
+Nijie Downloader 1.0.4.0
+- Feature: Add option to skip image if already downloaded in DB.
+- Feature: Add option for the starting page.
+- Enhancement: Save manga information to DB.
+- Enhancement: Refactor ViewModel and MainWindow.
+- Enhancement: Show error list on Batch Job.
+- Bug Fix: Update filesize detection.
+- Bug Fix: Fix Issue #16, status update in job.
+- Bug Fix: Fix Issue #11, Datetime value.
+
 Nijie Downloader 1.0.3.0
 - Feature: Add Trace DB to log setting.
 - Feature: Add Job Completion notification dialog.

@@ -29,9 +29,6 @@
     <Setting Name="AutoSaveBatchList" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="UseHttps" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="ConcurrentImageLoad" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
@@ -76,6 +73,9 @@
     </Setting>
     <Setting Name="SkipIfExistsInDB" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="StartPage" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Member</Value>
     </Setting>
   </Settings>
 </SettingsFile>

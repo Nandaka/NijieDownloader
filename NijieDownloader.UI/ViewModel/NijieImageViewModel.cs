@@ -342,7 +342,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 try
                 {
-                    var result = MainWindow.Bot.ParseImage(this.ImageId, Properties.Settings.Default.UseHttps);
+                    var result = MainWindow.Bot.ParseImage(this.ImageId);
                     temp = result;
                 }
                 catch (NijieException ne)

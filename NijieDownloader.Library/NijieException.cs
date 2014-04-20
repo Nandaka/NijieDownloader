@@ -23,6 +23,8 @@ namespace NijieDownloader.Library
 
         public const int SEARCH_UNKNOWN_ERROR = 4999;
 
+        #region ctor
+
         public NijieException(string message, int errorCode)
             : base(message)
         {
@@ -35,11 +37,23 @@ namespace NijieDownloader.Library
             this.ErrorCode = errorCode;
         }
 
+        #endregion ctor
+
         public int ErrorCode { get; set; }
 
-        public override string ToString() {
+        public int MemberId { get; set; }
+
+        public int ImageId { get; set; }
+
+        public string Query { get; set; }
+
+        public override string ToString()
+        {
             return string.Format("[{0}] {1}", ErrorCode, Message);
         }
 
+        public string Url { get; set; }
+
+        public string Filename { get; set; }
     }
 }

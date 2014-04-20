@@ -12,12 +12,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using NijieDownloader.Library;
-using Nandaka.Common;
-using FirstFloor.ModernUI.Windows.Navigation;
 using FirstFloor.ModernUI.Windows;
 using FirstFloor.ModernUI.Windows.Controls;
+using FirstFloor.ModernUI.Windows.Navigation;
+using Nandaka.Common;
+using NijieDownloader.Library;
+using NijieDownloader.Library.Properties;
 
 namespace NijieDownloader.UI
 {
@@ -28,9 +28,14 @@ namespace NijieDownloader.UI
     {
         private ModernDialog dialog;
         private bool isAutoLogin = false;
+
+        public List<String> StartPage { get; set; }
+
         public LoginInfo()
         {
             InitializeComponent();
+            StartPage = new List<string>(new string[] { "Member", "Image", "Search", "BatchDownload" });
+            cbxStartPage.DataContext = this;
 
             txtUserName.Text = Properties.Settings.Default.Username;
 
@@ -42,7 +47,7 @@ namespace NijieDownloader.UI
             this.Loaded += new RoutedEventHandler(LoginInfo_Loaded);
         }
 
-        void LoginInfo_Loaded(object sender, RoutedEventArgs e)
+        private void LoginInfo_Loaded(object sender, RoutedEventArgs e)
         {
             if (isAutoLogin)
             {
@@ -53,7 +58,6 @@ namespace NijieDownloader.UI
                 }
             }
         }
-
 
         private void updateLoginStatus(bool result, string message)
         {
@@ -67,11 +71,11 @@ namespace NijieDownloader.UI
                     Properties.Settings.Default.Password = secureString.EncryptString();
                 }
 
-                Properties.Settings.Default.Save();
+                MainWindow.SaveAllSettings();
 
                 dialog.Close();
 
-                var uri = new Uri("/Main/MemberPage.xaml", UriKind.RelativeOrAbsolute);
+                var uri = new Uri("/Main/" + Properties.Settings.Default.StartPage + "Page.xaml", UriKind.RelativeOrAbsolute);
                 var frame = NavigationHelper.FindFrame(null, this);
                 if (frame != null)
                 {
@@ -86,7 +90,7 @@ namespace NijieDownloader.UI
             if (!string.IsNullOrWhiteSpace(txtUserName.Text) && !string.IsNullOrWhiteSpace(txtPassword.Password))
             {
                 lblLoginStatus.Text = "Logging in...";
-                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus );
+                MainWindow.Bot.LoginAsync(txtUserName.Text, txtPassword.Password, updateLoginStatus);
                 dialog = new ModernDialog();
                 dialog.Content = "Logging in...";
                 dialog.CloseButton.Visibility = System.Windows.Visibility.Hidden;
@@ -128,8 +132,7 @@ namespace NijieDownloader.UI
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.Save();
-            MainWindow.Bot.UseHttps = Properties.Settings.Default.UseHttps;
+            MainWindow.SaveAllSettings();
         }
     }
 }

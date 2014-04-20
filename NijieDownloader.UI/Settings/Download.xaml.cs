@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,13 +14,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
 using FirstFloor.ModernUI;
-
-using Nandaka.Common;
-using System.Diagnostics;
 using FirstFloor.ModernUI.Windows.Controls;
-using System.IO;
+using Nandaka.Common;
 
 namespace NijieDownloader.UI.Settings
 {
@@ -28,6 +26,7 @@ namespace NijieDownloader.UI.Settings
     public partial class Download : UserControl
     {
         public List<String> LogLevel { get; set; }
+
         private int _oldBatch;
         private int _oldThumb;
 
@@ -43,7 +42,7 @@ namespace NijieDownloader.UI.Settings
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            NijieDownloader.UI.Properties.Settings.Default.Save();
+            MainWindow.SaveAllSettings();
             MainWindow.Log.Logger.Repository.Threshold = MainWindow.Log.Logger.Repository.LevelMap[Properties.Settings.Default.LogLevel];
 
             if (_oldBatch != Properties.Settings.Default.ConcurrentJob ||
@@ -51,7 +50,7 @@ namespace NijieDownloader.UI.Settings
             {
                 ModernDialog d = new ModernDialog();
                 d.Content = "Restart Required!";
-                d.ShowDialog();                  
+                d.ShowDialog();
             }
         }
 

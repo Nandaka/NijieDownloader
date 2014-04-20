@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using NijieDownloader.Library.Model;
-using System.ComponentModel;
 using System.Windows.Media.Imaging;
-using System.Collections.ObjectModel;
 using NijieDownloader.Library;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
 {
@@ -15,12 +15,17 @@ namespace NijieDownloader.UI.ViewModel
         private NijieMember _member;
 
         #region ctor
-        public NijieMemberViewModel() { }
 
-        #endregion
+        public NijieMemberViewModel()
+        {
+        }
+
+        #endregion ctor
 
         #region properties
+
         private int _memberId;
+
         public int MemberId
         {
             get
@@ -37,6 +42,7 @@ namespace NijieDownloader.UI.ViewModel
 
         private string _avatarImageStatus;
         private BitmapImage _avatarImage;
+
         public BitmapImage AvatarImage
         {
             get
@@ -69,6 +75,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private ObservableCollection<NijieImageViewModel> _images;
+
         public ObservableCollection<NijieImageViewModel> Images
         {
             get
@@ -83,6 +90,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _status;
+
         public string Status
         {
             get { return _status; }
@@ -107,10 +115,11 @@ namespace NijieDownloader.UI.ViewModel
             get
             {
                 if (_member != null) return _member.MemberUrl;
-                return NijieMember.GenerateMemberUrl(MemberId, Properties.Settings.Default.UseHttps);
+                return NijieMember.GenerateMemberUrl(MemberId);
             }
         }
-        #endregion
+
+        #endregion properties
 
         public void GetMember()
         {
@@ -133,7 +142,6 @@ namespace NijieDownloader.UI.ViewModel
             {
                 this.Status = "Error: " + ne.Message;
             }
-            
         }
     }
 }

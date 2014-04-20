@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Xml.Serialization;
+using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.UI.ViewModel
@@ -12,9 +14,10 @@ namespace NijieDownloader.UI.ViewModel
     [Serializable]
     public class JobDownloadViewModel : ViewModelBase, ICloneable
     {
-
         #region serialized data
+
         private JobType _jobType;
+
         public JobType JobType
         {
             get { return _jobType; }
@@ -26,6 +29,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _imageId;
+
         public int ImageId
         {
             get { return _imageId; }
@@ -37,6 +41,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _memberId;
+
         public int MemberId
         {
             get { return _memberId; }
@@ -48,6 +53,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _searchTag;
+
         public string SearchTag
         {
             get { return _searchTag; }
@@ -59,6 +65,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _startPage = 1;
+
         public int StartPage
         {
             get
@@ -72,6 +79,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _endPage = 0;
+
         public int EndPage
         {
             get
@@ -85,6 +93,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _limit = 0;
+
         public int Limit
         {
             get
@@ -98,6 +107,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private SortType _sort;
+
         public SortType Sort
         {
             get
@@ -112,6 +122,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private SearchMode _searchMode;
+
         public SearchMode SearchBy
         {
             get { return _searchMode; }
@@ -123,6 +134,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private SearchType _searchType;
+
         public SearchType Matching
         {
             get { return _searchType; }
@@ -132,7 +144,9 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Matching");
             }
         }
+
         private string _saveFilenameFormat;
+
         public string SaveFilenameFormat
         {
             get
@@ -151,6 +165,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _saveMangaFilenameFormat;
+
         public string SaveMangaFilenameFormat
         {
             get
@@ -169,6 +184,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _saveAvatarFilenameFormat;
+
         public string SaveAvatarFilenameFormat
         {
             get
@@ -187,6 +203,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _downloadCount;
+
         [XmlIgnoreAttribute]
         public int DownloadCount
         {
@@ -202,6 +219,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private int _currentPage;
+
         [XmlIgnoreAttribute]
         public int CurrentPage
         {
@@ -215,10 +233,13 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("CurrentPage");
             }
         }
-        #endregion
+
+        #endregion serialized data
 
         #region UI data
+
         private bool _isSelected;
+
         [XmlIgnoreAttribute]
         public bool IsSelected
         {
@@ -230,25 +251,50 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private ObservableCollection<NijieException> _exceptions;
+
+        [XmlIgnoreAttribute]
+        public ObservableCollection<NijieException> Exceptions
+        {
+            get
+            {
+                if (_exceptions == null)
+                    _exceptions = new ObservableCollection<NijieException>();
+                return _exceptions;
+            }
+            set
+            {
+                _exceptions = value;
+                onPropertyChanged("Exceptions");
+            }
+        }
+
         [XmlIgnoreAttribute]
         public string Name
         {
             get
             {
+                string _name = "";
                 switch (JobType)
                 {
                     case JobType.Image:
-                        return String.Format("Image ID: {0}", ImageId);
+                        _name = String.Format("Image ID: {0}", ImageId);
+                        break;
+
                     case JobType.Member:
-                        return String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
+                        _name = String.Format("Member ID: {0} StartPage: {1} EndPage: {2} Limit: {3}", MemberId, StartPage, EndPage, Limit);
+                        break;
+
                     case JobType.Tags:
-                        return String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
+                        _name = String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
+                        break;
                 }
-                return "N/A";
+                return _name;
             }
         }
 
         private JobStatus _status;
+
         [XmlIgnoreAttribute]
         public JobStatus Status
         {
@@ -264,15 +310,24 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         private string _message;
+
         [XmlIgnoreAttribute]
         public string Message
         {
             get
             {
+                string _temp = "";
                 if (JobType == JobType.Tags || JobType == JobType.Member)
-                    return String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
+                    _temp = String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
                 else
-                    return _message + Environment.NewLine;
+                    _temp = _message + Environment.NewLine;
+
+                if (Exceptions.Count > 0)
+                {
+                    _temp += String.Format("{0}Error Count: {1}", Environment.NewLine, Exceptions.Count);
+                }
+
+                return _temp;
             }
             set
             {
@@ -280,10 +335,13 @@ namespace NijieDownloader.UI.ViewModel
                 onPropertyChanged("Message");
             }
         }
-        #endregion
+
+        #endregion UI data
 
         #region Job control related
+
         private ManualResetEvent _pause;
+
         [XmlIgnoreAttribute]
         public ManualResetEvent PauseEvent
         {
@@ -331,7 +389,7 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        #endregion
+        #endregion Job control related
 
         public object Clone()
         {
@@ -345,7 +403,7 @@ namespace NijieDownloader.UI.ViewModel
         Member,
         Tags
     }
-    
+
     public enum JobStatus
     {
         Added,

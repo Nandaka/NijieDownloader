@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,16 +17,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using NijieDownloader.UI.ViewModel;
-using System.Collections.ObjectModel;
-using FirstFloor.ModernUI.Windows;
-using System.Web;
-using FirstFloor.ModernUI.Windows.Controls;
 using System.Xml.Serialization;
+using FirstFloor.ModernUI.Windows;
+using FirstFloor.ModernUI.Windows.Controls;
 using Microsoft.Win32;
 using NijieDownloader.Library.Model;
-using System.IO;
-using System.Threading;
+using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
 {
@@ -31,6 +32,7 @@ namespace NijieDownloader.UI
     public partial class BatchDownloadPage : Page, IContent
     {
         public ObservableCollection<JobDownloadViewModel> ViewData { get; set; }
+
         private CancellationTokenSource cancelToken;
 
         private const string DEFAULT_BATCH_JOB_LIST_FILENAME = "batchjob.xml";
@@ -47,7 +49,7 @@ namespace NijieDownloader.UI
 
             ViewData = new ObservableCollection<JobDownloadViewModel>();
             dgvJobList.DataContext = this;
-            
+
             Application.Current.Exit += new ExitEventHandler(Current_Exit);
         }
 
@@ -59,7 +61,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        void Current_Exit(object sender, ExitEventArgs e)
+        private void Current_Exit(object sender, ExitEventArgs e)
         {
             if (Properties.Settings.Default.AutoSaveBatchList)
             {
@@ -112,7 +114,9 @@ namespace NijieDownloader.UI
             newJob.Status = JobStatus.Added;
             AddJob(newJob);
         }
+
         #region navigation
+
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(e.Fragment))
@@ -165,7 +169,8 @@ namespace NijieDownloader.UI
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
         }
-        #endregion
+
+        #endregion navigation
 
         private void AddJob(JobDownloadViewModel newJob)
         {
@@ -325,7 +330,6 @@ namespace NijieDownloader.UI
             // notify when all done
             JobRunner.NotifyAllCompleted(() =>
             {
-
                 ModernDialog d = new ModernDialog();
                 var sb = new StringBuilder();
                 sb.Append("Jobs Completed!");
@@ -348,8 +352,8 @@ namespace NijieDownloader.UI
                 d.ShowDialog();
                 JobRunner.BatchStatus = JobStatus.Completed;
             });
-
         }
+
         private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             Control target = e.Source as Control;
@@ -382,6 +386,7 @@ namespace NijieDownloader.UI
             }
             //MainWindow.BatchStatus = JobStatus.Cancelled;
         }
+
         private void CanExecuteStopCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             Control target = e.Source as Control;
@@ -416,6 +421,7 @@ namespace NijieDownloader.UI
                 btnPause.Content = "Pause";
             }
         }
+
         private void CanExecutePauseCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             Control target = e.Source as Control;
@@ -442,6 +448,7 @@ namespace NijieDownloader.UI
                 AddJob(result);
             }
         }
+
         private void CanExecuteAddJobCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -460,6 +467,7 @@ namespace NijieDownloader.UI
                 }
             }
         }
+
         private void CanExecuteEditJobCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
@@ -468,7 +476,8 @@ namespace NijieDownloader.UI
                 e.CanExecute = false;
             }
         }
-        #endregion
+
+        #endregion Command
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -479,6 +488,16 @@ namespace NijieDownloader.UI
             else
             {
                 dgvJobList.MaxHeight = 1;
+            }
+        }
+
+        private void btnResetSort_Click(object sender, RoutedEventArgs e)
+        {
+            dgvJobList.Items.SortDescriptions.Clear();
+
+            foreach (DataGridColumn column in dgvJobList.Columns)
+            {
+                column.SortDirection = null;
             }
         }
     }

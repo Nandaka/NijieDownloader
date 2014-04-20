@@ -133,18 +133,6 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseHttps {
-            get {
-                return ((bool)(this["UseHttps"]));
-            }
-            set {
-                this["UseHttps"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int ConcurrentImageLoad {
             get {
@@ -320,6 +308,18 @@ namespace NijieDownloader.UI.Properties {
             }
             set {
                 this["SkipIfExistsInDB"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Member")]
+        public string StartPage {
+            get {
+                return ((string)(this["StartPage"]));
+            }
+            set {
+                this["StartPage"] = value;
             }
         }
     }
