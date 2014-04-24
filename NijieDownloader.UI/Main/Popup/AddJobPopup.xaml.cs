@@ -22,36 +22,24 @@ namespace NijieDownloader.UI.Main.Popup
     public partial class AddJob : Page
     {
         public JobDownloadViewModel NewJob { get; private set; }
+
         public List<Button> Buttons { get; private set; }
+
         private ModernDialog parent;
 
         public AddJob(JobDownloadViewModel job)
         {
+            this.NewJob = job;
             InitializeComponent();
             Buttons = new List<Button>();
             Buttons.Add(btnJobOk);
             Buttons.Add(btnJobCancel);
-            this.NewJob = job;
             this.DataContext = NewJob;
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
         {
             ModernDialog.ShowMessage(MainWindow.FILENAME_FORMAT_TOOLTIP, "Filename Format", MessageBoxButton.OK);
-        }
-
-        private void cbxJobType_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (cbxJobType.SelectedIndex == (int)JobType.Image)
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Collapsed;
-                pnlLimit.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            else
-            {
-                pnlStart.Visibility = System.Windows.Visibility.Visible;
-                pnlLimit.Visibility = System.Windows.Visibility.Visible;
-            }
         }
 
         private void btnJobOk_Click(object sender, RoutedEventArgs e)
@@ -89,7 +77,6 @@ namespace NijieDownloader.UI.Main.Popup
                 parent.DialogResult = true;
             }
         }
-
 
         private void btnJobCancel_Click(object sender, RoutedEventArgs e)
         {
