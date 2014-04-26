@@ -83,7 +83,7 @@ namespace NijieDownloader.UI.ViewModel
                     this.Members.Add(m);
                 }
                 this.IsNextPageAvailable = result.Item2;
-                this.Status = "OK";
+                this.Status = String.Format("Found {0} member(s).", this.Members.Count);
             }
             catch (NijieException ne)
             {

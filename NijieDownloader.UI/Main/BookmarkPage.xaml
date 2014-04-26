@@ -27,35 +27,34 @@
         <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
             <StackPanel MinWidth="200">
                 <TextBlock Text="Process Member Bookmark" Style="{StaticResource Heading2}" />
-                <StackPanel>
-                    <DockPanel>
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                            <Button Margin="5,5,5,5" Content="Get My Member Bookmark"
+                <DockPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                        <Button Margin="5,5,5,5" Content="Get My Member Bookmark"
                                     Command="{x:Static local:BookmarkPage.GetMyMemberBookmarkCommand}" />
-                            <Button Margin="5,5,5,5" Content="Add Selected to Batch"
+                        <Button Margin="5,5,5,5" Content="Add Selected to Batch"
                                     Command="{x:Static local:BookmarkPage.AddSelectedToBatchCommand}" />
-                            <Button Margin="5,5,5,5" Content="Add All to Batch"
+                        <Button Margin="5,5,5,5" Content="Add All to Batch"
                                     Command="{x:Static local:BookmarkPage.AddAllToBatchCommand}" />
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                            <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;"
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                        <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;"
                                     Command="{x:Static local:BookmarkPage.PrevPageCommand}" />
-                            <TextBox Text="{Binding Path=Page, FallbackValue=1}" Height="25" MinWidth="50" />
-                            <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
+                        <TextBox Text="{Binding Path=Page, FallbackValue=1}" Height="25" MinWidth="50" />
+                        <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
                                     Command="{x:Static local:BookmarkPage.NextPageCommand}" />
-                        </StackPanel>
-                        <TextBlock Width="Auto" />
-                    </DockPanel>
-                    <ListBox x:Name="lbxMembers" ItemsSource="{Binding Path=Members}"
-                             Height="Auto" PreviewMouseDoubleClick="lbxMembers_PreviewMouseDoubleClick"
-                             PreviewKeyDown="lbxMembers_PreviewKeyDown">
-                        <ListBox.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=bookmarkPage, Path=BookmarkTileColumns}" />
-                            </ItemsPanelTemplate>
-                        </ListBox.ItemsPanel>
-                    </ListBox>
-                </StackPanel>
+                    </StackPanel>
+                    <TextBlock Width="Auto" />
+                </DockPanel>
+                <ListBox x:Name="lbxMembers" ItemsSource="{Binding Path=Members}" MinHeight="150"
+                         Height="Auto" PreviewMouseDoubleClick="lbxMembers_PreviewMouseDoubleClick"
+                         PreviewKeyDown="lbxMembers_PreviewKeyDown">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=bookmarkPage, Path=BookmarkTileColumns}" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                </ListBox>
+                <TextBlock Text="{Binding Path=Status, FallbackValue=Status}" />
             </StackPanel>
         </ScrollViewer>
     </Grid>

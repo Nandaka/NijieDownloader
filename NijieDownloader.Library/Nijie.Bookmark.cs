@@ -19,7 +19,7 @@ namespace NijieDownloader.Library
             List<NijieMember> members = new List<NijieMember>();
 
             HtmlDocument doc = null;
-            bool isNextPageAvailable = true;
+            bool isNextPageAvailable = false;
             try
             {
                 var url = Util.FixUrl(String.Format("//nijie.info/like_my.php?p={0}", page), Properties.Settings.Default.UseHttps);
@@ -39,6 +39,15 @@ namespace NijieDownloader.Library
                         members.Add(member);
                     }
                     memberDiv.Remove();
+                }
+                var nextPageButton = doc.DocumentNode.SelectNodes("//p[@class='page_button']//a");
+                foreach (var item in nextPageButton)
+                {
+                    if (item.InnerText.StartsWith("次へ"))
+                    {
+                        isNextPageAvailable = true;
+                        break;
+                    }
                 }
             }
             catch (Exception ex)
