@@ -114,12 +114,16 @@
         <vm:JobDownloadViewModel JobType="Tags" SearchTag="SearchTag Here" />
     </d:DesignProperties.DataContext>
     <StackPanel DataContext="{Binding ValidatesOnDataErrors=True, NotifyOnValidationError=True}">
-        <StackPanel Orientation="Horizontal">
-            <TextBlock Text="Job Type" Margin="5,5,5,5" MinWidth="100" />
-            <ComboBox Name="cbxJobType" MinWidth="100"
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                <TextBlock Text="Job Type" Margin="5,5,5,5" MinWidth="100" />
+                <ComboBox Name="cbxJobType" MinWidth="100"
                       SelectedItem="{Binding Path=JobType}"
                       ItemsSource="{Binding Source={StaticResource jobTypeEnum}}" />
-        </StackPanel>
+            </StackPanel>
+            <TextBlock Name="txtCountMessage" Text="{Binding FallbackValue=N/A}"  DockPanel.Dock="Right" />
+            <TextBlock Width="Auto" />
+        </DockPanel>
 
         <StackPanel>
             <ContentControl Content="{Binding UpdateSourceTrigger=PropertyChanged}"

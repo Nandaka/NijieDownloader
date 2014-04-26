@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using NijieDownloader.UI.ViewModel;
 
-namespace NijieDownloader.UI.Main
+namespace NijieDownloader.UI
 {
     /// <summary>
     /// Interaction logic for BookmarkPage.xaml
@@ -56,15 +56,6 @@ namespace NijieDownloader.UI.Main
                 BookmarkTileColumns = 1;
         }
 
-        #endregion UI related
-
-        private void btnGetMemberBookmark_Click(object sender, RoutedEventArgs e)
-        {
-            ViewData.GetMyMemberBookmark();
-            this.DataContext = null;
-            this.DataContext = ViewData;
-        }
-
         private void lbxMembers_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (lbxMembers.SelectedIndex > -1 && lbxMembers.SelectedIndex < ViewData.Members.Count)
@@ -82,5 +73,84 @@ namespace NijieDownloader.UI.Main
                 e.Handled = true;
             }
         }
+
+        #endregion UI related
+
+        #region commands
+
+        public static RoutedCommand GetMyMemberBookmarkCommand = new RoutedCommand();
+
+        private void ExecuteGetMyMemberBookmarkCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.GetMyMemberBookmark();
+            this.DataContext = null;
+            this.DataContext = ViewData;
+        }
+
+        public static RoutedCommand NextPageCommand = new RoutedCommand();
+
+        private void ExecuteNextPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page += 1;
+            ExecuteGetMyMemberBookmarkCommand(sender, e);
+        }
+
+        private void CanExecuteNextPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.IsNextPageAvailable;
+        }
+
+        public static RoutedCommand PrevPageCommand = new RoutedCommand();
+
+        private void ExecutePrevPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page -= 1;
+            ExecuteGetMyMemberBookmarkCommand(sender, e);
+        }
+
+        private void CanExecutePrevPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.Page > 1 ? true : false;
+        }
+
+        public static RoutedCommand AddAllToBatchCommand = new RoutedCommand();
+
+        private void ExecuteAddAllToBatchCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            var memberIds = (from m in ViewData.Members
+                             select m.MemberId).ToArray();
+            e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", memberIds)));
+        }
+
+        private void CanExecuteAddAllToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.Members != null && ViewData.Members.Count > 0 ? true : false;
+        }
+
+        public static RoutedCommand AddSelectedToBatchCommand = new RoutedCommand();
+
+        private void ExecuteAddSelectedToBatchCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            var selected = (from m in ViewData.Members
+                            where m.IsSelected == true
+                            select m.MemberId).ToArray();
+            e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", selected)));
+        }
+
+        private void CanExecuteAddSelectedToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            var result = false;
+            if (ViewData.Members != null)
+            {
+                var selected = (from m in ViewData.Members
+                                where m.IsSelected == true
+                                select m).ToList();
+
+                result = selected.Count > 0 ? true : false;
+            }
+            e.CanExecute = result;
+        }
+
+        #endregion commands
     }
 }

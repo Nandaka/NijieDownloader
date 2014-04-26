@@ -13,12 +13,13 @@ namespace NijieDownloader.Library
     {
         private Regex re_member = new Regex(@"id=(\d+)");
 
-        public List<NijieMember> ParseMyMemberBookmark(int page)
+        public Tuple<List<NijieMember>, bool> ParseMyMemberBookmark(int page)
         {
             canOperate();
             List<NijieMember> members = new List<NijieMember>();
 
             HtmlDocument doc = null;
+            bool isNextPageAvailable = true;
             try
             {
                 var url = Util.FixUrl(String.Format("//nijie.info/like_my.php?p={0}", page), Properties.Settings.Default.UseHttps);
@@ -52,7 +53,7 @@ namespace NijieDownloader.Library
                 throw new NijieException(String.Format("Error when processing my member bookmark ==> {0}", ex.Message), ex, NijieException.IMAGE_UNKNOWN_ERROR);
             }
 
-            return members;
+            return new Tuple<List<NijieMember>, bool>(members, isNextPageAvailable);
         }
     }
 }

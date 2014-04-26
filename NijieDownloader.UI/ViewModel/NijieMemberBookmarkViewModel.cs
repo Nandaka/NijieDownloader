@@ -55,6 +55,21 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private bool _isNextPageAvailable;
+
+        public bool IsNextPageAvailable
+        {
+            get
+            {
+                return _isNextPageAvailable;
+            }
+            set
+            {
+                _isNextPageAvailable = value;
+                onPropertyChanged("IsNextPageAvailable");
+            }
+        }
+
         public void GetMyMemberBookmark()
         {
             try
@@ -62,11 +77,12 @@ namespace NijieDownloader.UI.ViewModel
                 var result = MainWindow.Bot.ParseMyMemberBookmark(this.Page);
 
                 this.Members = new ObservableCollection<NijieMemberViewModel>();
-                foreach (var item in result)
+                foreach (var item in result.Item1)
                 {
                     NijieMemberViewModel m = new NijieMemberViewModel(item);
                     this.Members.Add(m);
                 }
+                this.IsNextPageAvailable = result.Item2;
                 this.Status = "OK";
             }
             catch (NijieException ne)

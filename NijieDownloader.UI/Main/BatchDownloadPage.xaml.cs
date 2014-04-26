@@ -76,13 +76,13 @@ namespace NijieDownloader.UI
             }
         }
 
-        private void addJobForMember(int memberId)
+        private void addJobForMember(int memberId, string message = "")
         {
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Member;
             newJob.MemberId = memberId;
             newJob.Status = JobStatus.Added;
-            var result = ShowAddJobDialog(newJob);
+            var result = ShowAddJobDialog(newJob, message: message);
             if (result != null)
             {
                 AddJob(result);
@@ -125,8 +125,15 @@ namespace NijieDownloader.UI
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
                 if (query.Get("type").Equals("member"))
                 {
-                    var memberId = query.Get("memberId");
-                    addJobForMember(Int32.Parse(memberId));
+                    var memberIds = query.Get("memberId");
+                    var ids = memberIds.Split(',');
+                    int i = 1;
+                    foreach (var memberId in ids)
+                    {
+                        var message = String.Format("{0} of {1}", i, ids.Count());
+                        addJobForMember(Int32.Parse(memberId), message);
+                        i++;
+                    }
                 }
                 else if (query.Get("type").Equals("search"))
                 {
@@ -210,9 +217,9 @@ namespace NijieDownloader.UI
             }
         }
 
-        private JobDownloadViewModel ShowAddJobDialog(JobDownloadViewModel newJob, String title = "Add")
+        private JobDownloadViewModel ShowAddJobDialog(JobDownloadViewModel newJob, String title = "Add Job", String message = "")
         {
-            var ctx = new NijieDownloader.UI.Main.Popup.AddJob(newJob);
+            var ctx = new NijieDownloader.UI.Main.Popup.AddJob(newJob, message);
             var d = new ModernDialog();
             d.Buttons = ctx.Buttons;
             d.Content = ctx;

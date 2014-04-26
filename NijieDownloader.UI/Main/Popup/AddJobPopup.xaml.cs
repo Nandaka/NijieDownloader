@@ -27,7 +27,7 @@ namespace NijieDownloader.UI.Main.Popup
 
         private ModernDialog parent;
 
-        public AddJob(JobDownloadViewModel job)
+        public AddJob(JobDownloadViewModel job, String messageCount)
         {
             this.NewJob = job;
             InitializeComponent();
@@ -35,6 +35,7 @@ namespace NijieDownloader.UI.Main.Popup
             Buttons.Add(btnJobOk);
             Buttons.Add(btnJobCancel);
             this.DataContext = NewJob;
+            txtCountMessage.DataContext = messageCount;
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

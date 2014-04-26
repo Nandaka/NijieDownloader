@@ -34,7 +34,7 @@ namespace NijieDownloader.UI
         public LoginInfo()
         {
             InitializeComponent();
-            StartPage = new List<string>(new string[] { "Member", "Image", "Search", "BatchDownload" });
+            StartPage = new List<string>(new string[] { "Member", "Image", "Search", "Bookmark", "BatchDownload" });
             cbxStartPage.DataContext = this;
 
             txtUserName.Text = Properties.Settings.Default.Username;
