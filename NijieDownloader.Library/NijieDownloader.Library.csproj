@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Nijie.Bookmark.cs" />
     <Compile Include="DAL\NijieContext.cs" />
     <Compile Include="Migrations\201402201406506_InitialCreate.cs" />
     <Compile Include="Migrations\201402201406506_InitialCreate.Designer.cs">

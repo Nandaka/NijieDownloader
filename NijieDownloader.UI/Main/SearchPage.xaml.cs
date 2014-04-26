@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -11,15 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using NijieDownloader.Library.Model;
-using FirstFloor.ModernUI.Windows.Navigation;
-using NijieDownloader.UI.ViewModel;
-using System.Diagnostics;
-using System.ComponentModel;
 using FirstFloor.ModernUI.Windows;
-using NijieDownloader.Library;
 using FirstFloor.ModernUI.Windows.Controls;
+using FirstFloor.ModernUI.Windows.Navigation;
+using NijieDownloader.Library;
+using NijieDownloader.Library.Model;
+using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
 {
@@ -41,6 +40,7 @@ namespace NijieDownloader.UI
         }
 
         #region navigation
+
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             ProcessNavigation(e.Fragment);
@@ -70,9 +70,11 @@ namespace NijieDownloader.UI
                 SearchCommand.Execute(null, btnFetch);
             }
         }
-        #endregion
+
+        #endregion navigation
 
         #region UI related
+
         public static readonly DependencyProperty TileColumnsProperty =
             DependencyProperty.Register("TileColumns", typeof(int), typeof(SearchPage), new PropertyMetadata(3));
 
@@ -125,17 +127,20 @@ namespace NijieDownloader.UI
                 e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
             }
         }
-        #endregion
+
+        #endregion UI related
 
         #region Commands
+
         public static RoutedCommand SearchCommand = new RoutedCommand();
+
         private void ExecuteSearchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             // note: different way to refresh the binding.
             ModernDialog d = new ModernDialog();
             d.Content = "Loading data...";
             d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
-            
+
             System.Threading.ThreadPool.QueueUserWorkItem(
              (x) =>
              {
@@ -160,28 +165,33 @@ namespace NijieDownloader.UI
         }
 
         public static RoutedCommand SearchNextPageCommand = new RoutedCommand();
+
         private void ExecuteSearchNextPageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ViewData.Page += 1;
             ExecuteSearchCommand(sender, e);
         }
+
         private void CanExecuteSearchNextPageCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = ViewData.IsNextPageAvailable;
         }
 
         public static RoutedCommand SearchPrevPageCommand = new RoutedCommand();
+
         private void ExecuteSearchPrevPageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ViewData.Page -= 1;
             ExecuteSearchCommand(sender, e);
         }
+
         private void CanExecuteSearchPrevPageCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = ViewData.Page > 1 ? true : false;
         }
 
         public static RoutedCommand AddBatchCommand = new RoutedCommand();
+
         private void ExecuteAddBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             string target = string.Format("/Main/BatchDownloadPage.xaml#type=search&tags={0}&page={1}&sort={2}&mode={3}&searchType={4}",
@@ -195,6 +205,7 @@ namespace NijieDownloader.UI
         }
 
         public static RoutedCommand AddImagesToBatchCommand = new RoutedCommand();
+
         private void ExecuteAddImagesToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             var selected = from l in ViewData.Images
@@ -207,6 +218,7 @@ namespace NijieDownloader.UI
                 e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + join);
             }
         }
+
         private void CanExecuteAddImagesToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = false;
@@ -218,6 +230,7 @@ namespace NijieDownloader.UI
                 if (selected > 0) e.CanExecute = true;
             }
         }
-        #endregion
+
+        #endregion Commands
     }
 }

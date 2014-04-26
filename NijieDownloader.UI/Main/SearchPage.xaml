@@ -1,16 +1,16 @@
 ﻿<Page x:Class="NijieDownloader.UI.SearchPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       xmlns:lib="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="600" d:DesignWidth="800" Name="searchPage"
-	Title="Search Page">
+	  Title="Search Page">
     <Page.Resources>
         <ObjectDataProvider x:Key="sortTypeEnum" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
@@ -31,19 +31,19 @@
     <Page.CommandBindings>
         <CommandBinding Command="{x:Static local:SearchPage.SearchCommand}"
                         Executed="ExecuteSearchCommand"
-                        CanExecute="CanExecuteSearchCommand"/>
+                        CanExecute="CanExecuteSearchCommand" />
         <CommandBinding Command="{x:Static local:SearchPage.SearchNextPageCommand}"
                         Executed="ExecuteSearchNextPageCommand"
-                        CanExecute="CanExecuteSearchNextPageCommand"/>
+                        CanExecute="CanExecuteSearchNextPageCommand" />
         <CommandBinding Command="{x:Static local:SearchPage.SearchPrevPageCommand}"
                         Executed="ExecuteSearchPrevPageCommand"
-                        CanExecute="CanExecuteSearchPrevPageCommand"/>
+                        CanExecute="CanExecuteSearchPrevPageCommand" />
         <CommandBinding Command="{x:Static local:SearchPage.AddBatchCommand}"
                         Executed="ExecuteAddBatchCommand"
-                        CanExecute="CanExecuteSearchCommand"/>
+                        CanExecute="CanExecuteSearchCommand" />
         <CommandBinding Command="{x:Static local:SearchPage.AddImagesToBatchCommand}"
                         Executed="ExecuteAddImagesToBatchCommand"
-                        CanExecute="CanExecuteAddImagesToBatchCommand"/>
+                        CanExecute="CanExecuteAddImagesToBatchCommand" />
     </Page.CommandBindings>
     <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
         <Grid Style="{StaticResource ContentRoot}" x:Name="root">
@@ -51,36 +51,36 @@
                 <StackPanel DockPanel.Dock="Bottom">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Result" />
-                        <TextBlock Name="txtResultCount" Height="25" Text="{Binding Path=Images.Count, FallbackValue=0}" Margin="5,0,5,0"/>
-                        <TextBlock Name="lblStatus" Height="25" Text="{Binding Path=Status}" Margin="5,0,5,0"/>
+                        <TextBlock Name="txtResultCount" Height="25" Text="{Binding Path=Images.Count, FallbackValue=0}" Margin="5,0,5,0" />
+                        <TextBlock Name="lblStatus" Height="25" Text="{Binding Path=Status}" Margin="5,0,5,0" />
                     </StackPanel>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Top">
                     <TextBlock Text="Search Images" Style="{StaticResource Heading2}" />
-                    <DockPanel >
+                    <DockPanel>
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                            <TextBlock Text="Query" Margin="5,5,5,0"/>
+                            <TextBlock Text="Query" Margin="5,5,5,0" />
                             <TextBox  Name="txtQuery" Height="25" Width="150"
                                       Text="{Binding Path=Query, UpdateSourceTrigger=PropertyChanged}" />
-                            <TextBlock Text="Sort" Margin="5,5,5,0"/>
+                            <TextBlock Text="Sort" Margin="5,5,5,0" />
                             <ComboBox Name="cbxSort" Width="110" Margin="5,5,5,5"
-                                      ItemsSource="{Binding Source={StaticResource sortTypeEnum}}" 
-                                      SelectedItem="{Binding Path=Sort}"/>
+                                      ItemsSource="{Binding Source={StaticResource sortTypeEnum}}"
+                                      SelectedItem="{Binding Path=Sort}" />
                             <ComboBox Name="cbxMode" Width="110" Margin="5,5,5,5"
-                                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}" 
-                                      SelectedItem="{Binding Path=SearchBy}"/>
+                                      ItemsSource="{Binding Source={StaticResource modeTypeEnum}}"
+                                      SelectedItem="{Binding Path=SearchBy}" />
                             <ComboBox Name="cbxType" Width="110" Margin="5,5,5,5"
-                                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}" 
-                                      SelectedItem="{Binding Path=Matching}"/>
+                                      ItemsSource="{Binding Source={StaticResource searchTypeEnum}}"
+                                      SelectedItem="{Binding Path=Matching}" />
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-                            <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;" 
-                                    Command="{x:Static local:SearchPage.SearchPrevPageCommand}"/>
-                            <TextBox Name="txtPage" Height="25" Text="{Binding Path=Page}" MinWidth="50"/>
+                            <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;"
+                                    Command="{x:Static local:SearchPage.SearchPrevPageCommand}" />
+                            <TextBox Name="txtPage" Height="25" Text="{Binding Path=Page}" MinWidth="50" />
                             <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
-                                    Command="{x:Static local:SearchPage.SearchNextPageCommand}"/>
+                                    Command="{x:Static local:SearchPage.SearchNextPageCommand}" />
                         </StackPanel>
-                        <TextBlock Width="Auto"/>
+                        <TextBlock Width="Auto" />
                     </DockPanel>
                     <DockPanel>
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
@@ -94,19 +94,19 @@
                         <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
                             <Button Width="120" Margin="5,5,5,5" Name="btnFetch" IsDefault="True"
                                     Command="{x:Static local:SearchPage.SearchCommand}">Search</Button>
-                            <Button Width="120" Margin="5,5,5,5" Name="btnAddBatchJob" 
+                            <Button Width="120" Margin="5,5,5,5" Name="btnAddBatchJob"
                                     Command="{x:Static local:SearchPage.AddBatchCommand}">Add To Batch</Button>
-                            <Button Width="120" Margin="5,5,5,5" Name="btnAddSelectedJob" 
+                            <Button Width="120" Margin="5,5,5,5" Name="btnAddSelectedJob"
                                     Command="{x:Static local:SearchPage.AddImagesToBatchCommand}">Add Selected</Button>
                         </StackPanel>
-                        <TextBlock Width="Auto"/>
+                        <TextBlock Width="Auto" />
                     </DockPanel>
                 </StackPanel>
 
                 <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" Height="Auto" PreviewKeyDown="StackPanel_KeyDown" PreviewMouseDoubleClick="lbxImages_PreviewMouseDoubleClick">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=searchPage, Path=TileColumns}"/>
+                            <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=searchPage, Path=TileColumns}" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>

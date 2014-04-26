@@ -20,6 +20,12 @@ namespace NijieDownloader.UI.ViewModel
         {
         }
 
+        public NijieMemberViewModel(NijieMember member)
+        {
+            _member = member;
+            this.MemberId = member.MemberId;
+        }
+
         #endregion ctor
 
         #region properties
@@ -116,6 +122,21 @@ namespace NijieDownloader.UI.ViewModel
             {
                 if (_member != null) return _member.MemberUrl;
                 return NijieMember.GenerateMemberUrl(MemberId);
+            }
+        }
+
+        private bool _isSelected;
+
+        public bool IsSelected
+        {
+            get
+            {
+                return _isSelected;
+            }
+            set
+            {
+                _isSelected = value;
+                onPropertyChanged("IsSelected");
             }
         }
 
