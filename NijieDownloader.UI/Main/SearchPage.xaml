@@ -103,7 +103,9 @@
                     </DockPanel>
                 </StackPanel>
 
-                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" Height="Auto" PreviewKeyDown="StackPanel_KeyDown" PreviewMouseDoubleClick="lbxImages_PreviewMouseDoubleClick">
+                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" MinHeight="410"
+                         PreviewKeyDown="StackPanel_KeyDown"
+                         PreviewMouseDoubleClick="lbxImages_PreviewMouseDoubleClick">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=searchPage, Path=TileColumns}" />

@@ -6,7 +6,16 @@
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       mc:Ignorable="d"
       xmlns:local="clr-namespace:NijieDownloader.UI"
+      xmlns:vm="clr-namespace:NijieDownloader.UI.ViewModel"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
       d:DesignHeight="600" d:DesignWidth="800" Name="bookmarkPage">
+    <Page.Resources>
+        <ObjectDataProvider x:Key="BookmarkType" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vm:BookmarkType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+    </Page.Resources>
     <Page.CommandBindings>
         <CommandBinding Command="{x:Static local:BookmarkPage.GetMyMemberBookmarkCommand}"
                         Executed="ExecuteGetMyMemberBookmarkCommand" />
@@ -29,7 +38,9 @@
                 <TextBlock Text="Process Member Bookmark" Style="{StaticResource Heading2}" />
                 <DockPanel>
                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <Button Margin="5,5,5,5" Content="Get My Member Bookmark"
+                        <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=BookmarkType}" MinWidth="100"
+                                  ItemsSource="{Binding Source={StaticResource BookmarkType}}" SelectionChanged="ComboBox_SelectionChanged" />
+                        <Button Margin="5,5,5,5" Content="Get My Bookmark"
                                     Command="{x:Static local:BookmarkPage.GetMyMemberBookmarkCommand}" />
                         <Button Margin="5,5,5,5" Content="Add Selected to Batch"
                                     Command="{x:Static local:BookmarkPage.AddSelectedToBatchCommand}" />
@@ -45,9 +56,21 @@
                     </StackPanel>
                     <TextBlock Width="Auto" />
                 </DockPanel>
-                <ListBox x:Name="lbxMembers" ItemsSource="{Binding Path=Members}" MinHeight="150"
-                         Height="Auto" PreviewMouseDoubleClick="lbxMembers_PreviewMouseDoubleClick"
+                <ListBox x:Name="lbxMembers" MinHeight="460"
+                         PreviewMouseDoubleClick="lbxMembers_PreviewMouseDoubleClick"
                          PreviewKeyDown="lbxMembers_PreviewKeyDown">
+                    <ListBox.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=BookmarkType}" Value="Member">
+                                    <Setter Property="ListBox.ItemsSource" Value="{Binding Path=Members}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=BookmarkType}" Value="Image">
+                                    <Setter Property="ListBox.ItemsSource" Value="{Binding Path=Images}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ListBox.Style>
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <UniformGrid IsItemsHost="True" Columns="{Binding ElementName=bookmarkPage, Path=BookmarkTileColumns}" />

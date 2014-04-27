@@ -43,7 +43,7 @@ namespace NijieDownloader.UI
 
         private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var h = e.NewSize.Height - 50;
+            var h = e.NewSize.Height - 80;
             if (h > 0)
                 lbxMembers.MaxHeight = h;
             else
@@ -58,9 +58,16 @@ namespace NijieDownloader.UI
 
         private void lbxMembers_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (lbxMembers.SelectedIndex > -1 && lbxMembers.SelectedIndex < ViewData.Members.Count)
+            if (lbxMembers.SelectedIndex > -1)
             {
-                e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + ViewData.Members[lbxMembers.SelectedIndex].MemberId);
+                if (ViewData.BookmarkType == BookmarkType.Member && lbxMembers.SelectedIndex < ViewData.Members.Count)
+                {
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/MemberPage.xaml#memberId=" + ViewData.Members[lbxMembers.SelectedIndex].MemberId);
+                }
+                else if (ViewData.BookmarkType == BookmarkType.Image && lbxMembers.SelectedIndex < ViewData.Images.Count)
+                {
+                    e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#imageId=" + ViewData.Images[lbxMembers.SelectedIndex].ImageId);
+                }
             }
         }
 
@@ -68,10 +75,24 @@ namespace NijieDownloader.UI
         {
             if (e.Key == Key.Space)
             {
-                var member = ViewData.Members[lbxMembers.SelectedIndex];
-                member.IsSelected = !(member.IsSelected);
+                if (ViewData.BookmarkType == BookmarkType.Member)
+                {
+                    var member = ViewData.Members[lbxMembers.SelectedIndex];
+                    member.IsSelected = !(member.IsSelected);
+                }
+                else if (ViewData.BookmarkType == BookmarkType.Image)
+                {
+                    var image = ViewData.Images[lbxMembers.SelectedIndex];
+                    image.IsSelected = !(image.IsSelected);
+                }
                 e.Handled = true;
             }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewData.Status = "";
+            ViewData.Page = 1;
         }
 
         #endregion UI related
@@ -82,8 +103,14 @@ namespace NijieDownloader.UI
 
         private void ExecuteGetMyMemberBookmarkCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            ViewData.GetMyMemberBookmark();
-            this.DataContext = null;
+            if (ViewData.BookmarkType == BookmarkType.Member)
+            {
+                ViewData.GetMyMemberBookmark();
+            }
+            else
+            {
+                ViewData.GetMyImagesBookmark();
+            }
             this.DataContext = ViewData;
         }
 
@@ -117,34 +144,68 @@ namespace NijieDownloader.UI
 
         private void ExecuteAddAllToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            var memberIds = (from m in ViewData.Members
-                             select m.MemberId).ToArray();
-            e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", memberIds)));
+            if (ViewData.BookmarkType == BookmarkType.Member)
+            {
+                var memberIds = (from m in ViewData.Members
+                                 select m.MemberId).ToArray();
+                e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", memberIds)));
+            }
+            else if (ViewData.BookmarkType == BookmarkType.Image)
+            {
+                var imageIds = (from i in ViewData.Images
+                                select i.ImageId).ToArray();
+                e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=image&imageId={0}", String.Join(",", imageIds)));
+            }
         }
 
         private void CanExecuteAddAllToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = ViewData.Members != null && ViewData.Members.Count > 0 ? true : false;
+            if (ViewData.BookmarkType == BookmarkType.Member)
+            {
+                e.CanExecute = ViewData.Members != null && ViewData.Members.Count > 0 ? true : false;
+            }
+            else if (ViewData.BookmarkType == BookmarkType.Image)
+            {
+                e.CanExecute = ViewData.Images != null && ViewData.Images.Count > 0 ? true : false;
+            }
         }
 
         public static RoutedCommand AddSelectedToBatchCommand = new RoutedCommand();
 
         private void ExecuteAddSelectedToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            var selected = (from m in ViewData.Members
-                            where m.IsSelected == true
-                            select m.MemberId).ToArray();
-            e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", selected)));
+            if (ViewData.BookmarkType == BookmarkType.Member)
+            {
+                var selected = (from m in ViewData.Members
+                                where m.IsSelected == true
+                                select m.MemberId).ToArray();
+                e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}", String.Join(",", selected)));
+            }
+            else if (ViewData.BookmarkType == BookmarkType.Image)
+            {
+                var imageIds = (from i in ViewData.Images
+                                where i.IsSelected == true
+                                select i.ImageId).ToArray();
+                e.Handled = MainWindow.NavigateTo(this, String.Format("/Main/BatchDownloadPage.xaml#type=image&imageId={0}", String.Join(",", imageIds)));
+            }
         }
 
         private void CanExecuteAddSelectedToBatchCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             var result = false;
-            if (ViewData.Members != null)
+            if (ViewData.BookmarkType == BookmarkType.Member && ViewData.Members != null)
             {
                 var selected = (from m in ViewData.Members
                                 where m.IsSelected == true
                                 select m).ToList();
+
+                result = selected.Count > 0 ? true : false;
+            }
+            else if (ViewData.BookmarkType == BookmarkType.Image && ViewData.Images != null)
+            {
+                var selected = (from i in ViewData.Images
+                                where i.IsSelected == true
+                                select i.ImageId).ToList();
 
                 result = selected.Count > 0 ? true : false;
             }

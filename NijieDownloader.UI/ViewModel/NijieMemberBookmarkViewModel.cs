@@ -10,6 +10,21 @@ namespace NijieDownloader.UI.ViewModel
 {
     public class NijieMemberBookmarkViewModel : ViewModelBase
     {
+        private BookmarkType _bookmarkType;
+
+        public BookmarkType BookmarkType
+        {
+            get
+            {
+                return _bookmarkType;
+            }
+            set
+            {
+                _bookmarkType = value;
+                onPropertyChanged("BookmarkType");
+            }
+        }
+
         private ObservableCollection<NijieMemberViewModel> _members;
 
         public ObservableCollection<NijieMemberViewModel> Members
@@ -22,6 +37,21 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _members = value;
                 onPropertyChanged("Members");
+            }
+        }
+
+        private ObservableCollection<NijieImageViewModel> _images;
+
+        public ObservableCollection<NijieImageViewModel> Images
+        {
+            get
+            {
+                return _images;
+            }
+            set
+            {
+                _images = value;
+                onPropertyChanged("Images");
             }
         }
 
@@ -90,5 +120,31 @@ namespace NijieDownloader.UI.ViewModel
                 this.Status = "Error: " + ne.Message;
             }
         }
+
+        public void GetMyImagesBookmark()
+        {
+            try
+            {
+                var result = MainWindow.Bot.ParseMyImageBookmark(this.Page);
+
+                this.Images = new ObservableCollection<NijieImageViewModel>();
+                foreach (var item in result.Item1)
+                {
+                    NijieImageViewModel m = new NijieImageViewModel(item);
+                    this.Images.Add(m);
+                }
+                this.IsNextPageAvailable = result.Item2;
+                this.Status = String.Format("Found {0} images(s).", this.Images.Count);
+            }
+            catch (NijieException ne)
+            {
+                this.Status = "Error: " + ne.Message;
+            }
+        }
+    }
+
+    public enum BookmarkType
+    {
+        Member, Image
     }
 }

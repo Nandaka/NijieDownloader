@@ -151,6 +151,7 @@ namespace NijieDownloader.UI
                          this.DataContext = null;
                          this.DataContext = ViewData;
                          d.Close();
+                         ViewData.Status = "";
                      }),
                      new object[] { this }
                   );
