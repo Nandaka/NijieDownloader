@@ -79,7 +79,7 @@ namespace NijieDownloader.Library
         /// <param name="filename"></param>
         /// <param name="progressChanged"></param>
         /// <returns></returns>
-        public string Download(string url, string referer, string filename, Action<string> progressChanged)
+        public string Download(string url, string referer, string filename, Action<string> progressChanged, CancellationToken cancelToken)
         {
             String message = "";
 
@@ -118,7 +118,19 @@ namespace NijieDownloader.Library
 
                     Log.Warn(string.Format("Error when downloading: {0} to {1} ==> {2}, Retrying {2} of {3}...", url, tempFilename, ex.Message, retry, Properties.Settings.Default.RetryCount));
                     deleteTempFile(filename, progressChanged);
+
+                    var prefixMsg = message.Clone();
+                    for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
+                    {
+                        message = String.Format("{0} waiting: {1}", prefixMsg, i);
+                        Thread.Sleep(1000);
+                        if (cancelToken != null && cancelToken.IsCancellationRequested)
+                        {
+                            throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                        }
+                    }
                     ++retry;
+
                     if (retry > Properties.Settings.Default.RetryCount)
                         throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
                 }
@@ -286,6 +298,12 @@ namespace NijieDownloader.Library
                     checkHttpStatusCode(url, ex);
 
                     Log.Warn(String.Format("Error when downloading data: {0} ==> {1}, Retrying {2} of {3}...", url, ex.Message, retry, Properties.Settings.Default.RetryCount));
+
+                    //for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
+                    //{
+                    //    Thread.Sleep(1000);
+                    //}
+
                     ++retry;
                     if (retry > Properties.Settings.Default.RetryCount)
                         throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR);

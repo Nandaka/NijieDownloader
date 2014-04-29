@@ -47,9 +47,6 @@
     <Setting Name="MangaFilenameFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">{memberId}\{imageId}{page} - {tags}</Value>
     </Setting>
-    <Setting Name="RetryDelay" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">60</Value>
-    </Setting>
     <Setting Name="SaveDB" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

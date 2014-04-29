@@ -86,7 +86,7 @@
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="100" Text="Retry Delay" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}" />
+                                     Text="{Binding Source={x:Static nl:Settings.Default}, Path=RetryDelay, Mode=TwoWay}" />
                         <TextBlock Width="100" Text="Retry Count" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                      Text="{Binding Source={x:Static nl:Settings.Default}, Path=RetryCount, Mode=TwoWay}" />

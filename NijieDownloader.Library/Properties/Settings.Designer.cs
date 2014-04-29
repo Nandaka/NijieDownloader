@@ -82,5 +82,17 @@ namespace NijieDownloader.Library.Properties {
                 this["OverwriteOnlyIfDifferentSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("60")]
+        public int RetryDelay {
+            get {
+                return ((int)(this["RetryDelay"]));
+            }
+            set {
+                this["RetryDelay"] = value;
+            }
+        }
     }
 }

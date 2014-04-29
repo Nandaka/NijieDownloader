@@ -454,68 +454,23 @@ namespace NijieDownloader.UI
             url = Util.FixUrl(url);
 
             MainWindow.Log.Debug(String.Format("Downloading url: {0} ==> {1}", url, filename));
-            int retry = 0;
-            while (retry < 3)
+            if (isJobCancelled(job))
+                return false;
+
+            try
             {
-                if (isJobCancelled(job))
-                    return false;
-
-                try
-                {
-                    job.Message = "Saving to: " + filename;
-                    MainWindow.Bot.Download(url, referer, filename, x =>
-                                            {
-                                                job.Message = x;
-                                            });
-                    break;
-                }
-                catch (NijieException nex)
-                {
-                    job.Message = Util.GetAllInnerExceptionMessage(nex);
-                    MainWindow.Log.Error(nex.Message);
-
-                    var webException = nex.InnerException as System.Net.WebException;
-                    if (webException != null)
-                    {
-                        var response = webException.Response as System.Net.HttpWebResponse;
-                        if (response.StatusCode == System.Net.HttpStatusCode.GatewayTimeout ||
-                            response.StatusCode == System.Net.HttpStatusCode.RequestTimeout)
-                        {
-                            ++retry;
-                            MainWindow.Log.Error(String.Format("Failed to download url: {0}, retrying {1} of {2}", url, retry, 3), webException);
-                            for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
-                            {
-                                job.Message = webException.Message + " retry: " + retry + " wait: " + i;
-                                Thread.Sleep(1000);
-                                if (job.CancelToken.IsCancellationRequested)
-                                {
-                                    addException(job, nex, url, filename);
-                                    return false;
-                                }
-                            }
-                            continue;
-                        }
-                    }
-
-                    addException(job, nex, url, filename);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    ++retry;
-                    MainWindow.Log.Error(String.Format("Failed to download url: {0}, retrying {1} of {2}", url, retry, 3), ex);
-                    for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
-                    {
-                        job.Message = ex.Message + " retry: " + retry + " wait: " + i;
-                        Thread.Sleep(1000);
-                        if (job.CancelToken.IsCancellationRequested)
-                        {
-                            var nex = new NijieException(ex.Message, ex, NijieException.DOWNLOAD_ERROR);
-                            addException(job, nex, url, filename);
-                            return false;
-                        }
-                    }
-                }
+                job.Message = "Saving to: " + filename;
+                MainWindow.Bot.Download(url, referer, filename, x =>
+                                        {
+                                            job.Message = x;
+                                        }, job.CancelToken);
+            }
+            catch (NijieException nex)
+            {
+                job.Message = Util.GetAllInnerExceptionMessage(nex);
+                MainWindow.Log.Error(nex.Message);
+                addException(job, nex, url, filename);
+                return false;
             }
 
             return true;
