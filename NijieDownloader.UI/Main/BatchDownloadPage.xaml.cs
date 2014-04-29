@@ -209,10 +209,17 @@ namespace NijieDownloader.UI
 
             if (ok)
             {
-                ViewData.Add(newJob);
-                if (JobRunner.BatchStatus == JobStatus.Running)
+                if (ViewData.Contains(newJob, new JobDownloadViewModelComparer()))
                 {
-                    JobRunner.DoJob(newJob, cancelToken);
+                    MessageBox.Show("Job already exists", "Add Job Warning", MessageBoxButton.OK);
+                }
+                else
+                {
+                    ViewData.Add(newJob);
+                    if (JobRunner.BatchStatus == JobStatus.Running)
+                    {
+                        JobRunner.DoJob(newJob, cancelToken);
+                    }
                 }
             }
         }
@@ -358,7 +365,10 @@ namespace NijieDownloader.UI
                 d.Content = sb.ToString();
                 d.ShowDialog();
                 JobRunner.BatchStatus = JobStatus.Completed;
+                txtStatus.Text = JobRunner.BatchStatus.ToString();
             });
+
+            txtStatus.Text = JobRunner.BatchStatus.ToString();
         }
 
         private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -391,7 +401,7 @@ namespace NijieDownloader.UI
                     item.Status = JobStatus.Canceling;
                 }
             }
-            //MainWindow.BatchStatus = JobStatus.Cancelled;
+            txtStatus.Text = JobRunner.BatchStatus.ToString();
         }
 
         private void CanExecuteStopCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -427,6 +437,7 @@ namespace NijieDownloader.UI
                 }
                 btnPause.Content = "Pause";
             }
+            txtStatus.Text = JobRunner.BatchStatus.ToString();
         }
 
         private void CanExecutePauseCommand(object sender, CanExecuteRoutedEventArgs e)

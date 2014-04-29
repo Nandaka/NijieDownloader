@@ -486,6 +486,7 @@ namespace NijieDownloader.UI
                          nex.Url = url;
                          nex.Filename = filename;
                          job.Exceptions.Add(nex);
+                         job.HasError = true;
                      }
                  }),
                  new object[] { null }

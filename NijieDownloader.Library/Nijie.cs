@@ -63,12 +63,31 @@ namespace NijieDownloader.Library
 
         private Tuple<HtmlDocument, WebResponse> getPage(string url)
         {
+            Tuple<HtmlDocument, WebResponse> result = null;
             ExtendedWebClient client = new ExtendedWebClient();
-            var imagePage = client.DownloadData(url);
+            int retry = 1;
+            while (retry <= Properties.Settings.Default.RetryCount)
+            {
+                try
+                {
+                    var imagePage = client.DownloadData(url);
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(Encoding.UTF8.GetString(imagePage));
+                    result = new Tuple<HtmlDocument, WebResponse>(doc, client.Response);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    checkHttpStatusCode(url, ex);
 
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(Encoding.UTF8.GetString(imagePage));
-            return new Tuple<HtmlDocument, WebResponse>(doc, client.Response);
+                    ++retry;
+                    if (retry > Properties.Settings.Default.RetryCount)
+                    {
+                        throw;
+                    }
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -126,7 +145,7 @@ namespace NijieDownloader.Library
                         Thread.Sleep(1000);
                         if (cancelToken != null && cancelToken.IsCancellationRequested)
                         {
-                            throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                            throw new NijieException(string.Format("Cancel requested, error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
                         }
                     }
                     ++retry;
@@ -173,7 +192,6 @@ namespace NijieDownloader.Library
                 if (!Properties.Settings.Default.Overwrite)
                 {
                     message += ", skipping...";
-                    Log.Warn(message);
                     if (progressChanged != null)
                         progressChanged(message);
                     throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
@@ -209,7 +227,6 @@ namespace NijieDownloader.Library
                     if (oldFileInfo.Length == bytes_total && Properties.Settings.Default.OverwriteOnlyIfDifferentSize)
                     {
                         message += ", Identical size: " + bytes_total + ", skipping...";
-                        Log.Warn(message);
                         if (progressChanged != null)
                             progressChanged(message);
                         throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
@@ -253,7 +270,6 @@ namespace NijieDownloader.Library
                 if (oldFileInfo.Length == newFileInfo.Length && Properties.Settings.Default.OverwriteOnlyIfDifferentSize)
                 {
                     message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
-                    Log.Warn(message);
                     if (progressChanged != null)
                         progressChanged(message);
 

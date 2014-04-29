@@ -17,20 +17,26 @@ namespace NijieDownloader.UI.ViewModel
                         if (x.ImageId == other.ImageId)
                             return 0;
                         break;
+
                     case JobType.Member:
                         if (x.MemberId == other.MemberId &&
-                            x.StartPage == other.StartPage &&
-                            x.EndPage == other.EndPage &&
+                            //x.StartPage == other.StartPage &&
+                            //x.EndPage == other.EndPage &&
                             x.Limit == other.Limit)
                             return 0;
                         break;
+
                     case JobType.Tags:
                         if (x.SearchTag == other.SearchTag &&
+                            x.SearchBy == other.SearchBy &&
+                            x.Sort == other.Sort &&
+                            x.Matching == other.Matching &&
                             x.StartPage == other.StartPage &&
                             x.EndPage == other.EndPage &&
                             x.Limit == other.Limit)
                             return 0;
                         break;
+
                     default:
                         return 1;
                 }

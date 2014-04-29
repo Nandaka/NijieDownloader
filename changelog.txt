@@ -1,3 +1,8 @@
+Nijie Downloader 1.0.5.0
+- Feature: Add My Bookmarked Members and My Bookmarked Images (Request #19).
+- Feature: Add retry count option.
+- Enhancement: Refactor download code in library.
+
 Nijie Downloader 1.0.4.0
 - Feature: Add option to skip image if already downloaded in DB.
 - Feature: Add option for the starting page.

@@ -270,6 +270,21 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         [XmlIgnoreAttribute]
+        public bool HasError
+        {
+            get
+            {
+                if (_exceptions == null || _exceptions.Count == 0)
+                    return false;
+                return true;
+            }
+            set
+            {
+                onPropertyChanged("HasError");
+            }
+        }
+
+        [XmlIgnoreAttribute]
         public string Name
         {
             get
@@ -413,6 +428,7 @@ namespace NijieDownloader.UI.ViewModel
         Completed,
         Canceling,
         Cancelled,
-        Error
+        Error,
+        Ready
     }
 }
