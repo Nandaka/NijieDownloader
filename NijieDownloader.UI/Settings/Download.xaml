@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              xmlns:np="clr-namespace:NijieDownloader.UI.Properties"
+             xmlns:nl="clr-namespace:NijieDownloader.Library.Properties;assembly=NijieDownloader.Library"
              xmlns:local="clr-namespace:NijieDownloader.UI"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800">
@@ -53,12 +54,12 @@
                                   IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DownloadAvatar, Mode=TwoWay}" />
                         <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
                             <CheckBox Margin="0,0,5,0" Content="Overwrite" HorizontalAlignment="Left" Name="cbxOverwrite"
-                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=Overwrite, Mode=TwoWay}" />
+                                      IsChecked="{Binding Source={x:Static nl:Settings.Default}, Path=Overwrite, Mode=TwoWay}" />
                             <CheckBox Margin="0,0,5,0" Content="Only if different in size" HorizontalAlignment="Left" Name="cbxOOIFDS"
-                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=OverwriteOnlyIfDifferentSize, Mode=TwoWay}"
+                                      IsChecked="{Binding Source={x:Static nl:Settings.Default}, Path=OverwriteOnlyIfDifferentSize, Mode=TwoWay}"
                                       IsEnabled="{Binding ElementName=cbxOverwrite, Path=IsChecked}" />
                             <CheckBox Margin="0,0,5,0" Content="Backup old file" HorizontalAlignment="Left"
-                                      IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=MakeBackupOldFile, Mode=TwoWay}"
+                                      IsChecked="{Binding Source={x:Static nl:Settings.Default}, Path=MakeBackup, Mode=TwoWay}"
                                       IsEnabled="{Binding ElementName=cbxOOIFDS, Path=IsChecked}" />
                         </StackPanel>
                     </StackPanel>
@@ -86,6 +87,9 @@
                         <TextBlock Width="100" Text="Retry Delay" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=RetryDelay, Mode=TwoWay}" />
+                        <TextBlock Width="100" Text="Retry Count" Margin="5,5,5,0" />
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                     Text="{Binding Source={x:Static nl:Settings.Default}, Path=RetryCount, Mode=TwoWay}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
                         <CheckBox Margin="0,5,0,0" Content="Save Image Info to DB" HorizontalAlignment="Left"

@@ -73,18 +73,6 @@ namespace NijieDownloader.UI.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool Overwrite {
-            get {
-                return ((bool)(this["Overwrite"]));
-            }
-            set {
-                this["Overwrite"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UpdateRequired {
             get {
@@ -212,30 +200,6 @@ namespace NijieDownloader.UI.Properties {
             }
             set {
                 this["MangaFilenameFormat"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool OverwriteOnlyIfDifferentSize {
-            get {
-                return ((bool)(this["OverwriteOnlyIfDifferentSize"]));
-            }
-            set {
-                this["OverwriteOnlyIfDifferentSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool MakeBackupOldFile {
-            get {
-                return ((bool)(this["MakeBackupOldFile"]));
-            }
-            set {
-                this["MakeBackupOldFile"] = value;
             }
         }
         

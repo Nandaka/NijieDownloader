@@ -14,9 +14,6 @@
     <Setting Name="FilenameFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">{memberId}\{imageId} - {tags}</Value>
     </Setting>
-    <Setting Name="Overwrite" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="UpdateRequired" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -49,12 +46,6 @@
     </Setting>
     <Setting Name="MangaFilenameFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">{memberId}\{imageId}{page} - {tags}</Value>
-    </Setting>
-    <Setting Name="OverwriteOnlyIfDifferentSize" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="MakeBackupOldFile" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="RetryDelay" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">60</Value>

@@ -77,130 +77,51 @@ namespace NijieDownloader.Library
         /// <param name="url"></param>
         /// <param name="referer"></param>
         /// <param name="filename"></param>
-        /// <param name="overwrite"></param>
-        /// <param name="overwriteOnlyIfDifferentSize"></param>
-        /// <param name="makeBackup"></param>
         /// <param name="progressChanged"></param>
         /// <returns></returns>
-        public string Download(string url, string referer, string filename, bool overwrite, bool overwriteOnlyIfDifferentSize, bool makeBackup, Action<string> progressChanged)
+        public string Download(string url, string referer, string filename, Action<string> progressChanged)
         {
             String message = "";
-            var fileExist = File.Exists(filename);
-            if (fileExist)
-            {
-                message = "File Exists: " + filename;
-                // skip download if overwrite flag is not tick
-                if (!overwrite)
-                {
-                    message += ", skipping...";
-                    Log.Warn(message);
-                    if (progressChanged != null)
-                        progressChanged(message);
-                    throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
-                }
-            }
+
+            checkOverwrite(filename, progressChanged, ref message);
 
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
-            var tempFilename = filename + ".!nijie";
-            if (File.Exists(tempFilename))
-            {
-                var msg2 = "Deleting temporary file: " + tempFilename;
-                Log.Debug(msg2);
-                if (progressChanged != null)
-                    progressChanged(msg2);
-                File.Delete(tempFilename);
-            }
 
+            var tempFilename = deleteTempFile(filename, progressChanged);
             Util.CreateSubDir(tempFilename);
-            try
+            int retry = 1;
+            while (retry <= Properties.Settings.Default.RetryCount)
             {
-                using (var stream = client.OpenRead(url))
+                try
                 {
-                    var isCompressionEnabled = ExtendedWebClient.EnableCompression;
-                    Int64 bytes_total = -1;
-
-                    // if compression enabled, the content-length is the compressed size.
-                    // so need to check after download to get the real size.
-                    if (fileExist && !isCompressionEnabled)
+                    using (var stream = client.OpenRead(url))
                     {
-                        FileInfo oldFileInfo = new FileInfo(filename);
-                        if (client.ResponseHeaders["Content-Length"] != null)
-                            bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
+                        Int64 bytes_total = downloadPreCheck(filename, client, progressChanged, ref message);
 
-                        Log.Debug("Content-Length Filesize: " + bytes_total);
-
-                        // If have Content-length size, do pre-check.
-                        if (bytes_total > 0)
+                        using (var f = File.Create(tempFilename))
                         {
-                            // skip download if the filesize are the same.
-                            if (oldFileInfo.Length == bytes_total && overwriteOnlyIfDifferentSize)
-                            {
-                                message += ", Identical size: " + bytes_total + ", skipping...";
-                                Log.Warn(message);
-                                if (progressChanged != null)
-                                    progressChanged(message);
-                                throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
-                            }
-
-                            // make backup for the old file
-                            if (makeBackup)
-                            {
-                                var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
-                                message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
-                                Log.Info(message);
-                                if (progressChanged != null)
-                                    progressChanged(message);
-                                File.Move(filename, backupFilename);
-                            }
-                            else
-                            {
-                                File.Delete(filename);
-                            }
+                            stream.CopyTo(f);
                         }
-                    }
-                    using (var f = File.Create(tempFilename))
-                    {
-                        stream.CopyTo(f);
-                    }
 
-                    // if compression is enabled or Content Length is unknown, check after downloaded.
-                    if (fileExist && (isCompressionEnabled || bytes_total <= 0))
-                    {
-                        FileInfo oldFileInfo = new FileInfo(filename);
-                        FileInfo newFileInfo = new FileInfo(tempFilename);
-
-                        // delete the new file if filesize are the same
-                        if (oldFileInfo.Length == newFileInfo.Length && overwriteOnlyIfDifferentSize)
-                        {
-                            message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
-                            Log.Warn(message);
-                            if (progressChanged != null)
-                                progressChanged(message);
-
-                            // delete downloaded file
-                            File.Delete(tempFilename);
-                            throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
-                        }
-                        else if (makeBackup)
-                        {
-                            var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
-                            message += ", Compression enabled and different size: " + oldFileInfo.Length + " vs " + newFileInfo.Length + ", backing up to: " + backupFilename;
-                            Log.Info(message);
-                            if (progressChanged != null)
-                                progressChanged(message);
-                            File.Move(filename, backupFilename);
-                        }
+                        downloadPostCheck(filename, tempFilename, bytes_total, progressChanged, ref message);
                     }
+                    break;
                 }
-            }
-            catch (NijieException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                catch (NijieException)
+                {
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    checkHttpStatusCode(url, ex);
+
+                    Log.Warn(string.Format("Error when downloading: {0} to {1} ==> {2}, Retrying {2} of {3}...", url, tempFilename, ex.Message, retry, Properties.Settings.Default.RetryCount));
+                    deleteTempFile(filename, progressChanged);
+                    ++retry;
+                    if (retry > Properties.Settings.Default.RetryCount)
+                        throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                }
             }
 
             Thread.Sleep(100); // delay before renaming
@@ -211,6 +132,141 @@ namespace NijieDownloader.Library
             return message;
         }
 
+        private string deleteTempFile(string filename, Action<string> progressChanged)
+        {
+            var tempFilename = filename + ".!nijie";
+            if (File.Exists(tempFilename))
+            {
+                var msg2 = "Deleting temporary file: " + tempFilename;
+                Log.Debug(msg2);
+                if (progressChanged != null)
+                    progressChanged(msg2);
+                File.Delete(tempFilename);
+            }
+            return tempFilename;
+        }
+
+        /// <summary>
+        /// Check if allow overwrite
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="progressChanged"></param>
+        /// <param name="message"></param>
+        private void checkOverwrite(string filename, Action<string> progressChanged, ref string message)
+        {
+            if (File.Exists(filename))
+            {
+                message = "File Exists: " + filename;
+                // skip download if overwrite flag is not tick
+                if (!Properties.Settings.Default.Overwrite)
+                {
+                    message += ", skipping...";
+                    Log.Warn(message);
+                    if (progressChanged != null)
+                        progressChanged(message);
+                    throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check if File exists and need to redownload.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="client"></param>
+        /// <param name="progressChanged"></param>
+        /// <param name="message"></param>
+        /// <returns>Server File Size via "Content-Length" header.</returns>
+        private Int64 downloadPreCheck(string filename, ExtendedWebClient client, Action<string> progressChanged, ref string message)
+        {
+            Int64 bytes_total = -1;
+            // if compression enabled, the content-length is the compressed size.
+            // so need to check after download to get the real size.
+            if (File.Exists(filename) && !ExtendedWebClient.EnableCompression)
+            {
+                FileInfo oldFileInfo = new FileInfo(filename);
+                if (client.ResponseHeaders["Content-Length"] != null)
+                    bytes_total = Convert.ToInt64(client.ResponseHeaders["Content-Length"]);
+
+                Log.Debug("Content-Length Filesize: " + bytes_total);
+
+                // If have Content-length size, do pre-check.
+                if (bytes_total > 0)
+                {
+                    // skip download if the filesize are the same.
+                    if (oldFileInfo.Length == bytes_total && Properties.Settings.Default.OverwriteOnlyIfDifferentSize)
+                    {
+                        message += ", Identical size: " + bytes_total + ", skipping...";
+                        Log.Warn(message);
+                        if (progressChanged != null)
+                            progressChanged(message);
+                        throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
+                    }
+
+                    // make backup for the old file
+                    if (Properties.Settings.Default.MakeBackup)
+                    {
+                        var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
+                        message += ", different size: " + oldFileInfo.Length + " vs " + bytes_total + ", backing up to: " + backupFilename;
+                        Log.Info(message);
+                        if (progressChanged != null)
+                            progressChanged(message);
+                        File.Move(filename, backupFilename);
+                    }
+                    else
+                    {
+                        File.Delete(filename);
+                    }
+                }
+            }
+            return bytes_total;
+        }
+
+        /// <summary>
+        /// if compression is enabled or Content Length is unknown, check after downloaded.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="tempFilename"></param>
+        /// <param name="bytes_total"></param>
+        /// <param name="progressChanged"></param>
+        /// <param name="message"></param>
+        private void downloadPostCheck(string filename, string tempFilename, Int64 bytes_total, Action<string> progressChanged, ref string message)
+        {
+            if (File.Exists(filename) && (ExtendedWebClient.EnableCompression || bytes_total <= 0))
+            {
+                FileInfo oldFileInfo = new FileInfo(filename);
+                FileInfo newFileInfo = new FileInfo(tempFilename);
+
+                // delete the new file if filesize are the same
+                if (oldFileInfo.Length == newFileInfo.Length && Properties.Settings.Default.OverwriteOnlyIfDifferentSize)
+                {
+                    message += ", Compression Enabled and Identical size: " + newFileInfo.Length + ", deleting temp file...";
+                    Log.Warn(message);
+                    if (progressChanged != null)
+                        progressChanged(message);
+
+                    // delete downloaded file
+                    File.Delete(tempFilename);
+                    throw new NijieException(message, NijieException.DOWNLOAD_SKIPPED);
+                }
+                else if (Properties.Settings.Default.MakeBackup)
+                {
+                    var backupFilename = filename + "." + Util.DateTimeToUnixTimestamp(DateTime.Now);
+                    message += ", Compression enabled and different size: " + oldFileInfo.Length + " vs " + newFileInfo.Length + ", backing up to: " + backupFilename;
+                    Log.Info(message);
+                    if (progressChanged != null)
+                        progressChanged(message);
+                    File.Move(filename, backupFilename);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Download data to memory byte array.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="referer"></param>
+        /// <returns>downloaded data.</returns>
         public byte[] DownloadData(string url, string referer)
         {
             int retry = 1;
@@ -229,7 +285,7 @@ namespace NijieDownloader.Library
                 {
                     checkHttpStatusCode(url, ex);
 
-                    Log.Info(String.Format("Error when downloading data: {0} ==> {1}, Retrying {2} of {3}...", url, ex.Message, retry, Properties.Settings.Default.RetryCount);
+                    Log.Warn(String.Format("Error when downloading data: {0} ==> {1}, Retrying {2} of {3}...", url, ex.Message, retry, Properties.Settings.Default.RetryCount));
                     ++retry;
                     if (retry > Properties.Settings.Default.RetryCount)
                         throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR);

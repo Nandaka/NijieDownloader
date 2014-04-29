@@ -289,7 +289,7 @@ namespace NijieDownloader.UI
             MainWindow.Log.Debug("Processing Image:" + imageTemp.ImageId);
 
             // skip if exists in DB
-            if (Properties.Settings.Default.SkipIfExistsInDB && !Properties.Settings.Default.Overwrite)
+            if (Properties.Settings.Default.SkipIfExistsInDB && !NijieDownloader.Library.Properties.Settings.Default.Overwrite)
             {
                 using (var dao = new NijieContext())
                 {
@@ -423,7 +423,7 @@ namespace NijieDownloader.UI
         /// <returns></returns>
         private static bool canDownloadFile(JobDownloadViewModel job, String url, String filename)
         {
-            if (!File.Exists(filename) || Properties.Settings.Default.Overwrite)
+            if (!File.Exists(filename) || NijieDownloader.Library.Properties.Settings.Default.Overwrite)
             {
                 if (File.Exists(filename))
                 {
@@ -463,11 +463,7 @@ namespace NijieDownloader.UI
                 try
                 {
                     job.Message = "Saving to: " + filename;
-                    MainWindow.Bot.Download(url, referer, filename,
-                                            Properties.Settings.Default.Overwrite,
-                                            Properties.Settings.Default.OverwriteOnlyIfDifferentSize,
-                                            Properties.Settings.Default.MakeBackupOldFile
-                                            , x =>
+                    MainWindow.Bot.Download(url, referer, filename, x =>
                                             {
                                                 job.Message = x;
                                             });

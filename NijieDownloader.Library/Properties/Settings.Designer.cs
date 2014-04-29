@@ -46,5 +46,41 @@ namespace NijieDownloader.Library.Properties {
                 this["RetryCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MakeBackup {
+            get {
+                return ((bool)(this["MakeBackup"]));
+            }
+            set {
+                this["MakeBackup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Overwrite {
+            get {
+                return ((bool)(this["Overwrite"]));
+            }
+            set {
+                this["Overwrite"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OverwriteOnlyIfDifferentSize {
+            get {
+                return ((bool)(this["OverwriteOnlyIfDifferentSize"]));
+            }
+            set {
+                this["OverwriteOnlyIfDifferentSize"] = value;
+            }
+        }
     }
 }
