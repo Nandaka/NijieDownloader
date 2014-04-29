@@ -34,5 +34,17 @@ namespace NijieDownloader.Library.Properties {
                 this["UseHttps"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int RetryCount {
+            get {
+                return ((int)(this["RetryCount"]));
+            }
+            set {
+                this["RetryCount"] = value;
+            }
+        }
     }
 }

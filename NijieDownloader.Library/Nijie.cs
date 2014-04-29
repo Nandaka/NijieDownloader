@@ -213,15 +213,54 @@ namespace NijieDownloader.Library
 
         public byte[] DownloadData(string url, string referer)
         {
-            try
+            int retry = 1;
+            byte[] result = null;
+
+            while (retry <= Properties.Settings.Default.RetryCount)
             {
-                ExtendedWebClient client = new ExtendedWebClient();
-                client.Referer = referer;
-                return client.DownloadData(url);
+                try
+                {
+                    ExtendedWebClient client = new ExtendedWebClient();
+                    client.Referer = referer;
+                    result = client.DownloadData(url);
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    checkHttpStatusCode(url, ex);
+
+                    Log.Info(String.Format("Error when downloading data: {0} ==> {1}, Retrying {2} of {3}...", url, ex.Message, retry, Properties.Settings.Default.RetryCount);
+                    ++retry;
+                    if (retry > Properties.Settings.Default.RetryCount)
+                        throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                }
             }
-            catch (Exception ex)
+            return result;
+        }
+
+        /// <summary>
+        /// Throw exception if have httpstatuscode :
+        /// - 403 Forbidden
+        /// - 404 NotFound
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="ex"></param>
+        private void checkHttpStatusCode(string url, Exception ex)
+        {
+            var wex = ex as WebException;
+            if (wex != null)
             {
-                throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR); ;
+                var response = wex.Response as System.Net.HttpWebResponse;
+                if (response != null)
+                {
+                    // skip retry if got
+                    if (response.StatusCode == HttpStatusCode.Forbidden ||
+                        response.StatusCode == HttpStatusCode.NotFound
+                        )
+                    {
+                        throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, wex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                    }
+                }
             }
         }
     }
