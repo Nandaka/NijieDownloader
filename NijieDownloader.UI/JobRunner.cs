@@ -84,6 +84,7 @@ namespace NijieDownloader.UI
                 {
                     job.Status = JobStatus.Error;
                     job.Message = Util.GetAllInnerExceptionMessage(ex);
+                    MainWindow.Log.Error(String.Format("Unhandled Error for {0} ==> {1}", job.Name, ex.Message), ex);
                 }
                 finally
                 {
