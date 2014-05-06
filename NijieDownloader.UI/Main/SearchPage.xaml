@@ -61,7 +61,7 @@
                         <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                             <TextBlock Text="Query" Margin="5,5,5,0" />
                             <TextBox  Name="txtQuery" Height="25" Width="150"
-                                      Text="{Binding Path=Query, UpdateSourceTrigger=PropertyChanged}" />
+                                      Text="{Binding Path=Query, UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}" />
                             <TextBlock Text="Sort" Margin="5,5,5,0" />
                             <ComboBox Name="cbxSort" Width="110" Margin="5,5,5,5"
                                       ItemsSource="{Binding Source={StaticResource sortTypeEnum}}"

@@ -103,7 +103,8 @@ namespace NijieDownloader.UI
             System.Threading.ThreadPool.QueueUserWorkItem(
              (x) =>
              {
-                 ViewData.GetImage(); this.Dispatcher.BeginInvoke(
+                 ViewData.GetImage();
+                 this.Dispatcher.BeginInvoke(
                           new Action<ImagePage>((y) =>
                           {
                               this.DataContext = ViewData;

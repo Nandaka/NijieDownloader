@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Media.Imaging;
 using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
@@ -160,7 +161,7 @@ namespace NijieDownloader.UI.ViewModel
 
         #endregion properties
 
-        public void DoSearch()
+        public void DoSearch(SynchronizationContext context)
         {
             NijieSearchOption option = new NijieSearchOption();
             option.Sort = Sort;
@@ -177,7 +178,10 @@ namespace NijieDownloader.UI.ViewModel
                 foreach (var image in _search.Images)
                 {
                     var temp = new NijieImageViewModel(image);
-                    Images.Add(temp);
+                    context.Send((x) =>
+                    {
+                        Images.Add(temp);
+                    }, null);
                 }
             }
             catch (NijieException ne)

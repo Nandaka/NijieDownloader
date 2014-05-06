@@ -101,9 +101,9 @@ namespace NijieDownloader.UI
 
         #region commands
 
-        public static RoutedCommand GetMyMemberBookmarkCommand = new RoutedCommand();
+        public static RoutedCommand GetMyBookmarkCommand = new RoutedCommand();
 
-        private void ExecuteGetMyMemberBookmarkCommand(object sender, ExecutedRoutedEventArgs e)
+        private void ExecuteGetMyBookmarkCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ModernDialog d = new ModernDialog();
             d.Content = "Loading data...";
@@ -148,7 +148,7 @@ namespace NijieDownloader.UI
         private void ExecuteNextPageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ViewData.Page += 1;
-            ExecuteGetMyMemberBookmarkCommand(sender, e);
+            ExecuteGetMyBookmarkCommand(sender, e);
         }
 
         private void CanExecuteNextPageCommand(object sender, CanExecuteRoutedEventArgs e)
@@ -161,7 +161,7 @@ namespace NijieDownloader.UI
         private void ExecutePrevPageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ViewData.Page -= 1;
-            ExecuteGetMyMemberBookmarkCommand(sender, e);
+            ExecuteGetMyBookmarkCommand(sender, e);
         }
 
         private void CanExecutePrevPageCommand(object sender, CanExecuteRoutedEventArgs e)

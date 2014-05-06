@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -141,10 +142,11 @@ namespace NijieDownloader.UI
             d.Content = "Loading data...";
             d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
 
+            var ctx = SynchronizationContext.Current;
             System.Threading.ThreadPool.QueueUserWorkItem(
              (x) =>
              {
-                 ViewData.DoSearch();
+                 ViewData.DoSearch(ctx);
                  this.Dispatcher.BeginInvoke(
                      new Action<SearchPage>((y) =>
                      {

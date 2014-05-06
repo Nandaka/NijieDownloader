@@ -17,8 +17,8 @@
         </ObjectDataProvider>
     </Page.Resources>
     <Page.CommandBindings>
-        <CommandBinding Command="{x:Static local:BookmarkPage.GetMyMemberBookmarkCommand}"
-                        Executed="ExecuteGetMyMemberBookmarkCommand" />
+        <CommandBinding Command="{x:Static local:BookmarkPage.GetMyBookmarkCommand}"
+                        Executed="ExecuteGetMyBookmarkCommand" />
         <CommandBinding Command="{x:Static local:BookmarkPage.NextPageCommand}"
                         Executed="ExecuteNextPageCommand"
                         CanExecute="CanExecuteNextPageCommand" />
@@ -41,7 +41,7 @@
                         <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=BookmarkType}" MinWidth="100"
                                   ItemsSource="{Binding Source={StaticResource BookmarkType}}" SelectionChanged="ComboBox_SelectionChanged" />
                         <Button Margin="5,5,5,5" Content="Get My Bookmark"
-                                    Command="{x:Static local:BookmarkPage.GetMyMemberBookmarkCommand}" />
+                                    Command="{x:Static local:BookmarkPage.GetMyBookmarkCommand}" />
                         <Button Margin="5,5,5,5" Content="Add Selected to Batch"
                                     Command="{x:Static local:BookmarkPage.AddSelectedToBatchCommand}" />
                         <Button Margin="5,5,5,5" Content="Add All to Batch"
