@@ -148,10 +148,10 @@ namespace NijieDownloader.UI
                  this.Dispatcher.BeginInvoke(
                      new Action<SearchPage>((y) =>
                      {
-                         this.DataContext = null;
+                         //this.DataContext = null;
                          this.DataContext = ViewData;
                          d.Close();
-                         ViewData.Status = "";
+                         ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count); ;
                      }),
                      new object[] { this }
                   );

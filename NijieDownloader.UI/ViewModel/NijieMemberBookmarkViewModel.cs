@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
 
@@ -100,7 +101,7 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public void GetMyMemberBookmark()
+        public void GetMyMemberBookmark(SynchronizationContext context)
         {
             try
             {
@@ -110,7 +111,10 @@ namespace NijieDownloader.UI.ViewModel
                 foreach (var item in result.Item1)
                 {
                     NijieMemberViewModel m = new NijieMemberViewModel(item);
-                    this.Members.Add(m);
+                    context.Send((x) =>
+                    {
+                        this.Members.Add(m);
+                    }, null);
                 }
                 this.IsNextPageAvailable = result.Item2;
                 this.Status = String.Format("Found {0} member(s).", this.Members.Count);
@@ -121,7 +125,7 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        public void GetMyImagesBookmark()
+        public void GetMyImagesBookmark(SynchronizationContext context)
         {
             try
             {
@@ -131,7 +135,10 @@ namespace NijieDownloader.UI.ViewModel
                 foreach (var item in result.Item1)
                 {
                     NijieImageViewModel m = new NijieImageViewModel(item);
-                    this.Images.Add(m);
+                    context.Send((x) =>
+                    {
+                        this.Images.Add(m);
+                    }, null);
                 }
                 this.IsNextPageAvailable = result.Item2;
                 this.Status = String.Format("Found {0} images(s).", this.Images.Count);

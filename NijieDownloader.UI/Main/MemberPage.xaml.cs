@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,14 +13,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
-using NijieDownloader.Library.Model;
-using FirstFloor.ModernUI.Windows.Navigation;
-using NijieDownloader.UI.ViewModel;
-using System.Diagnostics;
 using FirstFloor.ModernUI.Windows;
-using NijieDownloader.Library;
 using FirstFloor.ModernUI.Windows.Controls;
+using FirstFloor.ModernUI.Windows.Navigation;
+using NijieDownloader.Library;
+using NijieDownloader.Library.Model;
+using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
 {
@@ -28,7 +28,7 @@ namespace NijieDownloader.UI
     public partial class MemberPage : Page, IContent
     {
         public NijieMemberViewModel ViewData { get; set; }
-        
+
         public MemberPage()
         {
             ViewData = new NijieMemberViewModel();
@@ -40,6 +40,7 @@ namespace NijieDownloader.UI
         }
 
         #region Navigation
+
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(e.Fragment))
@@ -64,9 +65,11 @@ namespace NijieDownloader.UI
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
         }
-        #endregion
+
+        #endregion Navigation
 
         #region UI related
+
         public static readonly DependencyProperty TileColumnsProperty =
             DependencyProperty.Register("TileColumns", typeof(int), typeof(MemberPage), new PropertyMetadata(3));
 
@@ -116,18 +119,41 @@ namespace NijieDownloader.UI
                 e.Handled = true;
             }
         }
-        #endregion
+
+        #endregion UI related
 
         #region Commands
+
         public static RoutedCommand GetMemberCommand = new RoutedCommand();
+
         private void ExecuteGetMemberCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            ViewData = new NijieMemberViewModel() { MemberId = ViewData.MemberId };
-            ViewData.GetMember();
-            this.DataContext = ViewData;
+            //ViewData = new NijieMemberViewModel() { MemberId = ViewData.MemberId };
+            ModernDialog d = new ModernDialog();
+            d.Content = "Loading data...";
+            d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+
+            var ctx = SynchronizationContext.Current;
+            System.Threading.ThreadPool.QueueUserWorkItem(
+             (x) =>
+             {
+                 ViewData.GetMember(ctx);
+                 this.Dispatcher.BeginInvoke(
+                     new Action<MemberPage>((y) =>
+                     {
+                         this.DataContext = ViewData;
+                         d.Close();
+                         ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count);
+                     }),
+                     new object[] { this }
+                  );
+             }, null
+            );
+            d.ShowDialog();
         }
 
         public static RoutedCommand AddMemberToBatchCommand = new RoutedCommand();
+
         private void ExecuteAddMemberToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(txtMemberID.Text))
@@ -142,6 +168,7 @@ namespace NijieDownloader.UI
         }
 
         public static RoutedCommand AddImagesToBatchCommand = new RoutedCommand();
+
         private void ExecuteAddImagesToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             var selected = from l in ViewData.Images
@@ -166,6 +193,7 @@ namespace NijieDownloader.UI
                 e.CanExecute = selected > 0 ? true : false;
             }
         }
-        #endregion
+
+        #endregion Commands
     }
 }

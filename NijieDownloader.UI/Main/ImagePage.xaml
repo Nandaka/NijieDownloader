@@ -1,10 +1,10 @@
 ﻿<Page x:Class="NijieDownloader.UI.ImagePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       xmlns:h="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
       xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
@@ -15,66 +15,66 @@
     <Page.CommandBindings>
         <CommandBinding Command="{x:Static local:ImagePage.GetImageCommand}"
                         Executed="ExecuteGetImageCommand"
-                        CanExecute="CanExecuteImageCommand"/>
+                        CanExecute="CanExecuteImageCommand" />
         <CommandBinding Command="{x:Static local:ImagePage.AddToBatchCommand}"
                         Executed="ExecuteAddToBatchCommand"
-                        CanExecute="CanExecuteImageCommand"/>
+                        CanExecute="CanExecuteImageCommand" />
         <CommandBinding Command="{x:Static local:ImagePage.MangaPrevCommand}"
                         Executed="ExecuteMangaPrevCommand"
-                        CanExecute="CanExecuteMangaCommand"/>
+                        CanExecute="CanExecuteMangaCommand" />
         <CommandBinding Command="{x:Static local:ImagePage.MangaNextCommand}"
                         Executed="ExecuteMangaNextCommand"
-                        CanExecute="CanExecuteMangaCommand"/>
+                        CanExecute="CanExecuteMangaCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}">
         <StackPanel>
             <TextBlock Text="Process Image" Style="{StaticResource Heading2}" />
             <DockPanel>
-                <Grid SizeChanged="Grid_SizeChanged" >
+                <Grid SizeChanged="Grid_SizeChanged">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <DockPanel Grid.ColumnSpan="2">
-                        <TextBlock Text="Image ID" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <TextBlock Text="Image ID" Margin="5,10,5,0" DockPanel.Dock="Left" />
                         <TextBox Name="txtImageID" Height="25" MinWidth="150" DockPanel.Dock="Left"
                                  Text="{Binding Path=ImageId, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button Name="btnFetch" Command="{x:Static local:ImagePage.GetImageCommand}" 
+                        <Button Name="btnFetch" Command="{x:Static local:ImagePage.GetImageCommand}"
                                 Margin="5,5,5,5" IsDefault="True" DockPanel.Dock="Left">Fetch Image</Button>
                         <Button Name="btnAddBatch" Command="{x:Static local:ImagePage.AddToBatchCommand}"
                                 Margin="5,5,5,5" DockPanel.Dock="Left">Add to Batch Job</Button>
-                        <TextBlock Text="Status: " TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"/>
+                        <TextBlock Text="Status: " TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left" />
                         <TextBlock TextWrapping="Wrap" Margin="5,10,5,0" DockPanel.Dock="Left"
                                    Text="{Binding Path=Message, FallbackValue=N/A}" />
                         <StackPanel Margin="5,5,5,0" Orientation="Horizontal" DockPanel.Dock="Right" HorizontalAlignment="Right"
                                     Visibility="{Binding Path=IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}">
                             <Button Name="btnPrev" Content="&lt;"
-                                    Command="{x:Static local:ImagePage.MangaPrevCommand}"/>
+                                    Command="{x:Static local:ImagePage.MangaPrevCommand}" />
                             <TextBlock Text="{Binding Path=Page, FallbackValue=0}" Margin="5,5,5,0" />
-                            <TextBlock Text="of" Margin="0,5,0,0"/>
+                            <TextBlock Text="of" Margin="0,5,0,0" />
                             <TextBlock Text="{Binding Path=PageCount, FallbackValue=0}" Margin="5,5,5,0" />
-                            <Button Name="btnNext" Content="&gt;" 
-                                    Command="{x:Static local:ImagePage.MangaNextCommand}"/>
+                            <Button Name="btnNext" Content="&gt;"
+                                    Command="{x:Static local:ImagePage.MangaNextCommand}" />
                         </StackPanel>
                     </DockPanel>
-                    <Expander ExpandDirection="Left" Grid.Row="1" Grid.Column="0" 
+                    <Expander ExpandDirection="Left" Grid.Row="1" Grid.Column="0"
                               IsExpanded="True" Margin="0,0,-15,0" Padding="0,0,-15,0">
                         <Expander.Header>
                             <TextBlock Text="Image Info" RenderTransformOrigin="0.5,0.5" Margin="0,25,0,0">
                                 <TextBlock.RenderTransform>
                                     <TransformGroup>
-                                        <RotateTransform Angle="-90"/>
+                                        <RotateTransform Angle="-90" />
                                      </TransformGroup>
                                 </TextBlock.RenderTransform>
                             </TextBlock>
                         </Expander.Header>
                         <ScrollViewer>
-                            <StackPanel Orientation="Vertical" >
-                                <TextBlock Text="Member ID" Margin="5,5,5,0"/>
+                            <StackPanel Orientation="Vertical" MaxWidth="150">
+                                <TextBlock Text="Member ID" Margin="5,5,5,0" />
                                 <TextBlock Margin="5,5,5,5">
                                     <Hyperlink NavigateUri="{Binding Path=MemberId}">
                                         <Label Name="lblMember"  Content="{Binding Path=MemberId}" MouseDown="lblMember_MouseDown" />
@@ -82,38 +82,38 @@
                                 </TextBlock>
 
                                 <TextBlock Text="Title" Margin="5,5,5,0" />
-                                <TextBox Name="txtTitle" MinHeight="25" Text="{Binding Path=Title, Mode=OneWay}" TextWrapping="Wrap"/>
+                                <TextBox Name="txtTitle" MinHeight="25" Text="{Binding Path=Title, Mode=OneWay}" TextWrapping="Wrap" />
 
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Good" Margin="5,5,5,0" />
-                                    <TextBlock Height="25" Margin="5,5,5,0"  Text="{Binding Path=GoodCount, Mode=OneWay}"/>
+                                    <TextBlock Height="25" Margin="5,5,5,0"  Text="{Binding Path=GoodCount, Mode=OneWay}" />
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="抜いた" Margin="5,5,5,0" />
-                                    <TextBlock Height="25" Margin="5,5,5,0" Text="{Binding Path=NuitaCount, Mode=OneWay}"/>
+                                    <TextBlock Height="25" Margin="5,5,5,0" Text="{Binding Path=NuitaCount, Mode=OneWay}" />
                                 </StackPanel>
 
                                 <TextBlock Text="Description" Margin="5,5,5,0" />
-                                <TextBox Name="txtDescription" MinHeight="25" MaxWidth="150"
-                                     Text="{Binding Path=Description, Mode=OneWay}" 
-                                     ToolTip="{Binding Path=Description}" 
-                                     TextWrapping="Wrap"/>
+                                <TextBox Name="txtDescription" MinHeight="25" MaxHeight="100"
+                                     Text="{Binding Path=Description, Mode=OneWay}"
+                                     ToolTip="{Binding Path=Description}"
+                                     TextWrapping="Wrap" />
 
                                 <TextBlock Text="Work Date" Margin="5,5,5,0" />
-                                <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=WorkDate, Mode=OneWay}"/>
+                                <TextBox Name="txtWorkDate" Height="25" Text="{Binding Path=WorkDate, Mode=OneWay}" />
 
                                 <TextBlock Text="Tags" Margin="5,5,5,0" />
 
-                                <ListBox ItemsSource="{Binding Path=Tags}">
+                                <ListBox ItemsSource="{Binding Path=Tags}" MaxHeight="100">
                                     <ListBox.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <WrapPanel IsItemsHost="True" Width="150"/>
+                                            <WrapPanel IsItemsHost="True" Width="150" />
                                         </ItemsPanelTemplate>
                                     </ListBox.ItemsPanel>
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
-                                            <TextBlock Margin="5,0,0,5">
-                                            <Hyperlink NavigateUri="{Binding Path=Name}" 
+                                            <TextBlock>
+                                            <Hyperlink NavigateUri="{Binding Path=Name}"
                                                        RequestNavigate="Hyperlink_RequestNavigate">
                                                 <Label Content="{Binding Path=Name}" />
                                             </Hyperlink>
@@ -126,7 +126,7 @@
                             </StackPanel>
                         </ScrollViewer>
                     </Expander>
-                    <DockPanel Grid.Column="1" Grid.Row="1" >
+                    <DockPanel Grid.Column="1" Grid.Row="1">
                         <ListBox DockPanel.Dock="Right" Name="lbxMangaThumb"
                                  Visibility="{Binding Path=IsManga, FallbackValue=Collapsed, Converter={StaticResource isMangaToVisibilityConverter}}"
                                  ItemsSource="{Binding Path=MangaImage}" SelectionChanged="ListBox_SelectionChanged" MinWidth="100">
@@ -139,13 +139,13 @@
                             </ListBox.ItemTemplate>
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel IsItemsHost="True" Orientation="Vertical"/>
+                                    <StackPanel IsItemsHost="True" Orientation="Vertical" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
                         <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent"
-                                          BorderBrush="Black" BorderThickness="1" >
-                            <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}"/>
+                                          BorderBrush="Black" BorderThickness="1">
+                            <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}" />
                         </local:ZoomBorder>
                     </DockPanel>
                 </Grid>

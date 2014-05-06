@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Media.Imaging;
 using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
@@ -142,18 +143,21 @@ namespace NijieDownloader.UI.ViewModel
 
         #endregion properties
 
-        public void GetMember()
+        public void GetMember(SynchronizationContext context)
         {
             try
             {
                 _member = MainWindow.Bot.ParseMember(this.MemberId);
                 if (_member.Images != null)
                 {
-                    _images = new ObservableCollection<NijieImageViewModel>();
+                    Images = new ObservableCollection<NijieImageViewModel>();
                     foreach (var image in _member.Images)
                     {
                         var temp = new NijieImageViewModel(image);
-                        _images.Add(temp);
+                        context.Send((x) =>
+                        {
+                            Images.Add(temp);
+                        }, null);
                     }
 
                     this.Status = String.Format("Loaded: {0} images.", _member.Images.Count);

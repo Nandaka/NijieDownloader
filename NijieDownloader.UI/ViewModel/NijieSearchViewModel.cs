@@ -173,11 +173,11 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _search = MainWindow.Bot.Search(option);
 
-                _images = new ObservableCollection<NijieImageViewModel>();
+                Images = new ObservableCollection<NijieImageViewModel>();
                 foreach (var image in _search.Images)
                 {
                     var temp = new NijieImageViewModel(image);
-                    _images.Add(temp);
+                    Images.Add(temp);
                 }
             }
             catch (NijieException ne)

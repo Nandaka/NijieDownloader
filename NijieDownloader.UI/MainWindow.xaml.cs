@@ -65,6 +65,7 @@ namespace NijieDownloader.UI
         public MainWindow()
         {
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             checkUpgrade();
             InitializeComponent();
 
@@ -86,9 +87,22 @@ namespace NijieDownloader.UI
             Nijie.LoggingEventHandler += new Nijie.NijieEventHandler(Nijie_LoggingEventHandler);
         }
 
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.IsTerminating)
+            {
+                var ex = e.ExceptionObject as Exception;
+                if (ex != null)
+                {
+                    Log.Error("AppDomain Unexpected Error: " + ex.Message, ex);
+                    MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
+                }
+            }
+        }
+
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            Log.Error("Unexpected Error: " + e.Exception.Message, e.Exception);
+            Log.Error("Application Unexpected Error: " + e.Exception.Message, e.Exception);
             if (e.Exception.InnerException != null)
             {
                 if (e.Exception.InnerException.Message.Contains("No Entity Framework provider found for the ADO.NET provider with invariant name") ||

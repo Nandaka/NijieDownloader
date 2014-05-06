@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FirstFloor.ModernUI.Windows.Controls;
 using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
@@ -103,15 +105,42 @@ namespace NijieDownloader.UI
 
         private void ExecuteGetMyMemberBookmarkCommand(object sender, ExecutedRoutedEventArgs e)
         {
-            if (ViewData.BookmarkType == BookmarkType.Member)
-            {
-                ViewData.GetMyMemberBookmark();
-            }
-            else
-            {
-                ViewData.GetMyImagesBookmark();
-            }
-            this.DataContext = ViewData;
+            ModernDialog d = new ModernDialog();
+            d.Content = "Loading data...";
+            d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+            var ctx = SynchronizationContext.Current;
+            System.Threading.ThreadPool.QueueUserWorkItem(
+             (x) =>
+             {
+                 if (ViewData.BookmarkType == BookmarkType.Member)
+                 {
+                     ViewData.GetMyMemberBookmark(ctx);
+                     this.Dispatcher.BeginInvoke(
+                         new Action<BookmarkPage>((y) =>
+                         {
+                             this.DataContext = ViewData;
+                             d.Close();
+                             ViewData.Status = String.Format("Loaded: {0} members.", ViewData.Members.Count); ;
+                         }),
+                         new object[] { this }
+                      );
+                 }
+                 else
+                 {
+                     ViewData.GetMyImagesBookmark(ctx);
+                     this.Dispatcher.BeginInvoke(
+                         new Action<BookmarkPage>((y) =>
+                         {
+                             this.DataContext = ViewData;
+                             d.Close();
+                             ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count); ;
+                         }),
+                         new object[] { this }
+                      );
+                 }
+             }, null
+            );
+            d.ShowDialog();
         }
 
         public static RoutedCommand NextPageCommand = new RoutedCommand();

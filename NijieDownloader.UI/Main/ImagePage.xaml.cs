@@ -13,10 +13,11 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FirstFloor.ModernUI.Windows;
-using NijieDownloader.UI.ViewModel;
+using FirstFloor.ModernUI.Windows.Controls;
 using FirstFloor.ModernUI.Windows.Navigation;
 using NijieDownloader.Library;
 using NijieDownloader.Library.DAL;
+using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
 {
@@ -40,6 +41,7 @@ namespace NijieDownloader.UI
         }
 
         #region navigation
+
         public void OnFragmentNavigation(FirstFloor.ModernUI.Windows.Navigation.FragmentNavigationEventArgs e)
         {
             if (!String.IsNullOrWhiteSpace(e.Fragment))
@@ -54,21 +56,20 @@ namespace NijieDownloader.UI
 
         public void OnNavigatedFrom(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
-
         }
 
         public void OnNavigatedTo(FirstFloor.ModernUI.Windows.Navigation.NavigationEventArgs e)
         {
-
         }
 
         public void OnNavigatingFrom(FirstFloor.ModernUI.Windows.Navigation.NavigatingCancelEventArgs e)
         {
-
         }
-        #endregion
-        
+
+        #endregion navigation
+
         #region UI events
+
         private void Grid_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var h = MainWindow.GetWindow(imgBigImage).Height - 200;
@@ -87,35 +88,56 @@ namespace NijieDownloader.UI
             e.Handled = MainWindow.NavigateTo(this, "/Main/SearchPage.xaml#query=" + e.Uri.OriginalString);
         }
 
-        #endregion
+        #endregion UI events
 
         #region Commands
+
         public static RoutedCommand GetImageCommand = new RoutedCommand();
+
         private void ExecuteGetImageCommand(object sender, ExecutedRoutedEventArgs e)
         {
             ViewData = new NijieImageViewModel() { ImageId = ViewData.ImageId };
-            ViewData.GetImage();
-            this.DataContext = ViewData;
+            ModernDialog d = new ModernDialog();
+            d.Content = "Loading data...";
+            d.Closed += new EventHandler((s, ex) => { ViewData.Message = "Still loading..."; });
+            System.Threading.ThreadPool.QueueUserWorkItem(
+             (x) =>
+             {
+                 ViewData.GetImage(); this.Dispatcher.BeginInvoke(
+                          new Action<ImagePage>((y) =>
+                          {
+                              this.DataContext = ViewData;
+                              d.Close();
+                              ViewData.Message = "Image(s) Loaded";
+                          }),
+                          new object[] { this }
+                       );
+             }, null
+            );
+            d.ShowDialog();
         }
 
         public static RoutedCommand AddToBatchCommand = new RoutedCommand();
+
         private void ExecuteAddToBatchCommand(object sender, ExecutedRoutedEventArgs e)
         {
             e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=image&imageId=" + ViewData.ImageId);
         }
-        
+
         private void CanExecuteImageCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = !Validation.GetHasError(txtImageID) && ViewData.ImageId > 0 ? true : false;
         }
 
         public static RoutedCommand MangaPrevCommand = new RoutedCommand();
+
         private void ExecuteMangaPrevCommand(object sender, ExecutedRoutedEventArgs e)
         {
             lbxMangaThumb.SelectedIndex = ViewData.Prev();
         }
 
         public static RoutedCommand MangaNextCommand = new RoutedCommand();
+
         private void ExecuteMangaNextCommand(object sender, ExecutedRoutedEventArgs e)
         {
             lbxMangaThumb.SelectedIndex = ViewData.Next();
@@ -130,6 +152,7 @@ namespace NijieDownloader.UI
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
         }
-        #endregion
+
+        #endregion Commands
     }
 }
