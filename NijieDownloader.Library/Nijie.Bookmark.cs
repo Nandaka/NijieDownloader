@@ -79,18 +79,56 @@ namespace NijieDownloader.Library
                 doc = result.Item1;
 
                 var imagesDiv = doc.DocumentNode.SelectNodes("//div[@class='nijie-bookmark nijie']");
-                foreach (var imageDiv in imagesDiv)
+                foreach (var imageDivx in imagesDiv)
                 {
-                    var imageUrl = imageDiv.SelectSingleNode("//div[@class='nijie-bookmark nijie']//a").Attributes["href"].Value;
+                    var tmp = imageDivx.InnerHtml;
+                    HtmlDocument imageDiv = new HtmlDocument();
+                    imageDiv.LoadHtml(tmp);
+
+                    var imageUrl = imageDiv.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value;
                     var res = re_image.Match(imageUrl);
                     if (res.Success)
                     {
                         var image = new NijieImage(Int32.Parse(res.Groups[1].Value));
-                        image.Title = imageDiv.SelectSingleNode("//div[@class='nijie-bookmark nijie']//p[@class='title']").InnerText;
-                        image.ThumbImageUrl = imageDiv.SelectSingleNode("//div[@class='nijie-bookmark nijie']//p[@class='nijiedao']//img").Attributes["src"].Value;
+                        image.Title = imageDiv.DocumentNode.SelectSingleNode("//p[@class='title']").InnerText;
+                        image.ThumbImageUrl = imageDiv.DocumentNode.SelectSingleNode("//p[@class='nijiedao']//img").Attributes["src"].Value;
+
+                        // check if image is friend only
+                        // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
+                        image.IsFriendOnly = false;
+                        if (image.ThumbImageUrl.EndsWith("friends.png"))
+                        {
+                            image.IsFriendOnly = true;
+                        }
+
+                        //"//img.nijie.info/pic/common_icon/illust/golden.png"
+                        image.IsGoldenMember = false;
+                        if (image.ThumbImageUrl.EndsWith("golden.png"))
+                        {
+                            image.IsGoldenMember = true;
+                        }
+
+                        // check manga icon
+                        image.IsManga = false;
+                        var icon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
+                        if (icon != null)
+                        {
+                            if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
+                                image.IsManga = true;
+                        }
+
+                        // check animation icon
+                        image.IsAnimated = false;
+                        var animeIcon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                        if (animeIcon != null)
+                        {
+                            if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
+                                image.IsAnimated = true;
+                        }
+
                         images.Add(image);
                     }
-                    imageDiv.Remove();
+                    imageDivx.Remove();
                 }
 
                 var nextPageButton = doc.DocumentNode.SelectNodes("//p[@class='page_button']//a");
