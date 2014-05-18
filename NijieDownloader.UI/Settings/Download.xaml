@@ -68,6 +68,8 @@
                               ToolTip="Ignored if Overwrite flag is enabled." />
                     <CheckBox Margin="120,0,0,0" Content="Auto Save Batch List" HorizontalAlignment="Left"
                               IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=AutoSaveBatchList, Mode=TwoWay}" />
+                    <CheckBox Margin="120,0,0,0" Content="Dump Downloaded Images to Text File" HorizontalAlignment="Left"
+                              IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DumpDownloadedImagesToTextFile, Mode=TwoWay}" />
                     <StackPanel Orientation="Horizontal" ToolTip="Restart required.">
                         <TextBlock Width="100" Text="Concurrent Thumb Loader" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"

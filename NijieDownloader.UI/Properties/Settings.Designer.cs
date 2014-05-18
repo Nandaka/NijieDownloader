@@ -274,5 +274,17 @@ namespace NijieDownloader.UI.Properties {
                 this["StartPage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DumpDownloadedImagesToTextFile {
+            get {
+                return ((bool)(this["DumpDownloadedImagesToTextFile"]));
+            }
+            set {
+                this["DumpDownloadedImagesToTextFile"] = value;
+            }
+        }
     }
 }

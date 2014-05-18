@@ -181,7 +181,7 @@ namespace NijieDownloader.UI
                         }
 
                         processImage(job, null, image);
-                        ++job.DownloadCount;
+
                         if (job.DownloadCount > limit && limit != 0)
                         {
                             job.Message = "Image limit reached: " + limit;
@@ -234,7 +234,6 @@ namespace NijieDownloader.UI
                     if (isJobCancelled(job)) return;
 
                     processImage(job, memberPage, imageTemp);
-                    ++job.DownloadCount;
 
                     if (job.CurrentPage > job.EndPage && job.EndPage != 0)
                     {
@@ -298,6 +297,7 @@ namespace NijieDownloader.UI
                     if (result)
                     {
                         job.Message = String.Format("Image {0} already downloaded in DB", imageTemp.ImageId);
+                        job.SkipCount++;
                         return;
                     }
                 }
@@ -329,7 +329,6 @@ namespace NijieDownloader.UI
 
         private static void processIllustration(JobDownloadViewModel job, NijieImage image)
         {
-            var result = -1;
             if (isJobCancelled(job))
                 return;
             job.PauseEvent.WaitOne(Timeout.Infinite);
@@ -338,23 +337,25 @@ namespace NijieDownloader.UI
             job.Message = "Downloading: " + image.BigImageUrl;
             filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
             filename = Properties.Settings.Default.RootDirectory + Path.DirectorySeparatorChar + Util.SanitizeFilename(filename);
-            if (canDownloadFile(job, image.BigImageUrl, filename))
-            {
-                result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
-                image.SavedFilename = filename;
-                image.ServerFilename = Util.ExtractFilenameFromUrl(image.BigImageUrl);
-                image.Filesize = new FileInfo(filename).Length;
-            }
+
+            var result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+            image.SavedFilename = filename;
+            image.ServerFilename = Util.ExtractFilenameFromUrl(image.BigImageUrl);
+            image.Filesize = new FileInfo(filename).Length;
 
             if (result == NijieException.OK)
             {
                 if (Properties.Settings.Default.SaveDB)
                     SaveImageToDB(job, image);
-                Util.WriteTextFile(filename + Environment.NewLine);
+                if (Properties.Settings.Default.DumpDownloadedImagesToTextFile)
+                    Util.WriteTextFile(filename + Environment.NewLine);
+                job.DownloadCount++;
             }
-            else if (result == NijieException.DOWNLOAD_SKIPPED && Properties.Settings.Default.SaveDB)
+            else if (result == NijieException.DOWNLOAD_SKIPPED)
             {
-                SaveImageToDB(job, image);
+                if (Properties.Settings.Default.SaveDB)
+                    SaveImageToDB(job, image);
+                job.SkipCount++;
             }
         }
 
@@ -381,15 +382,13 @@ namespace NijieDownloader.UI
                 pagefilename = Properties.Settings.Default.RootDirectory + Path.DirectorySeparatorChar + Util.SanitizeFilename(pagefilename);
 
                 var pages = image.MangaPages as List<NijieMangaInfo>;
-                if (canDownloadFile(job, image.ImageUrls[i], pagefilename))
-                {
-                    downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
-                    pages[i].SavedFilename = pagefilename;
-                    pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
-                    pages[i].Filesize = new FileInfo(pagefilename).Length;
-                    if (downloaded == NijieException.OK)
-                        Util.WriteTextFile(pagefilename + Environment.NewLine);
-                }
+
+                downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
+                pages[i].SavedFilename = pagefilename;
+                pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
+                pages[i].Filesize = new FileInfo(pagefilename).Length;
+                if (downloaded == NijieException.OK && Properties.Settings.Default.DumpDownloadedImagesToTextFile)
+                    Util.WriteTextFile(pagefilename + Environment.NewLine);
 
                 lastFilename = pagefilename;
                 lastUrl = image.ImageUrls[i];
@@ -398,8 +397,18 @@ namespace NijieDownloader.UI
             image.ServerFilename = Util.ExtractFilenameFromUrl(lastUrl);
             image.Filesize = new FileInfo(lastFilename).Length;
 
-            if (Properties.Settings.Default.SaveDB && (downloaded == NijieException.OK || downloaded == NijieException.DOWNLOAD_SKIPPED))
-                SaveImageToDB(job, image);
+            if (downloaded == NijieException.OK)
+            {
+                if (Properties.Settings.Default.SaveDB)
+                    SaveImageToDB(job, image);
+                job.DownloadCount++;
+            }
+            else if (downloaded == NijieException.DOWNLOAD_SKIPPED)
+            {
+                if (Properties.Settings.Default.SaveDB)
+                    SaveImageToDB(job, image);
+                job.SkipCount++;
+            }
         }
 
         private static void SaveImageToDB(JobDownloadViewModel job, NijieImage image)
@@ -422,33 +431,6 @@ namespace NijieDownloader.UI
             {
                 MainWindow.Log.Error("Failed to save to DB: " + image.ImageId, ex);
                 job.Message += ex.Message;
-            }
-        }
-
-        /// <summary>
-        /// Check if the url can be downloaded based on overwrite setting and existing file.
-        /// </summary>
-        /// <param name="job"></param>
-        /// <param name="url"></param>
-        /// <param name="filename"></param>
-        /// <returns></returns>
-        private static bool canDownloadFile(JobDownloadViewModel job, String url, String filename)
-        {
-            if (!File.Exists(filename) || NijieDownloader.Library.Properties.Settings.Default.Overwrite)
-            {
-                if (File.Exists(filename))
-                {
-                    MainWindow.Log.Debug("Overwriting file: " + filename);
-                    job.Message = "Overwriting file: " + filename;
-                }
-                return true;
-            }
-            else
-            {
-                MainWindow.Log.Debug(String.Format("Skipping url: {0}, file {1} exists: ", url, filename));
-                job.Message = "Skipped, file exists: " + filename;
-
-                return false;
             }
         }
 

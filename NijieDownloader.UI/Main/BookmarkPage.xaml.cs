@@ -107,7 +107,8 @@ namespace NijieDownloader.UI
         {
             ModernDialog d = new ModernDialog();
             d.Content = "Loading data...";
-            d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+            var closeHandler = new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+            d.Closed += closeHandler;
             var ctx = SynchronizationContext.Current;
             System.Threading.ThreadPool.QueueUserWorkItem(
              (x) =>
@@ -119,8 +120,10 @@ namespace NijieDownloader.UI
                          new Action<BookmarkPage>((y) =>
                          {
                              this.DataContext = ViewData;
+                             d.Closed -= closeHandler;
                              d.Close();
-                             ViewData.Status = String.Format("Loaded: {0} members.", ViewData.Members.Count); ;
+                             if (ViewData.Members != null)
+                                 ViewData.Status = String.Format("Loaded: {0} members.", ViewData.Members.Count); ;
                          }),
                          new object[] { this }
                       );
@@ -132,8 +135,10 @@ namespace NijieDownloader.UI
                          new Action<BookmarkPage>((y) =>
                          {
                              this.DataContext = ViewData;
+                             d.Closed -= closeHandler;
                              d.Close();
-                             ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count); ;
+                             if (ViewData.Images != null)
+                                 ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count); ;
                          }),
                          new object[] { this }
                       );

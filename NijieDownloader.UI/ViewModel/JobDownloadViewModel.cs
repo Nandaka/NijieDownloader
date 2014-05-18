@@ -218,6 +218,22 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private int _skipCount;
+
+        [XmlIgnoreAttribute]
+        public int SkipCount
+        {
+            get
+            {
+                return _skipCount;
+            }
+            set
+            {
+                _skipCount = value;
+                onPropertyChanged("SkipCount");
+            }
+        }
+
         private int _currentPage;
 
         [XmlIgnoreAttribute]
@@ -333,7 +349,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 string _temp = "";
                 if (JobType == JobType.Tags || JobType == JobType.Member)
-                    _temp = String.Format("Current Page: {0} Downloaded Count {1}{2}{3}", CurrentPage, DownloadCount, Environment.NewLine, _message);
+                    _temp = String.Format("Current Page: {0} Downloaded Count {1} Skip Count {2}{3}{4}", CurrentPage, DownloadCount, SkipCount, Environment.NewLine, _message);
                 else
                     _temp = _message + Environment.NewLine;
 

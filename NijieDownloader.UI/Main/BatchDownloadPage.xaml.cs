@@ -57,7 +57,8 @@ namespace NijieDownloader.UI
         {
             if (Properties.Settings.Default.AutoSaveBatchList)
             {
-                if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME)) LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
+                if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME))
+                    LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
             }
         }
 
@@ -325,6 +326,7 @@ namespace NijieDownloader.UI
         private void btnClearAll_Click(object sender, RoutedEventArgs e)
         {
             ViewData.Clear();
+            SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
         }
 
         #region Command
