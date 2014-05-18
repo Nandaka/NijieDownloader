@@ -7,6 +7,8 @@ namespace NijieDownloader.Library
 {
     public class NijieException : Exception
     {
+        public const int OK = 0;
+        public const int CANCELLED = 1;
         public const int NOT_LOGGED_IN = 1000;
         public const int DOWNLOAD_ERROR = 1001;
         public const int INVALID_SAVE_FILENAME_FORMAT = 1002;

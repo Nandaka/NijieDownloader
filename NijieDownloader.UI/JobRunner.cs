@@ -329,7 +329,7 @@ namespace NijieDownloader.UI
 
         private static void processIllustration(JobDownloadViewModel job, NijieImage image)
         {
-            var result = false;
+            var result = -1;
             if (isJobCancelled(job))
                 return;
             job.PauseEvent.WaitOne(Timeout.Infinite);
@@ -346,18 +346,26 @@ namespace NijieDownloader.UI
                 image.Filesize = new FileInfo(filename).Length;
             }
 
-            if (Properties.Settings.Default.SaveDB && result)
+            if (result == NijieException.OK)
+            {
+                if (Properties.Settings.Default.SaveDB)
+                    SaveImageToDB(job, image);
+                Util.WriteTextFile(filename + Environment.NewLine);
+            }
+            else if (result == NijieException.DOWNLOAD_SKIPPED && Properties.Settings.Default.SaveDB)
+            {
                 SaveImageToDB(job, image);
+            }
         }
 
         private static void processManga(JobDownloadViewModel job, NijieImage image)
         {
-            var downloaded = false;
+            var downloaded = -1;
             MainWindow.Log.Debug("Processing Manga Images:" + image.ImageId);
             string lastFilename = "", lastUrl = "";
             for (int i = 0; i < image.ImageUrls.Count; ++i)
             {
-                downloaded = false;
+                downloaded = -1;
                 if (isJobCancelled(job))
                     return;
                 job.PauseEvent.WaitOne(Timeout.Infinite);
@@ -379,6 +387,8 @@ namespace NijieDownloader.UI
                     pages[i].SavedFilename = pagefilename;
                     pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
                     pages[i].Filesize = new FileInfo(pagefilename).Length;
+                    if (downloaded == NijieException.OK)
+                        Util.WriteTextFile(pagefilename + Environment.NewLine);
                 }
 
                 lastFilename = pagefilename;
@@ -388,7 +398,7 @@ namespace NijieDownloader.UI
             image.ServerFilename = Util.ExtractFilenameFromUrl(lastUrl);
             image.Filesize = new FileInfo(lastFilename).Length;
 
-            if (Properties.Settings.Default.SaveDB && downloaded)
+            if (Properties.Settings.Default.SaveDB && (downloaded == NijieException.OK || downloaded == NijieException.DOWNLOAD_SKIPPED))
                 SaveImageToDB(job, image);
         }
 
@@ -449,14 +459,14 @@ namespace NijieDownloader.UI
         /// <param name="url"></param>
         /// <param name="referer"></param>
         /// <param name="filename"></param>
-        private static bool downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        private static int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
             filename = Util.SanitizeFilename(filename);
             url = Util.FixUrl(url);
 
             MainWindow.Log.Debug(String.Format("Downloading url: {0} ==> {1}", url, filename));
             if (isJobCancelled(job))
-                return false;
+                return NijieException.CANCELLED;
 
             try
             {
@@ -471,10 +481,10 @@ namespace NijieDownloader.UI
                 job.Message = Util.GetAllInnerExceptionMessage(nex);
                 MainWindow.Log.Error(nex.Message);
                 addException(job, nex, url, filename);
-                return false;
+                return nex.ErrorCode;
             }
 
-            return true;
+            return NijieException.OK;
         }
 
         private static void addException(JobDownloadViewModel job, NijieException nex, string url, string filename)

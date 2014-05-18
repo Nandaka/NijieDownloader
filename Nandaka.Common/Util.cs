@@ -203,5 +203,15 @@ namespace Nandaka.Common
 
             return string.Join(Environment.NewLine, messages.ToArray());
         }
+
+        public static void WriteTextFile(string content, string filename = null)
+        {
+            if (String.IsNullOrWhiteSpace(filename))
+                filename = String.Format("Batch Download on {0}.txt", DateTime.Now.ToString("yyyy-MM-dd"));
+            using (TextWriter tw = File.CreateText(filename))
+            {
+                tw.Write(content);
+            }
+        }
     }
 }
