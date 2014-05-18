@@ -341,10 +341,10 @@ namespace NijieDownloader.UI
             var result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
             image.SavedFilename = filename;
             image.ServerFilename = Util.ExtractFilenameFromUrl(image.BigImageUrl);
-            image.Filesize = new FileInfo(filename).Length;
 
             if (result == NijieException.OK)
             {
+                image.Filesize = new FileInfo(filename).Length;
                 if (Properties.Settings.Default.SaveDB)
                     SaveImageToDB(job, image);
                 if (Properties.Settings.Default.DumpDownloadedImagesToTextFile)
@@ -353,6 +353,7 @@ namespace NijieDownloader.UI
             }
             else if (result == NijieException.DOWNLOAD_SKIPPED)
             {
+                image.Filesize = new FileInfo(filename).Length;
                 if (Properties.Settings.Default.SaveDB)
                     SaveImageToDB(job, image);
                 job.SkipCount++;
@@ -386,25 +387,30 @@ namespace NijieDownloader.UI
                 downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
                 pages[i].SavedFilename = pagefilename;
                 pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
-                pages[i].Filesize = new FileInfo(pagefilename).Length;
-                if (downloaded == NijieException.OK && Properties.Settings.Default.DumpDownloadedImagesToTextFile)
-                    Util.WriteTextFile(pagefilename + Environment.NewLine);
+
+                if (downloaded == NijieException.OK)
+                {
+                    pages[i].Filesize = new FileInfo(pagefilename).Length;
+                    if (Properties.Settings.Default.DumpDownloadedImagesToTextFile)
+                        Util.WriteTextFile(pagefilename + Environment.NewLine);
+                }
 
                 lastFilename = pagefilename;
                 lastUrl = image.ImageUrls[i];
             }
             image.SavedFilename = lastFilename;
             image.ServerFilename = Util.ExtractFilenameFromUrl(lastUrl);
-            image.Filesize = new FileInfo(lastFilename).Length;
 
             if (downloaded == NijieException.OK)
             {
+                image.Filesize = new FileInfo(lastFilename).Length;
                 if (Properties.Settings.Default.SaveDB)
                     SaveImageToDB(job, image);
                 job.DownloadCount++;
             }
             else if (downloaded == NijieException.DOWNLOAD_SKIPPED)
             {
+                image.Filesize = new FileInfo(lastFilename).Length;
                 if (Properties.Settings.Default.SaveDB)
                     SaveImageToDB(job, image);
                 job.SkipCount++;
@@ -461,8 +467,15 @@ namespace NijieDownloader.UI
             catch (NijieException nex)
             {
                 job.Message = Util.GetAllInnerExceptionMessage(nex);
-                MainWindow.Log.Error(nex.Message);
-                addException(job, nex, url, filename);
+                if (nex.ErrorCode == NijieException.DOWNLOAD_SKIPPED)
+                {
+                    MainWindow.Log.Info(nex.Message);
+                }
+                else
+                {
+                    MainWindow.Log.Error(nex.Message);
+                    addException(job, nex, url, filename);
+                }
                 return nex.ErrorCode;
             }
 
