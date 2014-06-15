@@ -25,6 +25,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             _member = member;
             this.MemberId = member.MemberId;
+            this.Mode = (MemberMode)member.Mode;
         }
 
         #endregion ctor
@@ -81,6 +82,24 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private MemberMode _mode;
+
+        public MemberMode Mode
+        {
+            get
+            {
+                return _mode;
+            }
+            set
+            {
+                _mode = value;
+                if (_member != null)
+                    _member.Mode = (int)value;
+                onPropertyChanged("Mode");
+                onPropertyChanged("MemberUrl");
+            }
+        }
+
         private ObservableCollection<NijieImageViewModel> _images;
 
         public ObservableCollection<NijieImageViewModel> Images
@@ -121,8 +140,8 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
-                if (_member != null) return _member.MemberUrl;
-                return NijieMember.GenerateMemberUrl(MemberId);
+                //if (_member != null) return _member.MemberUrl;
+                return NijieMember.GenerateMemberUrl(MemberId, (int)Mode);
             }
         }
 
@@ -147,7 +166,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             try
             {
-                _member = MainWindow.Bot.ParseMember(this.MemberId);
+                _member = MainWindow.Bot.ParseMember(this.MemberId, (int)this.Mode);
                 if (_member.Images != null)
                 {
                     Images = new ObservableCollection<NijieImageViewModel>();
@@ -169,4 +188,11 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
     }
+
+    public enum MemberMode
+    {
+        Images = 0,
+        Doujin = 1,
+        Bookmark = 2
+    };
 }

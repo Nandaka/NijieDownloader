@@ -10,13 +10,13 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public NijieMember ParseMember(int memberId)
+        public NijieMember ParseMember(int memberId, int mode)
         {
             HtmlDocument doc = null;
             try
             {
                 canOperate();
-                NijieMember member = new NijieMember(memberId);
+                NijieMember member = new NijieMember(memberId, mode);
                 var result = getPage(member.MemberUrl);
                 var res = result.Item2;
                 if (res.ResponseUri.ToString() != member.MemberUrl)

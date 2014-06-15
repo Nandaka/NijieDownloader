@@ -56,6 +56,18 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private bool _isDoujin;
+
+        public bool IsDoujin
+        {
+            get { return _isDoujin; }
+            set
+            {
+                _isDoujin = value;
+                onPropertyChanged("IsDoujin");
+            }
+        }
+
         private bool _isSelected;
 
         public bool IsSelected
@@ -225,7 +237,8 @@ namespace NijieDownloader.UI.ViewModel
         {
             get
             {
-                if (_image != null) return _image.Member.MemberId;
+                if (_image != null && _image.Member != null)
+                    return _image.Member.MemberId;
                 return null;
             }
         }

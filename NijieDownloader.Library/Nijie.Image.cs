@@ -43,17 +43,25 @@ namespace NijieDownloader.Library
 
                 checkErrorMessage(doc);
 
-                if (member == null)
+                var doujinDiv = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_header']");
+                if (doujinDiv != null)
                 {
-                    member = ParseMemberFromImage(doc);
+                    ProcessDoujin(image, doc);
                 }
-                image.Member = member;
+                else
+                {
+                    if (member == null)
+                    {
+                        member = ParseMemberFromImage(doc);
+                    }
+                    image.Member = member;
 
-                ParseImageLinks(image, doc);
+                    ParseImageLinks(image, doc);
 
-                ParseImageTitleAndDescription(image, doc);
+                    ParseImageTitleAndDescription(image, doc);
 
-                ParseImageTags(image, doc);
+                    ParseImageTags(image, doc);
+                }
 
                 ParseImageExtras(image, doc);
 
@@ -73,6 +81,81 @@ namespace NijieDownloader.Library
                 }
 
                 throw new NijieException(String.Format("Error when processing image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_UNKNOWN_ERROR);
+            }
+        }
+
+        private void ProcessDoujin(NijieImage image, HtmlDocument doc)
+        {
+            image.IsDoujin = true;
+
+            // member id
+            var memberDivs = doc.DocumentNode.SelectNodes("//div[@id='main']/div[@class='main-center']//li/a");
+            foreach (var item in memberDivs)
+            {
+                var href = item.Attributes["href"].Value;
+                if (href.Contains("members_dojin.php?id="))
+                {
+                    var split = href.Split('=');
+                    image.Member = new NijieMember(Int32.Parse(split[1]), 1);
+                    break;
+                }
+            }
+
+            // parse doujin title
+            var doujinTitleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_header']//h2[@class='title']");
+            image.Title = doujinTitleDiv.InnerText;
+
+            // parse description
+            var doujinDescription = doc.DocumentNode.SelectSingleNode("//p[@itemprop='description']");
+            image.Description = doujinTitleDiv.InnerText;
+
+            // created date
+            var doujinCreated = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//span[@itemprop='uploadDate']");
+            image.WorkDate = DateTime.ParseExact(doujinCreated.InnerText, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
+
+            // main image
+            var mainImage = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//p[@class='image']/a/img");
+            image.MediumImageUrl = mainImage.Attributes["src"].Value;
+
+            var bigImage = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//p[@class='image']/a");
+            image.BigImageUrl = bigImage.Attributes["href"].Value;
+
+            // tags
+            var tags = doc.DocumentNode.SelectNodes("//ul[@id='tag']//span[@class='tag_name']/a");
+            image.Tags = new List<NijieTag>();
+            foreach (var item in tags)
+            {
+                if (!String.IsNullOrWhiteSpace(item.InnerText))
+                    image.Tags.Add(new NijieTag() { Name = item.InnerText });
+            }
+
+            // pages
+            image.IsManga = true;
+            image.ImageUrls = new List<string>();
+            image.MangaPages = new List<NijieMangaInfo>();
+            int p = 1;
+            image.ImageUrls.Add(image.BigImageUrl);
+            var page = new NijieMangaInfo();
+            page.Image = image;
+            page.ImageId = image.ImageId;
+            page.Page = p++;
+            page.ImageUrl = image.BigImageUrl;
+            image.MangaPages.Add(page);
+
+            var subImages = doc.DocumentNode.SelectNodes("//div[@id='gallery_new']//ul[@id='thumbnail']//a");
+            if (subImages != null && subImages.Count > 0)
+            {
+                foreach (var item in subImages)
+                {
+                    image.ImageUrls.Add(item.Attributes["href"].Value);
+
+                    page = new NijieMangaInfo();
+                    page.Image = image;
+                    page.ImageId = image.ImageId;
+                    page.Page = p++;
+                    page.ImageUrl = item.Attributes["href"].Value;
+                    image.MangaPages.Add(page);
+                }
             }
         }
 
@@ -114,6 +197,7 @@ namespace NijieDownloader.Library
 
         private void ParseImageTitleAndDescription(NijieImage image, HtmlDocument doc)
         {
+            // title
             var titleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/p");
             if (titleDiv != null)
                 image.Title = titleDiv.InnerText;
@@ -124,6 +208,7 @@ namespace NijieDownloader.Library
                     image.Title = titleDiv2.InnerText;
             }
 
+            // description and date
             var descDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-honbun']");
             if (descDiv != null)
             {
@@ -202,7 +287,7 @@ namespace NijieDownloader.Library
             var split = memberUrl.Split('?');
             int memberId = Int32.Parse(split[1].Replace("id=", ""));
 
-            NijieMember member = new NijieMember(memberId);
+            NijieMember member = new NijieMember(memberId, 0);
             var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
             if (profileDiv != null)
             {

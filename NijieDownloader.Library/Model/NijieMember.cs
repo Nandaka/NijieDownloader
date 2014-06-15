@@ -19,11 +19,14 @@ namespace NijieDownloader.Library.Model
         public virtual ICollection<NijieImage> Images { get; set; }
 
         [NotMapped]
+        public int Mode { get; set; }
+
+        [NotMapped]
         public string MemberUrl
         {
             get
             {
-                return GenerateMemberUrl(MemberId);
+                return GenerateMemberUrl(MemberId, Mode);
             }
             private set { }
         }
@@ -42,14 +45,31 @@ namespace NijieDownloader.Library.Model
             this.MemberId = -1;
         }
 
-        public NijieMember(int memberId)
+        public NijieMember(int memberId, int mode)
         {
             this.MemberId = memberId;
+            this.Mode = mode;
         }
 
-        public static string GenerateMemberUrl(int memberId)
+        public static string GenerateMemberUrl(int memberId, int mode)
         {
-            return Util.FixUrl("//nijie.info/members_illust.php?id=" + memberId, Properties.Settings.Default.UseHttps);
+            var prefix = "";
+            switch (mode)
+            {
+                case 0:
+                    prefix = "//nijie.info/members_illust.php?id=";
+                    break;
+
+                case 1:
+                    prefix = "//nijie.info/members_dojin.php?id=";
+                    break;
+
+                case 2:
+                    prefix = "//nijie.info/user_like_illust_view.php?id=";
+                    break;
+            }
+
+            return Util.FixUrl(prefix + memberId, Properties.Settings.Default.UseHttps);
         }
     }
 }

@@ -220,7 +220,7 @@ namespace NijieDownloader.UI
             try
             {
                 job.Message = "Parsing member page";
-                var memberPage = MainWindow.Bot.ParseMember(job.MemberId);
+                var memberPage = MainWindow.Bot.ParseMember(job.MemberId, (int)job.MemberMode);
 
                 if (Properties.Settings.Default.DownloadAvatar)
                 {

@@ -175,5 +175,7 @@ namespace NijieDownloader.Library.Model
             }
             return false;
         }
+
+        public bool IsDoujin { get; set; }
     }
 }

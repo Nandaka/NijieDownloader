@@ -80,6 +80,7 @@
                                         <Label Name="lblMember"  Content="{Binding Path=MemberId}" MouseDown="lblMember_MouseDown" />
                                     </Hyperlink>
                                 </TextBlock>
+                                <CheckBox Content="Is Doujin" IsChecked="{Binding Path=IsDoujin}" />
 
                                 <TextBlock Text="Title" Margin="5,5,5,0" />
                                 <TextBox Name="txtTitle" MinHeight="25" Text="{Binding Path=Title, Mode=OneWay}" TextWrapping="Wrap" />

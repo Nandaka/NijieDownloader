@@ -107,7 +107,8 @@ namespace NijieDownloader.UI
         {
             if (lbxImages.SelectedIndex > -1 && lbxImages.SelectedIndex < ViewData.Images.Count)
             {
-                e.Handled = MainWindow.NavigateTo(this, "/Main/ImagePage.xaml#ImageId=" + ViewData.Images[lbxImages.SelectedIndex].ImageId);
+                var uri = String.Format("/Main/ImagePage.xaml#ImageId={0}&Mode={1}", ViewData.Images[lbxImages.SelectedIndex].ImageId, ViewData.Mode);
+                e.Handled = MainWindow.NavigateTo(this, uri);
             }
         }
 

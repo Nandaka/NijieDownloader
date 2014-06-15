@@ -52,6 +52,18 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private MemberMode _memberMode;
+
+        public MemberMode MemberMode
+        {
+            get { return _memberMode; }
+            set
+            {
+                _memberMode = value;
+                onPropertyChanged("MemberMode");
+            }
+        }
+
         private string _searchTag;
 
         public string SearchTag

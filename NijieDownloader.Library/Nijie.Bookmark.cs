@@ -33,7 +33,7 @@ namespace NijieDownloader.Library
                     var res = re_member.Match(memberUrl);
                     if (res.Success)
                     {
-                        var member = new NijieMember(Int32.Parse(res.Groups[1].Value));
+                        var member = new NijieMember(Int32.Parse(res.Groups[1].Value), 0);
                         member.UserName = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//p[@class='sougo']").InnerText;
                         member.AvatarUrl = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//a//img").Attributes["src"].Value;
                         members.Add(member);

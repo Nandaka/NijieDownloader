@@ -1,95 +1,103 @@
 ﻿<Page x:Class="NijieDownloader.UI.MemberPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
-      mc:Ignorable="d" 
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      mc:Ignorable="d"
       d:DesignHeight="600" d:DesignWidth="800" Name="memberPage"
 	Title="Member Page">
     <Page.Resources>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
         <BitmapImage x:Key="AnimeIcon" UriSource="/Resources/thumbnail_anime.png" />
-        <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>        
+        <mui:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <ObjectDataProvider x:Key="MemberMode" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vd:MemberMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
     </Page.Resources>
     <Page.CommandBindings>
         <CommandBinding Command="{x:Static local:MemberPage.GetMemberCommand}"
                         Executed="ExecuteGetMemberCommand"
-                        CanExecute="CanExecuteMemberCommand"/>
+                        CanExecute="CanExecuteMemberCommand" />
         <CommandBinding Command="{x:Static local:MemberPage.AddMemberToBatchCommand}"
                         Executed="ExecuteAddMemberToBatchCommand"
-                        CanExecute="CanExecuteMemberCommand"/>
+                        CanExecute="CanExecuteMemberCommand" />
         <CommandBinding Command="{x:Static local:MemberPage.AddImagesToBatchCommand}"
                         Executed="ExecuteAddImagesToBatchCommand"
-                        CanExecute="CanExecuteImagesCommand"/>
+                        CanExecute="CanExecuteImagesCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}" x:Name="root">
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Text="Process Member" Style="{StaticResource Heading2}" />
-        <DockPanel Grid.Row="1" >
+        <DockPanel Grid.Row="1">
             <DockPanel DockPanel.Dock="Top">
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                    <TextBlock Text="Member ID" Margin="5,5,5,0"/>
+                    <TextBlock Text="Member ID" Margin="5,5,5,0" />
                     <TextBox Name="txtMemberID" Height="25" Width="100" Margin="5,5,5,5"
-                             Text="{Binding Path=MemberId, NotifyOnValidationError =True, UpdateSourceTrigger=PropertyChanged}"/>
+                             Text="{Binding Path=MemberId, NotifyOnValidationError =True, UpdateSourceTrigger=PropertyChanged}" />
+                    <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=Mode}" MinWidth="100"
+                                  ItemsSource="{Binding Source={StaticResource MemberMode}}" />
                     <Button Width="120" Name="btnFetch" Margin="5,5,5,5" IsDefault="True"
                             Command="{x:Static local:MemberPage.GetMemberCommand}">Fetch Images</Button>
-                    <Button Width="120" Name="btnAddToBatch" Margin="5,5,5,5" 
+                    <Button Width="120" Name="btnAddToBatch" Margin="5,5,5,5"
                             Command="{x:Static local:MemberPage.AddMemberToBatchCommand}">Add to Batch</Button>
-                    <Button Width="150" Name="btnAddImagesBatch" Margin="5,5,5,5" 
+                    <Button Width="150" Name="btnAddImagesBatch" Margin="5,5,5,5"
                             Command="{x:Static local:MemberPage.AddImagesToBatchCommand}">Add Selected Images</Button>
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
                     <Button Width="50" Name="btnPrev" Margin="5,5,5,5">&lt;</Button>
-                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="5,5,5,5"/>
+                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="5,5,5,5" />
                     <Button Width="50" Name="btnNext" Margin="5,5,5,5">&gt;</Button>
                 </StackPanel>
             </DockPanel>
 
             <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                <TextBlock Text="Status :" HorizontalAlignment="Left"/>
-                <TextBlock Name="lblStatus" HorizontalAlignment="Left" 
-                           Text="{Binding Path=Status}"/>
+                <TextBlock Text="Status :" HorizontalAlignment="Left" />
+                <TextBlock Name="lblStatus" HorizontalAlignment="Left"
+                           Text="{Binding Path=Status}" />
             </StackPanel>
 
             <Grid DockPanel.Dock="Left">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="150"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="30"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="150" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
-                <Image Grid.Row="0" Width="150" Name="imgAvatar" 
+                <Image Grid.Row="0" Width="150" Name="imgAvatar"
                        StretchDirection="DownOnly" HorizontalAlignment="Center"
-                       Source="{Binding Path=AvatarImage}"/>
-                <TextBlock Grid.Row="1" Text="Member Name"   HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="2" Name="txtMemberName" Height="25" HorizontalAlignment="Center" 
+                       Source="{Binding Path=AvatarImage}" />
+                <TextBlock Grid.Row="1" Text="Member Name"   HorizontalAlignment="Center" />
+                <TextBlock Grid.Row="2" Name="txtMemberName" Height="25" HorizontalAlignment="Center"
                            Text="{Binding Path=UserName, Mode=OneWay}" />
                 <TextBlock Grid.Row="3" Text="Member Url" HorizontalAlignment="Center" />
-                <TextBlock Grid.Row="4" Name="txtUrl" Height="25" HorizontalAlignment="Center" TextWrapping="Wrap">
+                <TextBlock Grid.Row="4" Name="txtUrl" MinHeight="25" HorizontalAlignment="Center" TextWrapping="Wrap">
                         <Hyperlink NavigateUri="{Binding Path=MemberUrl}" RequestNavigate="Hyperlink_RequestNavigate">
-                            <Label Content="{Binding Path=MemberUrl}" />
+                            <TextBlock Text="{Binding Path=MemberUrl}" ToolTip="{Binding Path=MemberUrl}" TextWrapping="Wrap" />
                         </Hyperlink>
                 </TextBlock>
             </Grid>
 
             <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
-                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}" 
+                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}"
                          PreviewMouseDoubleClick="lbxImages_PreviewMouseDoubleClick" PreviewKeyDown="lbxImages_PreviewKeyDown">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid IsItemsHost="True" 
-                                         Columns="{Binding ElementName=memberPage, Path=TileColumns}"/>
+                            <UniformGrid IsItemsHost="True"
+                                         Columns="{Binding ElementName=memberPage, Path=TileColumns}" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
