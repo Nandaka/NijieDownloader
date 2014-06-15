@@ -325,7 +325,7 @@ namespace NijieDownloader.UI.ViewModel
                         break;
 
                     case JobType.Member:
-                        _name = String.Format("Member ID: {0} Limit: {1}", MemberId, Limit);
+                        _name = String.Format("Member ID: {0} Limit: {1} Mode: {2}", MemberId, Limit, MemberMode);
                         break;
 
                     case JobType.Tags:

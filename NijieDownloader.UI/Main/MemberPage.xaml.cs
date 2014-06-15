@@ -159,7 +159,8 @@ namespace NijieDownloader.UI
         {
             if (!string.IsNullOrWhiteSpace(txtMemberID.Text))
             {
-                e.Handled = MainWindow.NavigateTo(this, "/Main/BatchDownloadPage.xaml#type=member&memberId=" + txtMemberID.Text);
+                var uri = String.Format("/Main/BatchDownloadPage.xaml#type=member&memberId={0}&mode={1}", txtMemberID.Text, (int)ViewData.Mode);
+                e.Handled = MainWindow.NavigateTo(this, uri);
             }
         }
 

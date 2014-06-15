@@ -30,6 +30,11 @@
                 <x:Type TypeName="lib:SearchType" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        <ObjectDataProvider x:Key="MemberMode" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="vm:MemberMode" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
         <Style TargetType="{x:Type TextBox}">
             <Style.Triggers>
                 <Trigger Property="Validation.HasError" Value="True">
@@ -45,6 +50,8 @@
                            Text="{Binding ElementName=cbxJobType, Path=SelectedValue, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBox MinWidth="150"
                           Text="{Binding Path=MemberId, ValidatesOnExceptions=True, NotifyOnValidationError=True, UpdateSourceTrigger=PropertyChanged}" />
+                    <ComboBox MinWidth="150" Margin="0,0,5,0" SelectedValue="{Binding Path=MemberMode}"
+                              ItemsSource="{Binding Source={StaticResource MemberMode}}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Name="pnlLimit">
                     <TextBlock Margin="5,5,5,5" MinWidth="100" Text="Limit" />

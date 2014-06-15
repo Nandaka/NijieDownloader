@@ -43,6 +43,8 @@ namespace NijieDownloader.UI
         public static RoutedCommand AddJobCommand = new RoutedCommand();
         public static RoutedCommand EditJobCommand = new RoutedCommand();
 
+        private bool _isCreated = false;
+
         public BatchDownloadPage()
         {
             InitializeComponent();
@@ -55,11 +57,12 @@ namespace NijieDownloader.UI
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Properties.Settings.Default.AutoSaveBatchList)
+            if (!_isCreated && Properties.Settings.Default.AutoSaveBatchList)
             {
                 if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME))
                     LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
             }
+            _isCreated = true;
         }
 
         private void Current_Exit(object sender, ExitEventArgs e)
@@ -77,12 +80,13 @@ namespace NijieDownloader.UI
             }
         }
 
-        private void addJobForMember(int memberId, string message = "")
+        private void addJobForMember(int memberId, int mode, string message = "")
         {
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Member;
             newJob.MemberId = memberId;
             newJob.Status = JobStatus.Added;
+            newJob.MemberMode = (MemberMode)mode;
             var result = ShowAddJobDialog(newJob, message: message);
             if (result != null)
             {
@@ -126,13 +130,19 @@ namespace NijieDownloader.UI
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
                 if (query.Get("type").Equals("member"))
                 {
+                    int mode = 0;
+                    var modeStr = query.Get("mode");
+                    if (modeStr != null)
+                    {
+                        Int32.TryParse(modeStr, out mode);
+                    }
                     var memberIds = query.Get("memberId");
                     var ids = memberIds.Split(',');
                     int i = 1;
                     foreach (var memberId in ids)
                     {
                         var message = String.Format("{0} of {1}", i, ids.Count());
-                        addJobForMember(Int32.Parse(memberId), message);
+                        addJobForMember(Int32.Parse(memberId), mode, message);
                         i++;
                     }
                 }

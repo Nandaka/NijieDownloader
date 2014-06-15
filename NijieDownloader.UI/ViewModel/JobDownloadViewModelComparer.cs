@@ -20,7 +20,7 @@ namespace NijieDownloader.UI.ViewModel
 
                     case JobType.Member:
                         if (x.MemberId == other.MemberId &&
-                            //x.StartPage == other.StartPage &&
+                            x.MemberMode == other.MemberMode &&
                             //x.EndPage == other.EndPage &&
                             x.Limit == other.Limit)
                             return 0;
