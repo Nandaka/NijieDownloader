@@ -32,7 +32,7 @@
         </ObjectDataProvider>
         <ObjectDataProvider x:Key="MemberMode" ObjectType="{x:Type system:Enum}" MethodName="GetValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="vm:MemberMode" />
+                <x:Type TypeName="lib:MemberMode" />
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
         <Style TargetType="{x:Type TextBox}">

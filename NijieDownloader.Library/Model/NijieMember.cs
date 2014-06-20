@@ -6,6 +6,13 @@ using Nandaka.Common;
 
 namespace NijieDownloader.Library.Model
 {
+    public enum MemberMode
+    {
+        Images = 0,
+        Doujin = 1,
+        Bookmark = 2
+    };
+
     public class NijieMember
     {
         [Key]
@@ -19,7 +26,7 @@ namespace NijieDownloader.Library.Model
         public virtual ICollection<NijieImage> Images { get; set; }
 
         [NotMapped]
-        public int Mode { get; set; }
+        public MemberMode Mode { get; set; }
 
         [NotMapped]
         public string MemberUrl
@@ -45,26 +52,26 @@ namespace NijieDownloader.Library.Model
             this.MemberId = -1;
         }
 
-        public NijieMember(int memberId, int mode)
+        public NijieMember(int memberId, MemberMode mode)
         {
             this.MemberId = memberId;
             this.Mode = mode;
         }
 
-        public static string GenerateMemberUrl(int memberId, int mode)
+        public static string GenerateMemberUrl(int memberId, MemberMode mode)
         {
             var prefix = "";
             switch (mode)
             {
-                case 0:
+                case MemberMode.Images:
                     prefix = "//nijie.info/members_illust.php?id=";
                     break;
 
-                case 1:
+                case MemberMode.Doujin:
                     prefix = "//nijie.info/members_dojin.php?id=";
                     break;
 
-                case 2:
+                case MemberMode.Bookmark:
                     prefix = "//nijie.info/user_like_illust_view.php?id=";
                     break;
             }

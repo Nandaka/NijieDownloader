@@ -10,7 +10,7 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public NijieMember ParseMember(int memberId, int mode)
+        public NijieMember ParseMember(int memberId, MemberMode mode)
         {
             HtmlDocument doc = null;
             try
@@ -28,7 +28,10 @@ namespace NijieDownloader.Library
 
                 ParseMemberProfile(doc, member);
 
-                ParseMemberImages(doc, member);
+                if (mode == MemberMode.Images || mode == MemberMode.Doujin)
+                    ParseMemberImages(doc, member);
+                else
+                    ParseMemberBookmark(doc, member);
 
                 member.Status = String.Format("Completed, found {0} images", member.Images.Count);
 
@@ -42,32 +45,12 @@ namespace NijieDownloader.Library
             {
                 if (doc != null)
                 {
-                    var filename = "Dump for Member " + memberId + ".html";
+                    var filename = String.Format("Dump for Member {0} Mode {1}", memberId, mode.ToString());
                     Log.Debug("Dumping member page to: " + filename);
                     doc.Save(filename);
                 }
 
                 throw new NijieException(String.Format("Error when processing member: {0} ==> {1}", memberId, ex.Message), ex, NijieException.MEMBER_UNKNOWN_ERROR);
-            }
-        }
-
-        private void ParseMemberProfile(HtmlDocument doc, NijieMember member)
-        {
-            var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
-            if (profileDiv != null)
-            {
-                member.UserName = profileDiv.Attributes["alt"].Value;
-                member.AvatarUrl = profileDiv.Attributes["src"].Value;
-            }
-        }
-
-        private void ParseMemberImages(HtmlDocument doc, NijieMember member)
-        {
-            var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
-            member.Images = ParseImageList(imagesDiv, member.MemberUrl);
-            foreach (var image in member.Images)
-            {
-                image.Member = member;
             }
         }
 
@@ -156,6 +139,91 @@ namespace NijieDownloader.Library
                 }
             }
             return list;
+        }
+
+        private void ParseMemberBookmark(HtmlDocument doc, NijieMember member)
+        {
+            member.Images = new List<NijieImage>();
+
+            var bookmarkedImages = doc.DocumentNode.SelectNodes("//p[@class='nijiedao']");
+            foreach (var item in bookmarkedImages)
+            {
+                var div = new HtmlDocument();
+                div.LoadHtml(item.InnerHtml);
+
+                var imageId = div.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value;
+                var res = re_image.Match(imageId);
+                if (res.Success)
+                {
+                    NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
+                    image.Referer = member.MemberUrl;
+
+                    var link = div.DocumentNode.SelectSingleNode("//a");
+                    image.Title = link.Attributes["title"].Value;
+
+                    var thumb = div.DocumentNode.SelectSingleNode("//a/img");
+                    image.ThumbImageUrl = thumb.Attributes["src"].Value;
+
+                    // check if image is friend only
+                    // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
+                    image.IsFriendOnly = false;
+                    if (image.ThumbImageUrl.EndsWith("friends.png"))
+                    {
+                        image.IsFriendOnly = true;
+                    }
+
+                    //"//img.nijie.info/pic/common_icon/illust/golden.png"
+                    image.IsGoldenMember = false;
+                    if (image.ThumbImageUrl.EndsWith("golden.png"))
+                    {
+                        image.IsGoldenMember = true;
+                    }
+
+                    // check manga icon
+                    image.IsManga = false;
+                    var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
+                    if (icon != null)
+                    {
+                        if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
+                            image.IsManga = true;
+                    }
+
+                    // check animation icon
+                    image.IsAnimated = false;
+                    var animeIcon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                    if (animeIcon != null)
+                    {
+                        if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
+                            image.IsAnimated = true;
+                    }
+
+                    image.BookmarkedBy = member;
+
+                    member.Images.Add(image);
+                }
+
+                item.Remove();
+            }
+        }
+
+        private void ParseMemberImages(HtmlDocument doc, NijieMember member)
+        {
+            var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
+            member.Images = ParseImageList(imagesDiv, member.MemberUrl);
+            foreach (var image in member.Images)
+            {
+                image.Member = member;
+            }
+        }
+
+        private void ParseMemberProfile(HtmlDocument doc, NijieMember member)
+        {
+            var profileDiv = doc.DocumentNode.SelectSingleNode("//div[@id='pro']/p/a/img");
+            if (profileDiv != null)
+            {
+                member.UserName = profileDiv.Attributes["alt"].Value;
+                member.AvatarUrl = profileDiv.Attributes["src"].Value;
+            }
         }
     }
 }

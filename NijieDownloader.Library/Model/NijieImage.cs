@@ -120,6 +120,9 @@ namespace NijieDownloader.Library.Model
             }
         }
 
+        [NotMapped]
+        public NijieMember BookmarkedBy { get; set; }
+
         #endregion not mapped
 
         public void SaveToDb(NijieContext dao, bool suppressSave = false)

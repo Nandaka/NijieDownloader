@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       xmlns:local="clr-namespace:NijieDownloader.UI"
-      xmlns:vd="clr-namespace:NijieDownloader.UI.ViewModel"
+      xmlns:vd="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d"
       d:DesignHeight="600" d:DesignWidth="800" Name="memberPage"

@@ -94,7 +94,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _mode = value;
                 if (_member != null)
-                    _member.Mode = (int)value;
+                    _member.Mode = value;
                 onPropertyChanged("Mode");
                 onPropertyChanged("MemberUrl");
             }
@@ -141,7 +141,7 @@ namespace NijieDownloader.UI.ViewModel
             get
             {
                 //if (_member != null) return _member.MemberUrl;
-                return NijieMember.GenerateMemberUrl(MemberId, (int)Mode);
+                return NijieMember.GenerateMemberUrl(MemberId, Mode);
             }
         }
 
@@ -166,7 +166,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             try
             {
-                _member = MainWindow.Bot.ParseMember(this.MemberId, (int)this.Mode);
+                _member = MainWindow.Bot.ParseMember(this.MemberId, this.Mode);
                 if (_member.Images != null)
                 {
                     Images = new ObservableCollection<NijieImageViewModel>();
@@ -188,11 +188,4 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
     }
-
-    public enum MemberMode
-    {
-        Images = 0,
-        Doujin = 1,
-        Bookmark = 2
-    };
 }

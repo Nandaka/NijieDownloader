@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using FirstFloor.ModernUI.Windows;
 using FirstFloor.ModernUI.Windows.Controls;
 using Microsoft.Win32;
+using NijieDownloader.Library;
 using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
 
@@ -80,13 +81,13 @@ namespace NijieDownloader.UI
             }
         }
 
-        private void addJobForMember(int memberId, int mode, string message = "")
+        private void addJobForMember(int memberId, MemberMode mode, string message = "")
         {
             var newJob = new JobDownloadViewModel();
             newJob.JobType = JobType.Member;
             newJob.MemberId = memberId;
             newJob.Status = JobStatus.Added;
-            newJob.MemberMode = (MemberMode)mode;
+            newJob.MemberMode = mode;
             var result = ShowAddJobDialog(newJob, message: message);
             if (result != null)
             {
@@ -142,7 +143,7 @@ namespace NijieDownloader.UI
                     foreach (var memberId in ids)
                     {
                         var message = String.Format("{0} of {1}", i, ids.Count());
-                        addJobForMember(Int32.Parse(memberId), mode, message);
+                        addJobForMember(Int32.Parse(memberId), (MemberMode)mode, message);
                         i++;
                     }
                 }

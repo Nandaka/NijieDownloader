@@ -96,7 +96,7 @@ namespace NijieDownloader.Library
                 if (href.Contains("members_dojin.php?id="))
                 {
                     var split = href.Split('=');
-                    image.Member = new NijieMember(Int32.Parse(split[1]), 1);
+                    image.Member = new NijieMember(Int32.Parse(split[1]), MemberMode.Doujin);
                     break;
                 }
             }

@@ -1,3 +1,7 @@
+Nijie Downloader 1.0.6.0
+- Feature: Add Member's doujin mode.
+- Bug Fix: Fix Issue ##21, continue to next image if encounter http error 404/403 for member and tags batch download.
+
 Nijie Downloader 1.0.5.0
 - Feature: Add My Bookmarked Members and My Bookmarked Images (Request #19).
 - Feature: Add retry count option.
