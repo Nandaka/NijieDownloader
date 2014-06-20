@@ -180,7 +180,20 @@ namespace NijieDownloader.UI
                             continue;
                         }
 
-                        processImage(job, null, image);
+                        try
+                        {
+                            processImage(job, null, image);
+                        }
+                        catch (NijieException ne)
+                        {
+                            if (ne.ErrorCode == NijieException.DOWNLOAD_ERROR)
+                            {
+                                job.Exceptions.Add(ne);
+                                continue;
+                            }
+                            else
+                                throw;
+                        }
 
                         if (job.DownloadCount > limit && limit != 0)
                         {
@@ -233,7 +246,20 @@ namespace NijieDownloader.UI
                 {
                     if (isJobCancelled(job)) return;
 
-                    processImage(job, memberPage, imageTemp);
+                    try
+                    {
+                        processImage(job, memberPage, imageTemp);
+                    }
+                    catch (NijieException ne)
+                    {
+                        if (ne.ErrorCode == NijieException.DOWNLOAD_ERROR)
+                        {
+                            job.Exceptions.Add(ne);
+                            continue;
+                        }
+                        else
+                            throw;
+                    }
 
                     if (job.CurrentPage > job.EndPage && job.EndPage != 0)
                     {

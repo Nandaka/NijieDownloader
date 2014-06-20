@@ -15,6 +15,8 @@ namespace NijieDownloader.Library
         public const int RENAME_ERROR = 1003;
         public const int DOWNLOAD_SKIPPED = 1004;
         public const int DB_ERROR = 1005;
+        public const int DOWNLOAD_CANCELLED = 1006;
+        public const int DOWNLOAD_UNKNOWN_ERROR = 1999;
 
         public const int MEMBER_REDIR = 2000;
         public const int MEMBER_UNKNOWN_ERROR = 2999;

@@ -145,13 +145,13 @@ namespace NijieDownloader.Library
                         Thread.Sleep(1000);
                         if (cancelToken != null && cancelToken.IsCancellationRequested)
                         {
-                            throw new NijieException(string.Format("Cancel requested, error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                            throw new NijieException(string.Format("Cancel requested, error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_CANCELLED);
                         }
                     }
                     ++retry;
 
                     if (retry > Properties.Settings.Default.RetryCount)
-                        throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                        throw new NijieException(string.Format("Error when downloading: {0} to {1} ==> {2}", url, tempFilename, ex.Message), ex, NijieException.DOWNLOAD_UNKNOWN_ERROR);
                 }
             }
 
@@ -322,7 +322,7 @@ namespace NijieDownloader.Library
 
                     ++retry;
                     if (retry > Properties.Settings.Default.RetryCount)
-                        throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_ERROR);
+                        throw new NijieException(String.Format("Error when downloading data: {0} ==> {1}", url, ex.Message), ex, NijieException.DOWNLOAD_UNKNOWN_ERROR);
                 }
             }
             return result;
