@@ -45,7 +45,7 @@ namespace NijieDownloader.Library
             {
                 if (doc != null)
                 {
-                    var filename = String.Format("Dump for Member {0} Mode {1}", memberId, mode.ToString());
+                    var filename = String.Format("Dump for Member {0} Mode {1}.html", memberId, mode.ToString());
                     Log.Debug("Dumping member page to: " + filename);
                     doc.Save(filename);
                 }
@@ -144,8 +144,13 @@ namespace NijieDownloader.Library
         private void ParseMemberBookmark(HtmlDocument doc, NijieMember member)
         {
             member.Images = new List<NijieImage>();
+            member.IsNextAvailable = false;
 
             var bookmarkedImages = doc.DocumentNode.SelectNodes("//p[@class='nijiedao']");
+            if (bookmarkedImages == null || bookmarkedImages.Count == 0)
+            {
+                return;
+            }
             foreach (var item in bookmarkedImages)
             {
                 var div = new HtmlDocument();

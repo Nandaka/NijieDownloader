@@ -203,6 +203,7 @@ namespace NijieDownloader.UI
                     }
 
                     ++job.CurrentPage;
+                    MainWindow.Log.Info("Moving to next page: " + job.CurrentPage);
                     if (job.CurrentPage > endPage && endPage != 0)
                     {
                         job.Message = "Page limit reached: " + endPage;
@@ -269,17 +270,20 @@ namespace NijieDownloader.UI
                                 throw;
                         }
 
-                        if (job.CurrentPage > job.EndPage && job.EndPage != 0)
-                        {
-                            job.Message = "Page limit reached: " + job.EndPage;
-                            return;
-                        }
-                        else if (job.DownloadCount > job.Limit && job.Limit != 0)
+                        if (job.DownloadCount > job.Limit && job.Limit != 0)
                         {
                             job.Message = "Image limit reached: " + job.Limit;
                             return;
                         }
-                        job.CurrentPage++;
+                    }
+
+                    job.CurrentPage++;
+                    MainWindow.Log.Info("Moving to next page: " + job.CurrentPage);
+
+                    if (job.CurrentPage > job.EndPage && job.EndPage != 0)
+                    {
+                        job.Message = "Page limit reached: " + job.EndPage;
+                        return;
                     }
                 } while (memberPage != null && memberPage.IsNextAvailable);
             }
