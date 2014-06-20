@@ -233,45 +233,55 @@ namespace NijieDownloader.UI
             try
             {
                 job.Message = "Parsing member page";
-                var memberPage = MainWindow.Bot.ParseMember(job.MemberId, job.MemberMode);
+                job.CurrentPage = job.StartPage;
 
-                if (Properties.Settings.Default.DownloadAvatar)
+                NijieMember memberPage = null;
+                do
                 {
-                    var rootPath = Properties.Settings.Default.RootDirectory;
-                    var avatarFilename = MainWindow.makeFilename(job, new NijieImage() { Member = memberPage }, type: MainWindow.FilenameFormatType.Avatar);
-                    downloadUrl(job, memberPage.AvatarUrl, memberPage.MemberUrl, rootPath + Path.DirectorySeparatorChar + avatarFilename);
-                }
+                    memberPage = MainWindow.Bot.ParseMember(job.MemberId, job.MemberMode, job.CurrentPage);
 
-                foreach (var imageTemp in memberPage.Images)
-                {
-                    if (isJobCancelled(job)) return;
-
-                    try
+                    if (Properties.Settings.Default.DownloadAvatar)
                     {
-                        processImage(job, memberPage, imageTemp);
+                        var rootPath = Properties.Settings.Default.RootDirectory;
+                        var avatarFilename = MainWindow.makeFilename(job, new NijieImage() { Member = memberPage }, type: MainWindow.FilenameFormatType.Avatar);
+                        downloadUrl(job, memberPage.AvatarUrl, memberPage.MemberUrl, rootPath + Path.DirectorySeparatorChar + avatarFilename);
                     }
-                    catch (NijieException ne)
+
+                    foreach (var imageTemp in memberPage.Images)
                     {
-                        if (ne.ErrorCode == NijieException.DOWNLOAD_ERROR)
+                        if (isJobCancelled(job)) return;
+
+                        try
                         {
-                            job.Exceptions.Add(ne);
-                            continue;
+                            if (job.MemberMode == MemberMode.Bookmark)
+                                processImage(job, null, imageTemp);
+                            else
+                                processImage(job, memberPage, imageTemp);
                         }
-                        else
-                            throw;
-                    }
+                        catch (NijieException ne)
+                        {
+                            if (ne.ErrorCode == NijieException.DOWNLOAD_ERROR)
+                            {
+                                job.Exceptions.Add(ne);
+                                continue;
+                            }
+                            else
+                                throw;
+                        }
 
-                    if (job.CurrentPage > job.EndPage && job.EndPage != 0)
-                    {
-                        job.Message = "Page limit reached: " + job.EndPage;
-                        return;
+                        if (job.CurrentPage > job.EndPage && job.EndPage != 0)
+                        {
+                            job.Message = "Page limit reached: " + job.EndPage;
+                            return;
+                        }
+                        else if (job.DownloadCount > job.Limit && job.Limit != 0)
+                        {
+                            job.Message = "Image limit reached: " + job.Limit;
+                            return;
+                        }
+                        job.CurrentPage++;
                     }
-                    else if (job.DownloadCount > job.Limit && job.Limit != 0)
-                    {
-                        job.Message = "Image limit reached: " + job.Limit;
-                        return;
-                    }
-                }
+                } while (memberPage != null && memberPage.IsNextAvailable);
             }
             catch (NijieException ne)
             {

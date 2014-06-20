@@ -30,6 +30,12 @@
         <CommandBinding Command="{x:Static local:MemberPage.AddImagesToBatchCommand}"
                         Executed="ExecuteAddImagesToBatchCommand"
                         CanExecute="CanExecuteImagesCommand" />
+        <CommandBinding Command="{x:Static local:MemberPage.PrevPageCommand}"
+                        Executed="ExecutePrevPageCommand"
+                        CanExecute="CanExecutePrevPageCommand" />
+        <CommandBinding Command="{x:Static local:MemberPage.NextPageCommand}"
+                        Executed="ExecuteNextPageCommand"
+                        CanExecute="CanExecuteNextPageCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}" x:Name="root">
         <Grid.RowDefinitions>
@@ -44,7 +50,7 @@
                     <TextBox Name="txtMemberID" Height="25" Width="100" Margin="5,5,5,5"
                              Text="{Binding Path=MemberId, NotifyOnValidationError =True, UpdateSourceTrigger=PropertyChanged}" />
                     <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=Mode}" MinWidth="100"
-                                  ItemsSource="{Binding Source={StaticResource MemberMode}}" />
+                              ItemsSource="{Binding Source={StaticResource MemberMode}}" />
                     <Button Width="120" Name="btnFetch" Margin="5,5,5,5" IsDefault="True"
                             Command="{x:Static local:MemberPage.GetMemberCommand}">Fetch Images</Button>
                     <Button Width="120" Name="btnAddToBatch" Margin="5,5,5,5"
@@ -52,10 +58,14 @@
                     <Button Width="150" Name="btnAddImagesBatch" Margin="5,5,5,5"
                             Command="{x:Static local:MemberPage.AddImagesToBatchCommand}">Add Selected Images</Button>
                 </StackPanel>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" Visibility="Collapsed">
-                    <Button Width="50" Name="btnPrev" Margin="5,5,5,5">&lt;</Button>
-                    <TextBox Width="50" Name="txtPage" Height="25" Text="1" Margin="5,5,5,5" />
-                    <Button Width="50" Name="btnNext" Margin="5,5,5,5">&gt;</Button>
+                <StackPanel Name="PageNav" DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right"
+                            Visibility="Visible">
+                    <Button Width="50" Name="btnPrev" Margin="5,5,5,5"
+                            Command="{x:Static local:MemberPage.PrevPageCommand}">&lt;</Button>
+                    <TextBox Width="50" Name="txtPage" Height="25" Margin="5,5,5,5"
+                             Text="{Binding Path=Page, UpdateSourceTrigger=PropertyChanged, FallbackValue=1}" />
+                    <Button Width="50" Name="btnNext" Margin="5,5,5,5"
+                            Command="{x:Static local:MemberPage.NextPageCommand}">&gt;</Button>
                 </StackPanel>
             </DockPanel>
 

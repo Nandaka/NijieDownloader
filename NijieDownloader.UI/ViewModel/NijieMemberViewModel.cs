@@ -100,6 +100,28 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private int _page = 1;
+
+        public int Page
+        {
+            get { return _page; }
+            set
+            {
+                _page = value;
+                onPropertyChanged("Page");
+                onPropertyChanged("MemberUrl");
+            }
+        }
+
+        public bool IsNextPageAvailable
+        {
+            get
+            {
+                if (_member != null) return _member.IsNextAvailable;
+                return false;
+            }
+        }
+
         private ObservableCollection<NijieImageViewModel> _images;
 
         public ObservableCollection<NijieImageViewModel> Images
@@ -141,7 +163,7 @@ namespace NijieDownloader.UI.ViewModel
             get
             {
                 //if (_member != null) return _member.MemberUrl;
-                return NijieMember.GenerateMemberUrl(MemberId, Mode);
+                return NijieMember.GenerateMemberUrl(MemberId, Mode, Page);
             }
         }
 
@@ -166,7 +188,7 @@ namespace NijieDownloader.UI.ViewModel
         {
             try
             {
-                _member = MainWindow.Bot.ParseMember(this.MemberId, this.Mode);
+                _member = MainWindow.Bot.ParseMember(this.MemberId, this.Mode, this.Page);
                 if (_member.Images != null)
                 {
                     Images = new ObservableCollection<NijieImageViewModel>();

@@ -10,13 +10,13 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        public NijieMember ParseMember(int memberId, MemberMode mode)
+        public NijieMember ParseMember(int memberId, MemberMode mode, int page)
         {
             HtmlDocument doc = null;
             try
             {
                 canOperate();
-                NijieMember member = new NijieMember(memberId, mode);
+                NijieMember member = new NijieMember(memberId, mode, page);
                 var result = getPage(member.MemberUrl);
                 var res = result.Item2;
                 if (res.ResponseUri.ToString() != member.MemberUrl)
@@ -203,6 +203,17 @@ namespace NijieDownloader.Library
                 }
 
                 item.Remove();
+            }
+
+            // check next page
+            var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
+            foreach (var item in navButtons)
+            {
+                if (item.InnerText.StartsWith("次へ"))
+                {
+                    member.IsNextAvailable = true;
+                    break;
+                }
             }
         }
 

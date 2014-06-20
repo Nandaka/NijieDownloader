@@ -33,7 +33,7 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return GenerateMemberUrl(MemberId, Mode);
+                return GenerateMemberUrl(MemberId, Mode, Page);
             }
             private set { }
         }
@@ -52,13 +52,14 @@ namespace NijieDownloader.Library.Model
             this.MemberId = -1;
         }
 
-        public NijieMember(int memberId, MemberMode mode)
+        public NijieMember(int memberId, MemberMode mode, int page = 0)
         {
             this.MemberId = memberId;
             this.Mode = mode;
+            this.Page = page;
         }
 
-        public static string GenerateMemberUrl(int memberId, MemberMode mode)
+        public static string GenerateMemberUrl(int memberId, MemberMode mode, int page)
         {
             var prefix = "";
             switch (mode)
@@ -72,11 +73,14 @@ namespace NijieDownloader.Library.Model
                     break;
 
                 case MemberMode.Bookmark:
-                    prefix = "//nijie.info/user_like_illust_view.php?id=";
+                    prefix = "//nijie.info/user_like_illust_view.php?p=" + page + "&id=";
                     break;
             }
 
             return Util.FixUrl(prefix + memberId, Properties.Settings.Default.UseHttps);
         }
+
+        [NotMapped]
+        public bool IsNextAvailable { get; set; }
     }
 }

@@ -196,6 +196,35 @@ namespace NijieDownloader.UI
             }
         }
 
+        public static RoutedCommand PrevPageCommand = new RoutedCommand();
+
+        private void ExecutePrevPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page -= 1;
+            ExecuteGetMemberCommand(sender, e);
+        }
+
+        private void CanExecutePrevPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            if (ViewData.Page > 1)
+            {
+                e.CanExecute = true;
+            }
+        }
+
+        public static RoutedCommand NextPageCommand = new RoutedCommand();
+
+        private void ExecuteNextPageCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ViewData.Page += 1;
+            ExecuteGetMemberCommand(sender, e);
+        }
+
+        private void CanExecuteNextPageCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = ViewData.IsNextPageAvailable;
+        }
+
         #endregion Commands
     }
 }

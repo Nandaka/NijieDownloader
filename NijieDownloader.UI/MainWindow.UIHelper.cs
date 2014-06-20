@@ -37,6 +37,8 @@ namespace NijieDownloader.UI
         public const string FILENAME_FORMAT_IMAGE_TITLE = "{imageTitle}";
         public const string FILENAME_FORMAT_MEMBER_NAME = "{memberName}";
         public const string FILENAME_FORMAT_SERVER_FILENAME = "{serverFilename}";
+        public const string FILENAME_FORMAT_BOOKMARKED_MEMBER_ID = "{bookmarkedMemberId}";
+        public const string FILENAME_FORMAT_BOOKMARKED_MEMBER_NAME = "{bookmarkedMemberName}";
 
         public static string FILENAME_FORMAT_TOOLTIP = "{memberId}\t= Member ID" + Environment.NewLine +
                                                     "{memberName}\t= Member Name, might changed." + Environment.NewLine +
@@ -47,7 +49,9 @@ namespace NijieDownloader.UI
                                                     "{maxPage}\t= Page Count for manga " + Environment.NewLine +
                                                     "{tags}\t\t= Image Tags " + Environment.NewLine +
                                                     "{searchTags}\t= Search Tags used for query " + Environment.NewLine +
-                                                    "{serverFilename}\t= Original numeric filename as the image is kept on server.";
+                                                    "{serverFilename}\t= Original numeric filename as the image is kept on server." + Environment.NewLine +
+                                                    "{bookmarkedMemberId}\t= Only available on Member's Bookmarks mode." + Environment.NewLine +
+                                                    "{bookmarkedMemberName}\t= Only available on Member's Bookmarks mode.";
 
         public enum FilenameFormatType
         {
@@ -136,6 +140,16 @@ namespace NijieDownloader.UI
                     filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_SERVER_FILENAME, Util.ExtractFilenameFromUrl(image.Member.AvatarUrl));
                 }
 
+                if (image.BookmarkedBy != null)
+                {
+                    filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_ID, image.BookmarkedBy.MemberId.ToString());
+                    filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_NAME, image.BookmarkedBy.UserName);
+                }
+                else
+                {
+                    filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_ID, "");
+                    filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_NAME, "");
+                }
                 return filenameFormat;
             }
             catch (Exception ex)

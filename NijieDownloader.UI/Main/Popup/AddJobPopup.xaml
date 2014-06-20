@@ -57,6 +57,16 @@
                     <TextBlock Margin="5,5,5,5" MinWidth="100" Text="Limit" />
                     <TextBox MinWidth="150" Text="{Binding Path=Limit}" />
                 </StackPanel>
+                <StackPanel Name="pnlStart" Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5,5,5,5" Text="Start Page" MinWidth="100" />
+                        <TextBox Name="txtStartPage" MinWidth="150" Text="{Binding Path=StartPage}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5,5,5,5" Text="End Page" MinWidth="100" />
+                        <TextBox Name="txtEndPage" MinWidth="150" Text="{Binding Path=EndPage}" />
+                    </StackPanel>
+                </StackPanel>
             </StackPanel>
         </DataTemplate>
         <DataTemplate x:Key="ImageJobDataTemplate">

@@ -326,10 +326,15 @@ namespace NijieDownloader.UI.ViewModel
 
                     case JobType.Member:
                         _name = String.Format("Member ID: {0} Limit: {1} Mode: {2}", MemberId, Limit, MemberMode);
+                        if (MemberMode == Library.Model.MemberMode.Bookmark)
+                        {
+                            _name = String.Format("{0}{1}StartPage:{2} EndPage:{3}", _name, Environment.NewLine, StartPage, EndPage);
+                        }
                         break;
 
                     case JobType.Tags:
-                        _name = String.Format("Search Tags: {0} StartPage: {1} EndPage: {2} Limit: {3}", SearchTag, StartPage, EndPage, Limit);
+                        _name = String.Format("Search Tags: {0} Limit: {1}{2}StartPage: {3} EndPage: {4}",
+                                            SearchTag, Limit, Environment.NewLine, StartPage, EndPage);
                         break;
                 }
                 return _name;
