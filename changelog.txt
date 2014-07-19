@@ -1,4 +1,4 @@
-Nijie Downloader 1.0.6.0
+Nijie Downloader 1.0.6.1
 - Feature: Add Member's doujin mode.
 - Feature: Add Member's bookmarks mode.
 - Enhancement: Add new filenameformat {bookmarkedMemberId} and {bookmarkedMemberName}, only applicable in Member Bookmarks mode.
