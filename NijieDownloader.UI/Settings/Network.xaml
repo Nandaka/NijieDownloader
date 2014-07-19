@@ -24,7 +24,7 @@
                 </StackPanel>
                 <CheckBox MinWidth="100" Name="chkUseProxy" Content="Use Proxy" Margin="110,0,0,0"
                           IsChecked="{Binding Source={x:Static nc:Settings.Default}, Path=UseProxy, Mode=TwoWay}" />
-                <CheckBox MinWidth="100" Name="chkEnableCompression" Content="Use Compression" Margin="110,0,0,0" ToolTip="If enabled, this will cause the image require to be downloaded for size checking."
+                <CheckBox MinWidth="100" Name="chkEnableCompression" Content="Enable Compression" Margin="110,0,0,0" ToolTip="If enabled, this will cause the image require to be downloaded for size checking."
                           IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=EnableCompression, Mode=TwoWay}" />
                 <CheckBox MinWidth="100" Name="chkLoadThumbnail" Content="Load Thumbnail" Margin="110,0,0,0"
                           IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=LoadThumbnail, Mode=TwoWay}" />

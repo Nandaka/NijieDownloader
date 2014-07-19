@@ -42,7 +42,7 @@
                     </StackPanel>
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Starting Page" />
                     <ComboBox Grid.Row="3" Grid.Column="1"
-                              Name="cbxStartPage" Margin="5,0,5,5" MinWidth="100"
+                              Name="cbxStartPage" Margin="0,0,0,5" MinWidth="100"
                               ItemsSource="{Binding Path=StartPage}"
                               SelectedItem="{Binding Source={x:Static np:Settings.Default}, Path=StartPage, Mode=TwoWay}">
                     </ComboBox>
