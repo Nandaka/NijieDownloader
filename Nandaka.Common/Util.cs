@@ -224,5 +224,17 @@ namespace Nandaka.Common
                 }
             }
         }
+
+        public static bool IsRedirected(string url1, string url2, bool ignoreProtocol = false)
+        {
+            if (ignoreProtocol)
+            {
+                // strip the protocol
+                url1 = url1.Substring(url1.IndexOf("://"));
+                url2 = url2.Substring(url2.IndexOf("://"));
+            }
+
+            return !url1.Equals(url2);
+        }
     }
 }

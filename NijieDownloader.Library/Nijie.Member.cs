@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using HtmlAgilityPack;
+using Nandaka.Common;
 using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
 
@@ -19,7 +20,7 @@ namespace NijieDownloader.Library
                 NijieMember member = new NijieMember(memberId, mode, page);
                 var result = getPage(member.MemberUrl);
                 var res = result.Item2;
-                if (res.ResponseUri.ToString() != member.MemberUrl)
+                if (Util.IsRedirected(res.ResponseUri.ToString(), member.MemberUrl, ignoreProtocol: true))
                 {
                     throw new NijieException(string.Format("Redirected to another page: {0} ==> {1}", member.MemberUrl, res.ResponseUri.ToString()), NijieException.MEMBER_REDIR);
                 }
