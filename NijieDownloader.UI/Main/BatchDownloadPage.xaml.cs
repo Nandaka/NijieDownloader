@@ -38,12 +38,6 @@ namespace NijieDownloader.UI
 
         private const string DEFAULT_BATCH_JOB_LIST_FILENAME = "batchjob.xml";
 
-        public static RoutedCommand StartCommand = new RoutedCommand();
-        public static RoutedCommand StopCommand = new RoutedCommand();
-        public static RoutedCommand PauseCommand = new RoutedCommand();
-        public static RoutedCommand AddJobCommand = new RoutedCommand();
-        public static RoutedCommand EditJobCommand = new RoutedCommand();
-
         private bool _isCreated = false;
 
         public BatchDownloadPage()
@@ -54,71 +48,6 @@ namespace NijieDownloader.UI
             dgvJobList.DataContext = this;
 
             Application.Current.Exit += new ExitEventHandler(Current_Exit);
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (!_isCreated && Properties.Settings.Default.AutoSaveBatchList)
-            {
-                if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME))
-                    LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
-            }
-            _isCreated = true;
-        }
-
-        private void Current_Exit(object sender, ExitEventArgs e)
-        {
-            if (Properties.Settings.Default.AutoSaveBatchList)
-            {
-                try
-                {
-                    SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to save batch job list: " + ex.Message);
-                }
-            }
-        }
-
-        private void addJobForMember(int memberId, MemberMode mode, string message = "")
-        {
-            var newJob = new JobDownloadViewModel();
-            newJob.JobType = JobType.Member;
-            newJob.MemberId = memberId;
-            newJob.Status = JobStatus.Added;
-            newJob.MemberMode = mode;
-            var result = ShowAddJobDialog(newJob, message: message);
-            if (result != null)
-            {
-                AddJob(result);
-            }
-        }
-
-        private void addJobForSearch(NijieSearchOption option)
-        {
-            var newJob = new JobDownloadViewModel();
-            newJob.JobType = JobType.Tags;
-            newJob.SearchTag = option.Query;
-            newJob.Status = JobStatus.Added;
-            newJob.StartPage = option.Page;
-            newJob.Sort = option.Sort;
-            newJob.Matching = option.Matching;
-            newJob.SearchBy = option.SearchBy;
-            var result = ShowAddJobDialog(newJob);
-            if (result != null)
-            {
-                AddJob(result);
-            }
-        }
-
-        private void addJobForImage(int p)
-        {
-            var newJob = new JobDownloadViewModel();
-            newJob.JobType = JobType.Image;
-            newJob.ImageId = p;
-            newJob.Status = JobStatus.Added;
-            AddJob(newJob);
         }
 
         #region navigation
@@ -191,6 +120,122 @@ namespace NijieDownloader.UI
 
         #endregion navigation
 
+        #region event handler
+
+        private void btnResetSort_Click(object sender, RoutedEventArgs e)
+        {
+            dgvJobList.Items.SortDescriptions.Clear();
+
+            foreach (DataGridColumn column in dgvJobList.Columns)
+            {
+                column.SortDirection = null;
+            }
+        }
+
+        private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (e.NewSize.Height > 0)
+            {
+                dgvJobList.MaxHeight = e.NewSize.Height;
+            }
+            else
+            {
+                dgvJobList.MaxHeight = 1;
+            }
+        }
+
+        private void btnLoad_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            open.Multiselect = false;
+            open.Filter = "xml|*.xml";
+            var result = open.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                LoadList(open.FileName);
+            }
+        }
+
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.AddExtension = true;
+            save.ValidateNames = true;
+            save.Filter = "xml|*.xml";
+            var result = save.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                SaveList(save.FileName);
+            }
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!_isCreated && Properties.Settings.Default.AutoSaveBatchList)
+            {
+                if (File.Exists(DEFAULT_BATCH_JOB_LIST_FILENAME))
+                    LoadList(DEFAULT_BATCH_JOB_LIST_FILENAME, true);
+            }
+            _isCreated = true;
+        }
+
+        private void Current_Exit(object sender, ExitEventArgs e)
+        {
+            if (Properties.Settings.Default.AutoSaveBatchList)
+            {
+                try
+                {
+                    SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Failed to save batch job list: " + ex.Message);
+                }
+            }
+        }
+
+        #endregion event handler
+
+        private void addJobForMember(int memberId, MemberMode mode, string message = "")
+        {
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Member;
+            newJob.MemberId = memberId;
+            newJob.Status = JobStatus.Added;
+            newJob.MemberMode = mode;
+            var result = ShowAddJobDialog(newJob, message: message);
+            if (result != null)
+            {
+                AddJob(result);
+            }
+        }
+
+        private void addJobForSearch(NijieSearchOption option)
+        {
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Tags;
+            newJob.SearchTag = option.Query;
+            newJob.Status = JobStatus.Added;
+            newJob.StartPage = option.Page;
+            newJob.Sort = option.Sort;
+            newJob.Matching = option.Matching;
+            newJob.SearchBy = option.SearchBy;
+            var result = ShowAddJobDialog(newJob);
+            if (result != null)
+            {
+                AddJob(result);
+            }
+        }
+
+        private void addJobForImage(int p)
+        {
+            var newJob = new JobDownloadViewModel();
+            newJob.JobType = JobType.Image;
+            newJob.ImageId = p;
+            newJob.Status = JobStatus.Added;
+            AddJob(newJob);
+        }
+
         private void AddJob(JobDownloadViewModel newJob)
         {
             var ok = true;
@@ -231,6 +276,13 @@ namespace NijieDownloader.UI
                     if (JobRunner.BatchStatus == JobStatus.Running)
                     {
                         JobRunner.DoJob(newJob, cancelToken);
+                        MainWindow.Log.Debug(String.Format("Add job {0} in running state.", newJob.Name));
+                    }
+                    else if (JobRunner.BatchStatus == JobStatus.Paused)
+                    {
+                        newJob.Pause();
+                        JobRunner.DoJob(newJob, cancelToken);
+                        MainWindow.Log.Debug(String.Format("Add job {0} in paused state.", newJob.Name));
                     }
                 }
             }
@@ -247,31 +299,6 @@ namespace NijieDownloader.UI
             return ctx.NewJob;
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            for (int i = 0; i < ViewData.Count; ++i)
-            {
-                if (ViewData[i].IsSelected)
-                {
-                    ViewData.RemoveAt(i);
-                    --i;
-                }
-            }
-        }
-
-        private void btnSave_Click(object sender, RoutedEventArgs e)
-        {
-            SaveFileDialog save = new SaveFileDialog();
-            save.AddExtension = true;
-            save.ValidateNames = true;
-            save.Filter = "xml|*.xml";
-            var result = save.ShowDialog();
-            if (result.HasValue && result.Value)
-            {
-                SaveList(save.FileName);
-            }
-        }
-
         private void SaveList(string filename)
         {
             try
@@ -286,18 +313,6 @@ namespace NijieDownloader.UI
             {
                 MainWindow.Log.Error(ex.Message, ex);
                 ModernDialog.ShowMessage(ex.Message, "Error Saving", MessageBoxButton.OK);
-            }
-        }
-
-        private void btnLoad_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog open = new OpenFileDialog();
-            open.Multiselect = false;
-            open.Filter = "xml|*.xml";
-            var result = open.ShowDialog();
-            if (result.HasValue && result.Value)
-            {
-                LoadList(open.FileName);
             }
         }
 
@@ -334,13 +349,15 @@ namespace NijieDownloader.UI
             }
         }
 
-        private void btnClearAll_Click(object sender, RoutedEventArgs e)
-        {
-            ViewData.Clear();
-            SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
-        }
-
         #region Command
+
+        public static RoutedCommand StartCommand = new RoutedCommand();
+        public static RoutedCommand StopCommand = new RoutedCommand();
+        public static RoutedCommand PauseCommand = new RoutedCommand();
+        public static RoutedCommand AddJobCommand = new RoutedCommand();
+        public static RoutedCommand EditJobCommand = new RoutedCommand();
+        public static RoutedCommand ClearAllCommand = new RoutedCommand();
+        public static RoutedCommand DeleteCommand = new RoutedCommand();
 
         private void ExecuteStartCommand(object sender, ExecutedRoutedEventArgs e)
         {
@@ -434,21 +451,25 @@ namespace NijieDownloader.UI
         {
             if (btnPause.Content.ToString() == "Pause")
             {
+                MainWindow.Log.Debug("Pausing...");
                 JobRunner.BatchStatus = JobStatus.Paused;
                 foreach (var item in ViewData)
                 {
                     item.Pause();
                 }
                 btnPause.Content = "Resume";
+                MainWindow.Log.Debug("Paused");
             }
             else
             {
+                MainWindow.Log.Debug("Resuming...");
                 JobRunner.BatchStatus = JobStatus.Running;
                 foreach (var item in ViewData)
                 {
                     item.Resume();
                 }
                 btnPause.Content = "Pause";
+                MainWindow.Log.Debug("Resumed");
             }
             txtStatus.Text = JobRunner.BatchStatus.ToString();
         }
@@ -508,28 +529,48 @@ namespace NijieDownloader.UI
             }
         }
 
+        private void ExecuteClearAllCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecuteStopCommand(sender, e);
+            JobRunner.Clear();
+            ViewData.Clear();
+            SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
+        }
+
+        private void CanExecuteClearAllCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            if (JobRunner.BatchStatus == JobStatus.Running)
+            {
+                e.CanExecute = false;
+            }
+        }
+
+        private void ExecuteDeleteCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            for (int i = 0; i < ViewData.Count; ++i)
+            {
+                if (ViewData[i].IsSelected)
+                {
+                    if (JobRunner.DeleteJob(ViewData[i]))
+                    {
+                        ViewData.RemoveAt(i);
+                        --i;
+                    }
+                }
+            }
+            SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
+        }
+
+        private void CanExecuteDeleteCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            if (JobRunner.BatchStatus == JobStatus.Running)
+            {
+                e.CanExecute = false;
+            }
+        }
+
         #endregion Command
-
-        private void ScrollViewer_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (e.NewSize.Height > 0)
-            {
-                dgvJobList.MaxHeight = e.NewSize.Height;
-            }
-            else
-            {
-                dgvJobList.MaxHeight = 1;
-            }
-        }
-
-        private void btnResetSort_Click(object sender, RoutedEventArgs e)
-        {
-            dgvJobList.Items.SortDescriptions.Clear();
-
-            foreach (DataGridColumn column in dgvJobList.Columns)
-            {
-                column.SortDirection = null;
-            }
-        }
     }
 }

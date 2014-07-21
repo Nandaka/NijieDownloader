@@ -76,6 +76,12 @@
         <CommandBinding Command="{x:Static local:BatchDownloadPage.EditJobCommand}"
                         Executed="ExecuteEditJobCommand"
                         CanExecute="CanExecuteEditJobCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.ClearAllCommand}"
+                        Executed="ExecuteClearAllCommand"
+                        CanExecute="CanExecuteClearAllCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.DeleteCommand}"
+                        Executed="ExecuteDeleteCommand"
+                        CanExecute="CanExecuteDeleteCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
@@ -88,7 +94,8 @@
                 <StackPanel Orientation="Horizontal">
                     <Button Name="btnAdd" Margin="10,0,0,10" Content="Add"
                             Command="{x:Static local:BatchDownloadPage.AddJobCommand}" />
-                    <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete" Click="btnDelete_Click" />
+                    <Button Name="btnDelete" Margin="10,0,0,10" Content="Delete"
+                            Command="{x:Static local:BatchDownloadPage.DeleteCommand}" />
                     <Button Name="btnStart" Margin="10,0,0,10" Content="Start"
                             Command="{x:Static local:BatchDownloadPage.StartCommand}" />
                     <Button Name="btnPause" Margin="10,0,0,10" Content="Pause"
@@ -97,7 +104,8 @@
                             Command="{x:Static local:BatchDownloadPage.StopCommand}" />
                     <Button Name="btnSave" Margin="10,0,0,10" Content="Save" Click="btnSave_Click" />
                     <Button Name="btnLoad" Margin="10,0,0,10" Content="Load" Click="btnLoad_Click" />
-                    <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All" Click="btnClearAll_Click" />
+                    <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All"
+                            Command="{x:Static local:BatchDownloadPage.ClearAllCommand}" />
                     <Button Name="btnResetSort" Margin="10,0,0,10" Content="Reset Sort" Click="btnResetSort_Click" />
                     <TextBlock Name="txtStatus" Margin="10,5,0,10" Text="Ready" />
                 </StackPanel>

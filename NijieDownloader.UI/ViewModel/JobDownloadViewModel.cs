@@ -437,6 +437,21 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private System.Threading.Tasks.Task _taskRef;
+
+        [XmlIgnoreAttribute]
+        public System.Threading.Tasks.Task TaskRef
+        {
+            get
+            {
+                return _taskRef;
+            }
+            set
+            {
+                _taskRef = value;
+            }
+        }
+
         #endregion Job control related
 
         public object Clone()

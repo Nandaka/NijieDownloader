@@ -46,7 +46,9 @@ namespace NijieDownloader.UI
             job.DownloadCount = 0;
             job.CurrentPage = 1;
 
-            tasks.Add(_jobFactory.StartNew(() =>
+            job.PauseEvent.WaitOne(Timeout.Infinite);
+
+            var taskRef = _jobFactory.StartNew(() =>
             {
                 long start = DateTime.Now.Ticks;
                 double totalSecond = 0;
@@ -95,11 +97,12 @@ namespace NijieDownloader.UI
                     }
                 }
                 MainWindow.Log.Debug(String.Format("Job completed: {0} in {1}s", job.Name, totalSecond));
-            }
-            , cancelSource.Token
+            }, cancelSource.Token
             , TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness
             , jobScheduler
-            ));
+            );
+            job.TaskRef = taskRef;
+            tasks.Add(taskRef);
         }
 
         /// <summary>
@@ -303,6 +306,10 @@ namespace NijieDownloader.UI
                     job.Status = JobStatus.Cancelled;
                     job.Message = "Job Cancelled.";
                     MainWindow.Log.Debug(string.Format("Job: {0} cancelled", job.Name));
+                    return true;
+                }
+                if (job.Status == JobStatus.Cancelled)
+                {
                     return true;
                 }
                 return false;
@@ -545,6 +552,34 @@ namespace NijieDownloader.UI
         {
             job.Status = JobStatus.Error;
             job.Message = Util.GetAllInnerExceptionMessage(ne);
+        }
+
+        public static bool DeleteJob(JobDownloadViewModel job)
+        {
+            try
+            {
+                job.Status = JobStatus.Cancelled;
+                return tasks.Remove(job.TaskRef);
+            }
+            catch (Exception exception)
+            {
+                MainWindow.Log.Error("Failed to delete job: " + job.Name, exception);
+                return false;
+            }
+        }
+
+        public static bool Clear()
+        {
+            try
+            {
+                tasks.Clear();
+                return tasks.Count == 0;
+            }
+            catch (Exception exception)
+            {
+                MainWindow.Log.Error("Failed to clear all jobs", exception);
+                return false;
+            }
         }
     }
 }
