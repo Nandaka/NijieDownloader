@@ -37,9 +37,10 @@ namespace NijieDownloader.Library
                 if (option.Page <= 1) search.IsPrevAvailable = false;
                 else search.IsPrevAvailable = true;
 
+                // check next page availability
                 search.IsNextAvailable = false;
                 var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//p");
-                if (topNav != null)
+                if (search.Images.Count > 0 && topNav != null)
                 {
                     foreach (var btn in topNav)
                     {
@@ -49,10 +50,6 @@ namespace NijieDownloader.Library
                             break;
                         }
                     }
-                }
-                else
-                {
-                    search.IsNextAvailable = false;
                 }
 
                 return search;
