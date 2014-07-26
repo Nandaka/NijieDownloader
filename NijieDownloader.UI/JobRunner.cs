@@ -46,10 +46,9 @@ namespace NijieDownloader.UI
             job.DownloadCount = 0;
             job.CurrentPage = 1;
 
-            job.PauseEvent.WaitOne(Timeout.Infinite);
-
             var taskRef = _jobFactory.StartNew(() =>
             {
+                job.PauseEvent.WaitOne(Timeout.Infinite);
                 long start = DateTime.Now.Ticks;
                 double totalSecond = 0;
                 try
