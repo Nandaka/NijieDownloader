@@ -1,26 +1,31 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NijieDownloader.Library.DAL;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Data.Entity.Migrations;
-using Nandaka.Common;
-using NijieDownloader.Library.Model;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
+using HtmlAgilityPack;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Nandaka.Common;
+using NijieDownloader.Library;
+using NijieDownloader.Library.DAL;
+using NijieDownloader.Library.Model;
 
-namespace Nijie.Test
+namespace NijieDownloader.Test
 {
     [TestClass]
     public class UnitTest1
     {
-
         [TestInitialize]
         public void Init()
         {
+            UpdateHtmlForm updateForm = new UpdateHtmlForm();
+            updateForm.ShowDialog();
+
             using (var ctx = new NijieContext())
             {
                 ctx.Database.Delete();
@@ -29,7 +34,65 @@ namespace Nijie.Test
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void TestMemberParserMethod()
+        {
+            var nijie = Nijie.GetInstance();
+            var member = new NijieMember() { MemberId = 44103 };
+            // test member images
+            {
+                var page = UpdateHtmlForm.PATH + "member-images.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseMember(doc, member, MemberMode.Images);
+
+                Assert.AreEqual(result.UserName, "SADAO");
+                Assert.AreEqual(3, result.Images.Count, "Image counts differents");
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+            }
+
+            // test member doujins
+            // need to be updated with proper member with doujin
+            {
+                var page = UpdateHtmlForm.PATH + "member-doujins.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseMember(doc, member, MemberMode.Doujin);
+                Assert.AreEqual(0, result.Images.Count, "Image counts differents");
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+            }
+
+            // test member bookmarked
+            {
+                var page = UpdateHtmlForm.PATH + "member-bookmarked-images.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
+                Assert.AreEqual(46, result.Images.Count, "Image counts differents");
+
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+
+                Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
+                Assert.AreEqual(50, result.TotalImages, "Different image count");
+            }
+        }
+
+        [TestMethod]
+        public void TestDBMethod()
         {
             int MEMBER_COUNT = 10;
             int IMAGE_COUNT = 10;
@@ -105,7 +168,7 @@ namespace Nijie.Test
         }
 
         [TestMethod]
-        public void TestMethod2()
+        public void TestUtilMethod()
         {
             {
                 var url = "http://pic04.nijie.info/nijie_picture/122240_20140213201403.jpg";
@@ -118,7 +181,6 @@ namespace Nijie.Test
                 expected = "122240_20140213201403";
 
                 Assert.IsTrue(result == expected);
-
             }
             {
                 var url = "http://pic04.nijie.info/nijie_picture/122240_20140213201403.jpg?someparams=xxx";

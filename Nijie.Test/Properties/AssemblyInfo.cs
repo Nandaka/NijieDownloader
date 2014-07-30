@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Nijie.Test")]
+[assembly: AssemblyTitle("NijieDownloader.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Infineon Technologies")]
-[assembly: AssemblyProduct("Nijie.Test")]
+[assembly: AssemblyProduct("NijieDownloader.Test")]
 [assembly: AssemblyCopyright("Copyright © Infineon Technologies 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
