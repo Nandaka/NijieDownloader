@@ -34,7 +34,7 @@ namespace NijieDownloader.Library
 
         private static Nijie _instance;
 
-        public static Nijie GetInstance(ILog _log, bool useHttps)
+        public static Nijie GetInstance(ILog _log = null, bool useHttps = false)
         {
             if (_instance == null)
             {

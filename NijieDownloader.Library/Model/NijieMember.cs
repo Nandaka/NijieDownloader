@@ -82,5 +82,8 @@ namespace NijieDownloader.Library.Model
 
         [NotMapped]
         public bool IsNextAvailable { get; set; }
+
+        [NotMapped]
+        public int TotalImages { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Nandaka.Common;
 using NijieDownloader.Library.DAL;
@@ -11,6 +12,15 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
+        private Regex re_count = new Regex(@"(\d+)");
+
+        /// <summary>
+        /// Parse member from internet based on given member id, mode, and page number.
+        /// </summary>
+        /// <param name="memberId"></param>
+        /// <param name="mode"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
         public NijieMember ParseMember(int memberId, MemberMode mode, int page)
         {
             HtmlDocument doc = null;
@@ -27,16 +37,7 @@ namespace NijieDownloader.Library
 
                 doc = result.Item1;
 
-                ParseMemberProfile(doc, member);
-
-                if (mode == MemberMode.Images || mode == MemberMode.Doujin)
-                    ParseMemberImages(doc, member);
-                else
-                    ParseMemberBookmark(doc, member);
-
-                member.Status = String.Format("Completed, found {0} images", member.Images.Count);
-
-                return member;
+                return ParseMember(doc, member, mode);
             }
             catch (NijieException)
             {
@@ -53,6 +54,27 @@ namespace NijieDownloader.Library
 
                 throw new NijieException(String.Format("Error when processing member: {0} ==> {1}", memberId, ex.Message), ex, NijieException.MEMBER_UNKNOWN_ERROR);
             }
+        }
+
+        /// <summary>
+        /// Parse member from html document.
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <param name="member"></param>
+        /// <param name="mode"></param>
+        /// <returns></returns>
+        public NijieMember ParseMember(HtmlDocument doc, NijieMember member, MemberMode mode)
+        {
+            ParseMemberProfile(doc, member);
+
+            if (mode == MemberMode.Images || mode == MemberMode.Doujin)
+                ParseMemberImages(doc, member);
+            else
+                ParseMemberBookmark(doc, member);
+
+            member.Status = String.Format("Completed, found {0} images", member.Images.Count);
+
+            return member;
         }
 
         /// <summary>
@@ -145,7 +167,6 @@ namespace NijieDownloader.Library
         private void ParseMemberBookmark(HtmlDocument doc, NijieMember member)
         {
             member.Images = new List<NijieImage>();
-            member.IsNextAvailable = false;
 
             var bookmarkedImages = doc.DocumentNode.SelectNodes("//p[@class='nijiedao']");
             if (bookmarkedImages == null || bookmarkedImages.Count == 0)
@@ -212,12 +233,24 @@ namespace NijieDownloader.Library
             }
 
             // check next page
+            member.IsNextAvailable = false;
             var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
             foreach (var item in navButtons)
             {
                 if (item.InnerText.StartsWith("次へ"))
                 {
                     member.IsNextAvailable = true;
+                    break;
+                }
+            }
+
+            var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
+            foreach (var item in imageCountElements)
+            {
+                var match = re_count.Match(item.InnerText);
+                if (match.Success)
+                {
+                    member.TotalImages = Int32.Parse(match.Groups[0].Value);
                     break;
                 }
             }
