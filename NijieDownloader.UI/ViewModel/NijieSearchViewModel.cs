@@ -159,6 +159,16 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        public int TotalImages
+        {
+            get
+            {
+                if (_search != null)
+                    return _search.TotalImages;
+                return -1;
+            }
+        }
+
         #endregion properties
 
         public void DoSearch(SynchronizationContext context)
@@ -183,6 +193,8 @@ namespace NijieDownloader.UI.ViewModel
                         Images.Add(temp);
                     }, null);
                 }
+
+                onPropertyChanged("TotalImages");
             }
             catch (NijieException ne)
             {

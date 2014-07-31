@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using NijieDownloader.Library;
+using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.Test
 {
@@ -48,7 +49,64 @@ namespace NijieDownloader.Test
                 // get member bookmark page
                 txtLog.AppendText("Getting member's bookmarked images page..." + Environment.NewLine);
                 downloadHelper("https://nijie.info/user_like_illust_view.php?id=44103", "member-bookmarked-images.html");
+
+                // get member bookmark last page
+                txtLog.AppendText("Getting member's bookmarked images last page..." + Environment.NewLine);
+                downloadHelper("https://nijie.info/user_like_illust_view.php?id=44103&p=2", "member-bookmarked-images-lastpage.html");
+
+                // get search page
+                {
+                    txtLog.AppendText("Getting search1 page Tag PartialMatch..." + Environment.NewLine);
+                    var option = new NijieSearchOption()
+                    {
+                        Matching = SearchType.PartialMatch,
+                        Query = "無修正",
+                        Sort = SortType.Latest,
+                        SearchBy = SearchMode.Tag
+                    };
+                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-partial-latest.html");
+                }
+                {
+                    txtLog.AppendText("Getting search2 page Tag ExactMatch..." + Environment.NewLine);
+                    var option = new NijieSearchOption()
+                    {
+                        Matching = SearchType.ExactMatch,
+                        Query = "無修正",
+                        Sort = SortType.Latest,
+                        SearchBy = SearchMode.Tag
+                    };
+                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-exact-latest.html");
+                }
+
+                {
+                    txtLog.AppendText("Getting search last page Tag PartialMatch..." + Environment.NewLine);
+                    var option = new NijieSearchOption()
+                    {
+                        Matching = SearchType.PartialMatch,
+                        Query = "無修正",
+                        Sort = SortType.Latest,
+                        SearchBy = SearchMode.Tag,
+                        Page = 4
+                    };
+                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-partial-latest-lastpage.html");
+                }
+                {
+                    txtLog.AppendText("Getting search2 last page Tag ExactMatch..." + Environment.NewLine);
+                    var option = new NijieSearchOption()
+                    {
+                        Matching = SearchType.ExactMatch,
+                        Query = "無修正",
+                        Sort = SortType.Latest,
+                        SearchBy = SearchMode.Tag,
+                        Page = 2
+                    };
+                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-exact-latest-lastpage.html");
+                }
             }
+            txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
+
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
         }
 
         private string downloadHelper(string url, string filename, string referer = "https://nijie.info")

@@ -29,7 +29,15 @@ namespace NijieDownloader.Library.Model
 
         public bool IsNextAvailable { get; set; }
 
-        public bool IsPrevAvailable { get; set; }
+        public bool IsPrevAvailable
+        {
+            get
+            {
+                if (Option != null)
+                    return Option.Page > 1;
+                return false;
+            }
+        }
 
         public static string GenerateQueryUrl(NijieSearchOption option)
         {
@@ -42,5 +50,7 @@ namespace NijieDownloader.Library.Model
                     , (int)option.Sort);
             return Util.FixUrl(url, Properties.Settings.Default.UseHttps);
         }
+
+        public int TotalImages { get; set; }
     }
 }

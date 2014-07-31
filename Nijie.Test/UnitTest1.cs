@@ -89,6 +89,94 @@ namespace NijieDownloader.Test
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
                 Assert.AreEqual(50, result.TotalImages, "Different image count");
             }
+
+            // test member bookmarked - last page
+            {
+                var page = UpdateHtmlForm.PATH + "member-bookmarked-images-lastpage.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
+                Assert.AreEqual(3, result.Images.Count, "Image counts differents");
+
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+
+                Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
+                Assert.AreEqual(50, result.TotalImages, "Different image count");
+            }
+        }
+
+        [TestMethod]
+        public void TestSearchParserMethod()
+        {
+            var nijie = Nijie.GetInstance();
+            var option = new NijieSearchOption()
+                    {
+                        Matching = SearchType.PartialMatch,
+                        Query = "無修正",
+                        Sort = SortType.Latest,
+                        SearchBy = SearchMode.Tag,
+                        Page = 1
+                    };
+            var search = new NijieSearch(option);
+
+            {
+                var page = UpdateHtmlForm.PATH + "search-tag-partial-latest.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseSearch(doc, search);
+                Assert.AreEqual(48, result.Images.Count, "Image counts differents");
+
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+
+                Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
+                Assert.AreEqual(166, result.TotalImages, "Different image count");
+            }
+
+            {
+                var page = UpdateHtmlForm.PATH + "search-tag-exact-latest.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseSearch(doc, search);
+                Assert.AreEqual(48, result.Images.Count, "Image counts differents");
+
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+
+                Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
+                Assert.AreEqual(86, result.TotalImages, "Different image count");
+            }
+
+            {
+                var page = UpdateHtmlForm.PATH + "search-tag-partial-latest-lastpage.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseSearch(doc, search);
+                Assert.AreEqual(21, result.Images.Count, "Image counts differents");
+
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
+
+                Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
+                Assert.AreEqual(166, result.TotalImages, "Different image count");
+            }
         }
 
         [TestMethod]

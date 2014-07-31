@@ -264,6 +264,17 @@ namespace NijieDownloader.Library
             {
                 image.Member = member;
             }
+
+            var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
+            foreach (var item in imageCountElements)
+            {
+                var match = re_count.Match(item.InnerText);
+                if (match.Success)
+                {
+                    member.TotalImages = Int32.Parse(match.Groups[0].Value);
+                    break;
+                }
+            }
         }
 
         private void ParseMemberProfile(HtmlDocument doc, NijieMember member)

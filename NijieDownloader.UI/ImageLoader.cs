@@ -24,7 +24,8 @@ namespace NijieDownloader.UI
         /// - ConcurrentImageLoad
         /// - cacheMemoryLimitMegabytes
         /// </summary>
-        static ImageLoader() {
+        static ImageLoader()
+        {
             configureCache();
             _imageFactory = new TaskFactory(new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentImageLoad, 8));
         }
@@ -59,7 +60,11 @@ namespace NijieDownloader.UI
                         action(ViewModelHelper.Loading, IMAGE_LOADING);
 
                         MainWindow.Log.Debug("Loading image: " + url);
+#if DEBUG
+                        var result = File.ReadAllBytes(@"../../Resources/error_icon.png");
+#else
                         var result = MainWindow.Bot.DownloadData(url, referer);
+#endif
                         using (var ms = new MemoryStream(result))
                         {
                             var t = new BitmapImage();
@@ -91,6 +96,5 @@ namespace NijieDownloader.UI
                 action((BitmapImage)cache.Get(url), IMAGE_LOADED);
             }
         }
-
     }
 }

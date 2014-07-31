@@ -33,10 +33,10 @@ namespace NijieDownloader.UI
         {
             ViewData = new NijieMemberViewModel();
             InitializeComponent();
-#if DEBUG
-            txtMemberID.Text = "17296";
-#endif
             this.DataContext = ViewData;
+#if DEBUG
+            ViewData.MemberId = 17296;
+#endif
         }
 
         #region Navigation

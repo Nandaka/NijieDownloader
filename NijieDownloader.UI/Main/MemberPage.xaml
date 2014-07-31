@@ -8,7 +8,7 @@
       xmlns:vd="clr-namespace:NijieDownloader.Library.Model;assembly=NijieDownloader.Library"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d"
-      d:DesignHeight="600" d:DesignWidth="800" Name="memberPage"
+      d:DesignHeight="600" d:DesignWidth="1024" Name="memberPage"
 	Title="Member Page">
     <Page.Resources>
         <BitmapImage x:Key="ComicIcon" UriSource="/Resources/thumbnail_comic.png" />
@@ -69,11 +69,16 @@
                 </StackPanel>
             </DockPanel>
 
-            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal">
-                <TextBlock Text="Status :" HorizontalAlignment="Left" />
-                <TextBlock Name="lblStatus" HorizontalAlignment="Left"
-                           Text="{Binding Path=Status}" />
-            </StackPanel>
+            <DockPanel DockPanel.Dock="Bottom">
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                    <TextBlock Text="Status : " HorizontalAlignment="Left" />
+                    <TextBlock Name="lblStatus" HorizontalAlignment="Left" Text="{Binding Path=Status}" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Total Images : " />
+                    <TextBlock Text="{Binding Path=TotalImages, FallbackValue=0}" MinWidth="10" />
+                </StackPanel>
+            </DockPanel>
 
             <Grid DockPanel.Dock="Left">
                 <Grid.RowDefinitions>

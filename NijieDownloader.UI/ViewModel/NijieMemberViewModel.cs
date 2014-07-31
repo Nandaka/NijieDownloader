@@ -182,6 +182,18 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        public int TotalImages
+        {
+            get
+            {
+                if (_member != null)
+                {
+                    return _member.TotalImages;
+                }
+                return -1;
+            }
+        }
+
         #endregion properties
 
         public void GetMember(SynchronizationContext context)
@@ -202,6 +214,7 @@ namespace NijieDownloader.UI.ViewModel
                     }
 
                     this.Status = String.Format("Loaded: {0} images.", _member.Images.Count);
+                    onPropertyChanged("TotalImages");
                 }
             }
             catch (NijieException ne)
