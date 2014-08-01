@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Net;
-using System.Threading;
+using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
+using System.Text;
+using System.Threading;
 
 namespace Nandaka.Common
 {
     public class ExtendedWebClient : WebClient
     {
         #region ctor
+
         public ExtendedWebClient(int timeout = -1, CookieContainer cookieJar = null, String userAgent = null)
         {
             if (timeout > 0)
@@ -21,7 +24,7 @@ namespace Nandaka.Common
             else
             {
                 this.Timeout = Properties.Settings.Default.Timeout;
-                if (this.Timeout < 0) 
+                if (this.Timeout < 0)
                     this.Timeout = 60000;
             }
 
@@ -37,13 +40,15 @@ namespace Nandaka.Common
                 this.UserAgent = userAgent;
             }
         }
-        #endregion  
 
-        public WebRequest Request {get; private set;}
+        #endregion ctor
+
+        public WebRequest Request { get; private set; }
+
         public WebResponse Response { get; private set; }
- 
 
         private static IWebProxy globalProxy;
+
         public static IWebProxy GlobalProxy
         {
             get
@@ -70,6 +75,7 @@ namespace Nandaka.Common
         }
 
         private int timeout;
+
         public int Timeout
         {
             get { return this.timeout; }
@@ -81,6 +87,7 @@ namespace Nandaka.Common
         }
 
         private static bool enableCookie;
+
         public static bool EnableCookie
         {
             get
@@ -100,6 +107,7 @@ namespace Nandaka.Common
         public static bool EnableCompression { get; set; }
 
         private static string _acceptLanguage;
+
         public static string AcceptLanguage
         {
             get
@@ -111,6 +119,7 @@ namespace Nandaka.Common
         }
 
         private static CookieContainer cookieJar;
+
         public static CookieContainer CookieJar
         {
             get
@@ -130,6 +139,7 @@ namespace Nandaka.Common
         }
 
         private string referer;
+
         public string Referer
         {
             get { return this.referer; }
@@ -150,6 +160,7 @@ namespace Nandaka.Common
         }
 
         private string userAgent;
+
         public string UserAgent
         {
             get
@@ -222,6 +233,64 @@ namespace Nandaka.Common
                 CookieCollection cookies = response.Cookies;
                 cookieJar.Add(cookies);
             }
+        }
+
+        public byte[] DownloadData(string address)
+        {
+            return base.DownloadData(CreateUri(address));
+        }
+
+        public void DownloadFile(string address, string fileName)
+        {
+            base.DownloadFile(CreateUri(address), fileName);
+        }
+
+        public string DownloadString(string address)
+        {
+            return base.DownloadString(CreateUri(address));
+        }
+
+        public Stream OpenRead(string address)
+        {
+            return base.OpenRead(CreateUri(address));
+        }
+
+        public Stream OpenWrite(string address)
+        {
+            return base.OpenWrite(CreateUri(address));
+        }
+
+        public Stream OpenWrite(string address, string method)
+        {
+            return base.OpenWrite(CreateUri(address), method);
+        }
+
+        /// <summary>
+        /// enable url ended with '.'
+        /// taken from http://stackoverflow.com/a/2285321
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        private static Uri CreateUri(string url)
+        {
+            MethodInfo getSyntax = typeof(UriParser).GetMethod("GetSyntax", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+            FieldInfo flagsField = typeof(UriParser).GetField("m_Flags", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            if (getSyntax != null && flagsField != null)
+            {
+                foreach (string scheme in new[] { "http", "https" })
+                {
+                    UriParser parser = (UriParser)getSyntax.Invoke(null, new object[] { scheme });
+                    if (parser != null)
+                    {
+                        int flagsValue = (int)flagsField.GetValue(parser);
+                        // Clear the CanonicalizeAsFilePath attribute
+                        if ((flagsValue & 0x1000000) != 0)
+                            flagsField.SetValue(parser, flagsValue & ~0x1000000);
+                    }
+                }
+            }
+            var uri = new Uri(url);
+            return uri;
         }
     }
 }
