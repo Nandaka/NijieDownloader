@@ -144,7 +144,10 @@ namespace NijieDownloader.UI
                      {
                          this.DataContext = ViewData;
                          d.Close();
-                         ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count);
+                         if (ViewData.Images != null)
+                             ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count);
+                         else
+                             ViewData.Status = "Failed to parse images.";
                      }),
                      new object[] { this }
                   );

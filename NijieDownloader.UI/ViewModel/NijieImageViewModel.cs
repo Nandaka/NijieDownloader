@@ -56,15 +56,13 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
-        private bool _isDoujin;
-
         public bool IsDoujin
         {
-            get { return _isDoujin; }
-            set
+            get
             {
-                _isDoujin = value;
-                onPropertyChanged("IsDoujin");
+                if (_image != null)
+                    return _image.IsDoujin;
+                return false;
             }
         }
 

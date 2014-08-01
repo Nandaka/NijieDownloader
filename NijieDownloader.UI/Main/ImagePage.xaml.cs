@@ -50,9 +50,6 @@ namespace NijieDownloader.UI
                 var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
 
                 txtImageID.Text = query.Get("ImageId");
-                var mode = query.Get("Mode");
-                ViewData.IsDoujin = !String.IsNullOrWhiteSpace(mode) && mode.Equals("1") ? true : false;
-
                 ViewData.ImageId = Int32.Parse(txtImageID.Text);
                 GetImageCommand.Execute(null, btnFetch);
             }

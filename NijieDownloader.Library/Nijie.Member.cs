@@ -235,12 +235,15 @@ namespace NijieDownloader.Library
             // check next page
             member.IsNextAvailable = false;
             var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
-            foreach (var item in navButtons)
+            if (navButtons != null)
             {
-                if (item.InnerText.StartsWith("次へ"))
+                foreach (var item in navButtons)
                 {
-                    member.IsNextAvailable = true;
-                    break;
+                    if (item.InnerText.StartsWith("次へ"))
+                    {
+                        member.IsNextAvailable = true;
+                        break;
+                    }
                 }
             }
 

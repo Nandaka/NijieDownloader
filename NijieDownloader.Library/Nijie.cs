@@ -306,6 +306,7 @@ namespace NijieDownloader.Library
                 {
                     ExtendedWebClient client = new ExtendedWebClient();
                     client.Referer = referer;
+
                     result = client.DownloadData(url);
                     break;
                 }

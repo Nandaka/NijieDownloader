@@ -1,3 +1,11 @@
+Nijie Downloader 1.0.7.0
+- Feature: Update member parser to parse image count.
+- Feature: Update search parser to parse image count.
+- Bug Fix: Update web client to handle url ended with period.
+- Bug Fix: Update https handler.
+- Bug Fix: Update batch job runner.
+- Add test case for parsers.
+
 Nijie Downloader 1.0.6.1
 - Feature: Add Member's doujin mode.
 - Feature: Add Member's bookmarks mode.

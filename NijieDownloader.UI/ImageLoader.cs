@@ -84,6 +84,7 @@ namespace NijieDownloader.UI
                     catch (Exception ex)
                     {
                         action(null, IMAGE_ERROR);
+
                         MainWindow.Log.Error(String.Format("Error when loading image: {0}", ex.Message), ex);
                         if (ex.InnerException != null)
                             MainWindow.Log.Error(ex.InnerException.Message, ex.InnerException);
