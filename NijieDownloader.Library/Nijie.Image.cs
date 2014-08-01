@@ -34,38 +34,14 @@ namespace NijieDownloader.Library
                 var result = getPage(image.ViewUrl);
                 PrintCookie("Image Page " + image.ImageId);
                 doc = result.Item1;
-                if (result.Item2.ResponseUri.ToString() != image.ViewUrl)
+                if (Util.IsRedirected(result.Item2.ResponseUri.ToString(), image.ViewUrl, true))
                 {
                     Log.Debug(String.Format("Redirection for Image {0}: {1} ==> {2}, possibly locked.", image.ImageId, image.ViewUrl, result.Item2.ResponseUri));
                     image.IsFriendOnly = true;
                     return image;
                 }
 
-                checkErrorMessage(doc);
-
-                var doujinDiv = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_header']");
-                if (doujinDiv != null)
-                {
-                    ProcessDoujin(image, doc);
-                }
-                else
-                {
-                    if (member == null)
-                    {
-                        member = ParseMemberFromImage(doc);
-                    }
-                    image.Member = member;
-
-                    ParseImageLinks(image, doc);
-
-                    ParseImageTitleAndDescription(image, doc);
-
-                    ParseImageTags(image, doc);
-                }
-
-                ParseImageExtras(image, doc);
-
-                return image;
+                return ParseImage(image, ref member, doc);
             }
             catch (NijieException)
             {
@@ -82,6 +58,35 @@ namespace NijieDownloader.Library
 
                 throw new NijieException(String.Format("Error when processing image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_UNKNOWN_ERROR);
             }
+        }
+
+        public NijieImage ParseImage(NijieImage image, ref NijieMember member, HtmlDocument doc)
+        {
+            checkErrorMessage(doc);
+
+            var doujinDiv = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_header']");
+            if (doujinDiv != null)
+            {
+                ProcessDoujin(image, doc);
+            }
+            else
+            {
+                if (member == null)
+                {
+                    member = ParseMemberFromImage(doc);
+                }
+                image.Member = member;
+
+                ParseImageLinks(image, doc);
+
+                ParseImageTitleAndDescription(image, doc);
+
+                ParseImageTags(image, doc);
+            }
+
+            ParseImageExtras(image, doc);
+
+            return image;
         }
 
         private void ProcessDoujin(NijieImage image, HtmlDocument doc)

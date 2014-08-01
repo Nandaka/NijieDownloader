@@ -29,7 +29,7 @@ namespace NijieDownloader.Library
                 NijieSearch search = new NijieSearch(option);
                 var result = getPage(search.QueryUrl);
 
-                if (result.Item2.ResponseUri.ToString() != search.QueryUrl)
+                if (Util.IsRedirected(result.Item2.ResponseUri.ToString(), search.QueryUrl, true))
                 {
                     Log.Debug(string.Format("Different Search URL expected: {0} ==> {1}", search.QueryUrl, result.Item2.ResponseUri.ToString()));
                 }
@@ -82,17 +82,22 @@ namespace NijieDownloader.Library
             }
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//h4/em");
+            search.TotalImages = ParseTotalImageCount(imageCountElements);
+
+            return search;
+        }
+
+        private int ParseTotalImageCount(HtmlNodeCollection imageCountElements)
+        {
             foreach (var item in imageCountElements)
             {
                 var match = re_count.Match(item.InnerText);
                 if (match.Success)
                 {
-                    search.TotalImages = Int32.Parse(match.Groups[0].Value);
-                    break;
+                    return Int32.Parse(match.Groups[0].Value.Replace(",", "").Replace(".", ""));
                 }
             }
-
-            return search;
+            return 0;
         }
     }
 }

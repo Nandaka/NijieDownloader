@@ -12,7 +12,7 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
-        private Regex re_count = new Regex(@"(\d+)");
+        private Regex re_count = new Regex(@"([\d\.,]+)");
 
         /// <summary>
         /// Parse member from internet based on given member id, mode, and page number.
@@ -245,15 +245,7 @@ namespace NijieDownloader.Library
             }
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
-            foreach (var item in imageCountElements)
-            {
-                var match = re_count.Match(item.InnerText);
-                if (match.Success)
-                {
-                    member.TotalImages = Int32.Parse(match.Groups[0].Value);
-                    break;
-                }
-            }
+            member.TotalImages = ParseTotalImageCount(imageCountElements);
         }
 
         private void ParseMemberImages(HtmlDocument doc, NijieMember member)
@@ -266,15 +258,7 @@ namespace NijieDownloader.Library
             }
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
-            foreach (var item in imageCountElements)
-            {
-                var match = re_count.Match(item.InnerText);
-                if (match.Success)
-                {
-                    member.TotalImages = Int32.Parse(match.Groups[0].Value);
-                    break;
-                }
-            }
+            member.TotalImages = ParseTotalImageCount(imageCountElements);
         }
 
         private void ParseMemberProfile(HtmlDocument doc, NijieMember member)

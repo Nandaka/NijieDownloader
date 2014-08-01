@@ -102,6 +102,15 @@ namespace NijieDownloader.Test
                     };
                     downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-exact-latest-lastpage.html");
                 }
+
+                // image page
+                {
+                    txtLog.AppendText("Getting image page..." + Environment.NewLine);
+                    downloadHelper("https://nijie.info/view.php?id=92049", "image-normal.html");
+
+                    txtLog.AppendText("Getting image page..." + Environment.NewLine);
+                    downloadHelper("https://nijie.info/view.php?id=92508", "image-manga.html");
+                }
             }
             txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
 
