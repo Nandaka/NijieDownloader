@@ -172,6 +172,12 @@ namespace NijieDownloader.UI
                     };
                     var searchPage = MainWindow.Bot.Search(option);
 
+                    if (searchPage.Images == null || searchPage.Images.Count == 0)
+                    {
+                        job.Message = "No more images found!";
+                        return;
+                    }
+
                     foreach (var image in searchPage.Images)
                     {
                         if (isJobCancelled(job)) return;
@@ -211,10 +217,12 @@ namespace NijieDownloader.UI
                         job.Message = "Page limit reached: " + endPage;
                         return;
                     }
-                    else if (job.DownloadCount < limit)
+                    else if (job.DownloadCount > limit)
                     {
-                        flag = searchPage.IsNextAvailable;
+                        job.Message = "Download count reached: " + limit;
+                        return;
                     }
+                    flag = searchPage.IsNextAvailable;
                 }
             }
             catch (NijieException ne)
