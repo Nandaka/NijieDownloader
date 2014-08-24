@@ -462,8 +462,8 @@ namespace NijieDownloader.UI.ViewModel
 
     public enum JobType
     {
-        Image,
         Member,
+        Image,
         Tags
     }
 
