@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -16,6 +17,45 @@ namespace NijieDownloader.UI
     /// </summary>
     public partial class MainWindow : ModernWindow
     {
+        private ObservableCollection<String> formatList;
+
+        public ObservableCollection<String> FormatList
+        {
+            get
+            {
+                if (formatList == null)
+                {
+                    formatList = new ObservableCollection<string>();
+
+                    if (Properties.Settings.Default.FormatList == null)
+                    {
+                        Properties.Settings.Default.FormatList = new System.Collections.Specialized.StringCollection();
+                    }
+                    if (Properties.Settings.Default.FormatList.Count == 0)
+                    {
+                        if (!Properties.Settings.Default.FormatList.Contains(Properties.Settings.Default.FilenameFormat))
+                        {
+                            Properties.Settings.Default.FormatList.Add(Properties.Settings.Default.FilenameFormat);
+                        }
+                        if (!Properties.Settings.Default.FormatList.Contains(Properties.Settings.Default.MangaFilenameFormat))
+                        {
+                            Properties.Settings.Default.FormatList.Add(Properties.Settings.Default.MangaFilenameFormat);
+                        }
+                        if (!Properties.Settings.Default.FormatList.Contains(Properties.Settings.Default.AvatarFilenameFormat))
+                        {
+                            Properties.Settings.Default.FormatList.Add(Properties.Settings.Default.AvatarFilenameFormat);
+                        }
+                    }
+                    foreach (var item in Properties.Settings.Default.FormatList)
+                    {
+                        formatList.Add(item);
+                    }
+                }
+                return formatList;
+            }
+            set { formatList = value; }
+        }
+
         public static Nijie Bot { get; private set; }
 
         private static ILog _log;
@@ -27,6 +67,7 @@ namespace NijieDownloader.UI
                 if (_log == null)
                 {
                     log4net.GlobalContext.Properties["Date"] = DateTime.Now.ToString("yyyy-MM-dd");
+
                     _log = LogManager.GetLogger(typeof(MainWindow));
                     log4net.Config.XmlConfigurator.Configure();
 
@@ -78,6 +119,7 @@ namespace NijieDownloader.UI
                 var count = ctx.Images.Count();
                 Log.Info(string.Format("Tracking {0} image(s)", count));
             }
+            Application.Current.MainWindow = this;
         }
 
         private void ConfigureBot()
@@ -132,6 +174,34 @@ namespace NijieDownloader.UI
         private void ModernWindow_Closed(object sender, EventArgs e)
         {
             Log.Info(AppName + " closed.");
+        }
+
+        public void ValidateFormatList(string[] formats)
+        {
+            // check combo box
+            foreach (var item in formats)
+            {
+                if (!FormatList.Contains(item))
+                {
+                    FormatList.Add(item);
+                }
+            }
+
+            // remove blank
+            for (int i = 0; i < FormatList.Count; i++)
+            {
+                if (String.IsNullOrWhiteSpace(FormatList[i]))
+                {
+                    FormatList.RemoveAt(i);
+                    --i;
+                }
+            }
+
+            // trim the list
+            while (FormatList.Count > 8)
+            {
+                FormatList.RemoveAt(0);
+            }
         }
     }
 }

@@ -61,6 +61,15 @@
                     <TextBlock Text="{Binding Path=Status}" Height="25" />
                 </StackPanel>
             </DataTemplate>
+            <DataTemplate x:Key="FormatDataTemplate">
+                <DockPanel MinWidth="{Binding Path=MinWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ComboBox}}}">
+                    <Button DockPanel.Dock="Right" BorderThickness="0" Padding="5,0,5,0"
+                            Command="{Binding Path=DeleteItemCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}">
+                        <TextBlock Text="x" />
+                    </Button>
+                    <TextBlock Text="{Binding}" />
+                </DockPanel>
+            </DataTemplate>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/FirstFloor.ModernUI;component/Assets/ModernUI.xaml" />

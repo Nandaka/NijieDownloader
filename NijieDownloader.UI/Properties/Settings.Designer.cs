@@ -286,5 +286,16 @@ namespace NijieDownloader.UI.Properties {
                 this["DumpDownloadedImagesToTextFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection FormatList {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["FormatList"]));
+            }
+            set {
+                this["FormatList"] = value;
+            }
+        }
     }
 }

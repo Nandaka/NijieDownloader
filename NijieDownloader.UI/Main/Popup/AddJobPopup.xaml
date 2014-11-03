@@ -150,21 +150,27 @@
         <StackPanel Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5,5,5,5" Text="Filename Format" MinWidth="150" />
-                <TextBox Text="{Binding Path=SaveFilenameFormat}" MinWidth="400" />
+                <ComboBox MinWidth="400" IsEditable="True" StaysOpenOnEdit="True"
+                          ItemsSource="{Binding Path=MainWindow.FormatList, Mode=TwoWay, Source={x:Static local:App.Current}}"
+                          Text="{Binding Path=SaveFilenameFormat}" />
                 <TextBlock>
                     <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5,5,5,5" Text="Manga Filename Format" MinWidth="150" />
-                <TextBox Text="{Binding Path=SaveMangaFilenameFormat}" MinWidth="400" />
+                <ComboBox MinWidth="400" IsEditable="True" StaysOpenOnEdit="True"
+                          ItemsSource="{Binding Path=MainWindow.FormatList, Mode=TwoWay, Source={x:Static local:App.Current}}"
+                          Text="{Binding Path=SaveMangaFilenameFormat}" />
                 <TextBlock>
                     <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock Margin="5,5,5,5" Text="Avatar Filename Format" MinWidth="150" />
-                <TextBox Text="{Binding Path=SaveAvatarFilenameFormat}" MinWidth="400" />
+                <ComboBox MinWidth="400" IsEditable="True" StaysOpenOnEdit="True"
+                          ItemsSource="{Binding Path=MainWindow.FormatList, Mode=TwoWay, Source={x:Static local:App.Current}}"
+                          Text="{Binding Path=SaveAvatarFilenameFormat}" />
                 <TextBlock>
                     <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                 </TextBlock>

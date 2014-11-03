@@ -7,6 +7,7 @@
              xmlns:np="clr-namespace:NijieDownloader.UI.Properties"
              xmlns:nl="clr-namespace:NijieDownloader.Library.Properties;assembly=NijieDownloader.Library"
              xmlns:local="clr-namespace:NijieDownloader.UI"
+             xmlns:localSet="clr-namespace:NijieDownloader.UI.Settings"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800">
     <Grid Style="{StaticResource ContentRoot}">
@@ -24,24 +25,31 @@
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="100" Text="Filename Format" Margin="5,5,5,0" />
-                            <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
+                            <ComboBox MinWidth="500" Height="25" Margin="10,0,0,0" IsEditable="True" StaysOpenOnEdit="True"
+                                      ItemsSource="{Binding Path=FormatList, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=FilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                      ItemTemplate ="{StaticResource ResourceKey=FormatDataTemplate}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>
                         </StackPanel>
+
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="100" Text="Manga Format" Margin="5,5,5,0" />
-                            <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=MangaFilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
+                            <ComboBox MinWidth="500" Height="25" Margin="10,0,0,0" IsEditable="True" StaysOpenOnEdit="True"
+                                      ItemsSource="{Binding Path=FormatList, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=MangaFilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                      ItemTemplate ="{StaticResource ResourceKey=FormatDataTemplate}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Width="100" Text="Avatar Format" Margin="5,5,5,0" />
-                            <TextBox MinWidth="500" Height="25" Margin="10,0,0,0"
-                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=AvatarFilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
+                            <ComboBox MinWidth="500" Height="25" Margin="10,0,0,0" IsEditable="True" StaysOpenOnEdit="True"
+                                      ItemsSource="{Binding Path=FormatList, Mode=TwoWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=AvatarFilenameFormat, Mode=TwoWay, NotifyOnSourceUpdated=True}"
+                                      ItemTemplate ="{StaticResource ResourceKey=FormatDataTemplate}" />
                             <TextBlock>
                                 <Hyperlink Click="Hyperlink_Click">[?]</Hyperlink>
                             </TextBlock>

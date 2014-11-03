@@ -73,6 +73,10 @@ namespace NijieDownloader.UI.Main.Popup
                 }
             }
 
+            // update filenamelist
+            var mainWindow = Application.Current.MainWindow as MainWindow;
+            mainWindow.ValidateFormatList(new string[] { NewJob.SaveFilenameFormat, NewJob.SaveMangaFilenameFormat, NewJob.SaveAvatarFilenameFormat });
+
             if (ok)
             {
                 parent.DialogResult = true;

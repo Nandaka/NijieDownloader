@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,6 +33,38 @@ namespace NijieDownloader.UI.Settings
         private int _oldThumb;
         private bool _isChanged;
 
+        private MainWindow mainWindow;
+
+        #region commands
+
+        public static readonly DependencyProperty DeleteItemCommandProperty =
+            DependencyProperty.Register("DeleteItemCommand", typeof(RoutedCommand), typeof(UserControl));
+
+        public RoutedCommand DeleteItemCommand
+        {
+            get { return (RoutedCommand)GetValue(DeleteItemCommandProperty); }
+            set { SetValue(DeleteItemCommandProperty, value); }
+        }
+
+        private void ExecuteDeleteItemCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            var UiItem = e.OriginalSource as Control;
+            var str = UiItem.DataContext.ToString();
+
+            if (mainWindow.FormatList.Contains(str))
+            {
+                mainWindow.FormatList.Remove(str);
+            }
+            e.Handled = true;
+        }
+
+        private void CanExecuteDeleteItemCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+        }
+
+        #endregion commands
+
         public Download()
         {
             InitializeComponent();
@@ -41,6 +74,12 @@ namespace NijieDownloader.UI.Settings
             _oldBatch = Properties.Settings.Default.ConcurrentJob;
             _oldThumb = Properties.Settings.Default.ConcurrentImageLoad;
             _isChanged = false;
+
+            mainWindow = Application.Current.MainWindow as MainWindow;
+
+            this.CommandBindings.Add(new CommandBinding((DeleteItemCommand = new RoutedCommand()), ExecuteDeleteItemCommand, CanExecuteDeleteItemCommand));
+
+            this.DataContext = this;
         }
 
         private void btnSave_Click(object sender, RoutedEventArgs e)
@@ -50,6 +89,11 @@ namespace NijieDownloader.UI.Settings
 
         private void SaveSettings()
         {
+            mainWindow.ValidateFormatList(new string[] { Properties.Settings.Default.FilenameFormat, Properties.Settings.Default.MangaFilenameFormat, Properties.Settings.Default.AvatarFilenameFormat });
+
+            Properties.Settings.Default.FormatList.Clear();
+            Properties.Settings.Default.FormatList.AddRange(mainWindow.FormatList.ToArray());
+
             MainWindow.SaveAllSettings();
             MainWindow.Log.Logger.Repository.Threshold = MainWindow.Log.Logger.Repository.LevelMap[Properties.Settings.Default.LogLevel];
 
