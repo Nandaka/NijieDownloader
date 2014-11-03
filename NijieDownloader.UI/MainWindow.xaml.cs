@@ -198,7 +198,7 @@ namespace NijieDownloader.UI
             }
 
             // trim the list
-            while (FormatList.Count > 8)
+            while (FormatList.Count > Properties.Settings.Default.FormatListCount)
             {
                 FormatList.RemoveAt(0);
             }

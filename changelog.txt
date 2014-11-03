@@ -1,5 +1,6 @@
 Nijie Downloader 1.0.7.2
-- Bug Fix: Fix Issue #31
+- Feature: Issue#26, Remember filename format.
+- Bug Fix: Issue#31, update parser for tag search.
 
 Nijie Downloader 1.0.7.0
 - Feature: Update member parser to parse image count.

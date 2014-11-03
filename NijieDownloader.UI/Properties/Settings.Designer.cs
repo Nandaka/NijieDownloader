@@ -297,5 +297,17 @@ namespace NijieDownloader.UI.Properties {
                 this["FormatList"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
+        public int FormatListCount {
+            get {
+                return ((int)(this["FormatListCount"]));
+            }
+            set {
+                this["FormatListCount"] = value;
+            }
+        }
     }
 }

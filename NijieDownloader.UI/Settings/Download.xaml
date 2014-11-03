@@ -82,11 +82,14 @@
                         <TextBlock Width="100" Text="Concurrent Thumb Loader" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                  Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentImageLoad, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
                         <TextBlock Width="100" Text="Concurrent Job" Margin="5,5,5,0" />
                         <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
                                      Text="{Binding Source={x:Static np:Settings.Default}, Path=ConcurrentJob, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="100" Text="Max Format List" Margin="5,5,5,0" />
+                        <TextBox MinWidth="100" Height="25" Margin="10,0,0,0"
+                                     Text="{Binding Source={x:Static np:Settings.Default}, Path=FormatListCount, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Width="100" Text="Job Delay" Margin="5,5,5,0" />
