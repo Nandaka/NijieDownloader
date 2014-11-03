@@ -566,7 +566,11 @@ namespace NijieDownloader.UI
             try
             {
                 job.Status = JobStatus.Cancelled;
-                return tasks.Remove(job.TaskRef);
+                if (tasks.Remove(job.TaskRef))
+                {
+                    MainWindow.Log.Info("Removing Task Reference: " + job.Name);
+                }
+                return true;
             }
             catch (Exception exception)
             {
