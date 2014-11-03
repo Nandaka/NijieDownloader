@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Nandaka.Common;
+using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
 
 namespace NijieDownloader.Library
@@ -64,7 +65,7 @@ namespace NijieDownloader.Library
         public NijieSearch ParseSearch(HtmlDocument doc, NijieSearch search)
         {
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;
-            search.Images = ParseImageList(imagesDiv, search.QueryUrl);
+            search.Images = ParseSearchImageList(imagesDiv, search.QueryUrl);
 
             // check next page availability
             search.IsNextAvailable = false;
@@ -98,6 +99,94 @@ namespace NijieDownloader.Library
                 }
             }
             return 0;
+        }
+
+        /// <summary>
+        /// Parse image list from search.
+        /// </summary>
+        /// <param name="html"></param>
+        /// <param name="referer"></param>
+        /// <returns></returns>
+        private List<NijieImage> ParseSearchImageList(string html, string referer)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            var nijieImageCss = "//div[@class='nijie mozamoza']";
+            var images = doc.DocumentNode.SelectNodes(nijieImageCss);
+
+            // parse images
+            var list = new List<NijieImage>();
+            if (images != null)
+            {
+                foreach (var imageDiv in images)
+                {
+                    var imageId = imageDiv.SelectSingleNode(nijieImageCss + "//a").Attributes["href"].Value;
+                    var res = re_image.Match(imageId);
+                    if (res.Success)
+                    {
+                        NijieImage image = new NijieImage(Int32.Parse(res.Groups[1].Value));
+                        image.Referer = referer;
+
+                        var div = new HtmlDocument();
+                        div.LoadHtml(imageDiv.SelectSingleNode(nijieImageCss).InnerHtml);
+
+                        var link = div.DocumentNode.SelectSingleNode("//a");
+                        image.Title = link.Attributes["title"].Value;
+
+                        var thumb = div.DocumentNode.SelectSingleNode("//a/img");
+                        image.ThumbImageUrl = thumb.Attributes["src"].Value;
+
+                        // check if image is friend only
+                        // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
+                        image.IsFriendOnly = false;
+                        if (image.ThumbImageUrl.EndsWith("friends.png"))
+                        {
+                            image.IsFriendOnly = true;
+                        }
+
+                        //"//img.nijie.info/pic/common_icon/illust/golden.png"
+                        image.IsGoldenMember = false;
+                        if (image.ThumbImageUrl.EndsWith("golden.png"))
+                        {
+                            image.IsGoldenMember = true;
+                        }
+
+                        // check manga icon
+                        image.IsManga = false;
+                        var icon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
+                        if (icon != null)
+                        {
+                            if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
+                                image.IsManga = true;
+                        }
+
+                        // check animation icon
+                        image.IsAnimated = false;
+                        var animeIcon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                        if (animeIcon != null)
+                        {
+                            if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
+                                image.IsAnimated = true;
+                        }
+
+                        list.Add(image);
+                    }
+                    imageDiv.Remove();
+                }
+            }
+
+            using (var ctx = new NijieContext())
+            {
+                foreach (var item in list)
+                {
+                    var r = (from x in ctx.Images
+                             where x.ImageId == item.ImageId
+                             select x).FirstOrDefault();
+                    if (r != null && !String.IsNullOrWhiteSpace(r.SavedFilename)) item.IsDownloaded = true;
+                    else item.IsDownloaded = false;
+                }
+            }
+            return list;
         }
     }
 }

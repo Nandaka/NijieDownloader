@@ -78,7 +78,7 @@ namespace NijieDownloader.Library
         }
 
         /// <summary>
-        /// Parse image list from member and search result.
+        /// Parse image list from member.
         /// </summary>
         /// <param name="html"></param>
         /// <param name="referer"></param>

@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.7.2
+- Bug Fix: Fix Issue #31
+
 Nijie Downloader 1.0.7.0
 - Feature: Update member parser to parse image count.
 - Feature: Update search parser to parse image count.
