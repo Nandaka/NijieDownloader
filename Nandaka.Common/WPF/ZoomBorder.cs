@@ -1,10 +1,14 @@
-﻿using System.Linq;
+﻿/***
+ * From https://github.com/wieslawsoltes/PanAndZoom/blob/master/PanAndZoom/ZoomBorder.cs
+ ***/
+
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace NijieDownloader.UI
+namespace Nandaka.Common.WPF
 {
     public class ZoomBorder : Border
     {
@@ -57,8 +61,13 @@ namespace NijieDownloader.UI
                 this.MouseDown += new MouseButtonEventHandler(ZoomBorder_MouseDown);
             }
         }
-        
-        void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
+
+        /// <summary>
+        /// Reset zoom on double click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ZoomBorder_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ClickCount >= 2)
             {
@@ -132,7 +141,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        void child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        private void child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.Reset();
         }
@@ -151,6 +160,6 @@ namespace NijieDownloader.UI
             }
         }
 
-        #endregion
+        #endregion Child Events
     }
 }

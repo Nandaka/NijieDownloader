@@ -235,32 +235,32 @@ namespace Nandaka.Common
             }
         }
 
-        public byte[] DownloadData(string address)
+        public new byte[] DownloadData(string address)
         {
             return base.DownloadData(CreateUri(address));
         }
 
-        public void DownloadFile(string address, string fileName)
+        public new void DownloadFile(string address, string fileName)
         {
             base.DownloadFile(CreateUri(address), fileName);
         }
 
-        public string DownloadString(string address)
+        public new string DownloadString(string address)
         {
             return base.DownloadString(CreateUri(address));
         }
 
-        public Stream OpenRead(string address)
+        public new Stream OpenRead(string address)
         {
             return base.OpenRead(CreateUri(address));
         }
 
-        public Stream OpenWrite(string address)
+        public new Stream OpenWrite(string address)
         {
             return base.OpenWrite(CreateUri(address));
         }
 
-        public Stream OpenWrite(string address, string method)
+        public new Stream OpenWrite(string address, string method)
         {
             return base.OpenWrite(CreateUri(address), method);
         }

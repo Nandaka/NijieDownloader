@@ -167,7 +167,6 @@
     <Compile Include="ViewModel\NijieImageViewModel.cs" />
     <Compile Include="ViewModel\NijieMemberViewModel.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
-    <Compile Include="ZoomBorder.cs" />
     <Page Include="Main\BatchDownloadPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

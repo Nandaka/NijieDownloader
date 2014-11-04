@@ -64,6 +64,7 @@
     </Compile>
     <Compile Include="SecureIt.cs" />
     <Compile Include="WebImgConverter.cs" />
+    <Compile Include="WPF\ZoomBorder.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

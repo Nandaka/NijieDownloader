@@ -6,6 +6,7 @@
       xmlns:mui="http://firstfloorsoftware.com/ModernUI"
       mc:Ignorable="d"
       xmlns:h="clr-namespace:Nandaka.Common;assembly=Nandaka.Common"
+      xmlns:zb="clr-namespace:Nandaka.Common.WPF;assembly=Nandaka.Common"
       xmlns:local="clr-namespace:NijieDownloader.UI"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       d:DesignHeight="600" d:DesignWidth="800">
@@ -144,10 +145,10 @@
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
-                        <local:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent"
-                                          BorderBrush="Black" BorderThickness="1">
+                        <zb:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent"
+                                       BorderBrush="Black" BorderThickness="1">
                             <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}" />
-                        </local:ZoomBorder>
+                        </zb:ZoomBorder>
                     </DockPanel>
                 </Grid>
             </DockPanel>
