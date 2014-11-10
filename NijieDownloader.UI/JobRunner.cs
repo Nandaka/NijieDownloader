@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,21 +14,38 @@ using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
 {
-    public class JobRunner
+    public class JobRunner : INotifyPropertyChanged
     {
-        private static TaskFactory _jobFactory;
-        private static LimitedConcurrencyLevelTaskScheduler jobScheduler;
-        private static Object _lock = new Object();
-        private static object _dbLock = new object();
-        private static List<Task> tasks = new List<Task>();
+        private TaskFactory _jobFactory;
+        private LimitedConcurrencyLevelTaskScheduler jobScheduler;
+        private Object _lock = new Object();
+        private object _dbLock = new object();
+        private List<Task> tasks = new List<Task>();
 
-        public static JobStatus BatchStatus { get; set; }
+        private JobStatus _batchStatus;
+
+        public JobStatus BatchStatus
+        {
+            get
+            {
+                return _batchStatus;
+            }
+
+            set
+            {
+                _batchStatus = value;
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("BatchStatus"));
+                }
+            }
+        }
 
         /// <summary>
         /// Init the JobRunner, changes on these settings require app restart:
         /// - ConcurrentJob
         /// </summary>
-        static JobRunner()
+        public JobRunner()
         {
             jobScheduler = new LimitedConcurrencyLevelTaskScheduler(Properties.Settings.Default.ConcurrentJob, 8);
             _jobFactory = new TaskFactory(jobScheduler);
@@ -39,7 +57,7 @@ namespace NijieDownloader.UI
         /// Run job on Task factory
         /// </summary>
         /// <param name="job"></param>
-        public static void DoJob(JobDownloadViewModel job, CancellationTokenSource cancelSource)
+        public void DoJob(JobDownloadViewModel job, CancellationTokenSource cancelSource)
         {
             job.Status = JobStatus.Queued;
             job.CancelToken = cancelSource.Token;
@@ -108,7 +126,7 @@ namespace NijieDownloader.UI
         /// Notify all task completed callback
         /// </summary>
         /// <param name="action"></param>
-        public static void NotifyAllCompleted(Action action)
+        public void NotifyAllCompleted(Action action)
         {
             var finalTask = _jobFactory.ContinueWhenAll(tasks.ToArray(), x =>
             {
@@ -121,7 +139,7 @@ namespace NijieDownloader.UI
         /// Process individual image.
         /// </summary>
         /// <param name="job"></param>
-        private static void doImageJob(JobDownloadViewModel job)
+        private void doImageJob(JobDownloadViewModel job)
         {
             if (isJobCancelled(job))
                 return;
@@ -143,7 +161,7 @@ namespace NijieDownloader.UI
         /// Process images from search result.
         /// </summary>
         /// <param name="job"></param>
-        private static void doSearchJob(JobDownloadViewModel job)
+        private void doSearchJob(JobDownloadViewModel job)
         {
             if (isJobCancelled(job)) return;
 
@@ -217,7 +235,7 @@ namespace NijieDownloader.UI
                         job.Message = "Page limit reached: " + endPage;
                         return;
                     }
-                    else if (job.DownloadCount > limit)
+                    else if (job.DownloadCount > limit && limit != 0)
                     {
                         job.Message = "Download count reached: " + limit;
                         return;
@@ -236,7 +254,7 @@ namespace NijieDownloader.UI
         /// Process images from member page.
         /// </summary>
         /// <param name="job"></param>
-        private static void doMemberJob(JobDownloadViewModel job)
+        private void doMemberJob(JobDownloadViewModel job)
         {
             if (isJobCancelled(job)) return;
 
@@ -304,7 +322,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static bool isJobCancelled(JobDownloadViewModel job)
+        private bool isJobCancelled(JobDownloadViewModel job)
         {
             lock (_lock)
             {
@@ -335,7 +353,7 @@ namespace NijieDownloader.UI
         /// <param name="job"></param>
         /// <param name="memberPage"></param>
         /// <param name="imageTemp"></param>
-        private static void processImage(JobDownloadViewModel job, NijieMember memberPage, NijieImage imageTemp)
+        private void processImage(JobDownloadViewModel job, NijieMember memberPage, NijieImage imageTemp)
         {
             if (isJobCancelled(job))
                 return;
@@ -381,7 +399,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static void processIllustration(JobDownloadViewModel job, NijieImage image)
+        private void processIllustration(JobDownloadViewModel job, NijieImage image)
         {
             if (isJobCancelled(job))
                 return;
@@ -414,7 +432,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static void processManga(JobDownloadViewModel job, NijieImage image)
+        private void processManga(JobDownloadViewModel job, NijieImage image)
         {
             var downloaded = -1;
             MainWindow.Log.Debug("Processing Manga Images:" + image.ImageId);
@@ -471,7 +489,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        private static void SaveImageToDB(JobDownloadViewModel job, NijieImage image)
+        private void SaveImageToDB(JobDownloadViewModel job, NijieImage image)
         {
             try
             {
@@ -501,7 +519,7 @@ namespace NijieDownloader.UI
         /// <param name="url"></param>
         /// <param name="referer"></param>
         /// <param name="filename"></param>
-        private static int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        private int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
             filename = Util.SanitizeFilename(filename);
             url = Util.FixUrl(url);
@@ -536,7 +554,7 @@ namespace NijieDownloader.UI
             return NijieException.OK;
         }
 
-        private static void addException(JobDownloadViewModel job, NijieException nex, string url, string filename)
+        private void addException(JobDownloadViewModel job, NijieException nex, string url, string filename)
         {
             Application.Current.Dispatcher.BeginInvoke(
                  new Action<BatchDownloadPage>((y) =>
@@ -555,13 +573,13 @@ namespace NijieDownloader.UI
 
         #endregion actual download image related
 
-        private static void HandleJobException(JobDownloadViewModel job, NijieException ne)
+        private void HandleJobException(JobDownloadViewModel job, NijieException ne)
         {
             job.Status = JobStatus.Error;
             job.Message = Util.GetAllInnerExceptionMessage(ne);
         }
 
-        public static bool DeleteJob(JobDownloadViewModel job)
+        public bool DeleteJob(JobDownloadViewModel job)
         {
             try
             {
@@ -579,7 +597,7 @@ namespace NijieDownloader.UI
             }
         }
 
-        public static bool Clear()
+        public bool Clear()
         {
             try
             {
@@ -592,5 +610,7 @@ namespace NijieDownloader.UI
                 return false;
             }
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

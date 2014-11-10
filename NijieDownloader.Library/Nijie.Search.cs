@@ -69,12 +69,15 @@ namespace NijieDownloader.Library
 
             // check next page availability
             search.IsNextAvailable = false;
-            var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//p");
+
+            // nijie removed the next page button, search based on paging number
+            var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//li");
             if (search.Images.Count > 0 && topNav != null)
             {
-                foreach (var btn in topNav)
+                int nextPage = search.Option.Page + 1;
+                foreach (var pageItem in topNav)
                 {
-                    if (btn.InnerText.Contains("次へ"))
+                    if (pageItem.InnerText.Contains(nextPage.ToString()))
                     {
                         search.IsNextAvailable = true;
                         break;
@@ -84,6 +87,10 @@ namespace NijieDownloader.Library
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//h4/em");
             search.TotalImages = ParseTotalImageCount(imageCountElements);
+
+            // set next page to false if no images anymore.
+            if (search.Images.Count <= 0)
+                search.IsNextAvailable = false;
 
             return search;
         }

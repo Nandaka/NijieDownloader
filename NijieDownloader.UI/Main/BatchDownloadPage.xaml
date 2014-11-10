@@ -107,7 +107,7 @@
                     <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All"
                             Command="{x:Static local:BatchDownloadPage.ClearAllCommand}" />
                     <Button Name="btnResetSort" Margin="10,0,0,10" Content="Reset Sort" Click="btnResetSort_Click" />
-                    <TextBlock Name="txtStatus" Margin="10,5,0,10" Text="Ready" />
+                    <TextBlock Margin="10,5,0,10" Text="{Binding Path=JobRunner.BatchStatus}" />
                 </StackPanel>
             </StackPanel>
             <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
