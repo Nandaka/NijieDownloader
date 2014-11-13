@@ -266,6 +266,19 @@ namespace NijieDownloader.UI.ViewModel
 
         #region UI data
 
+        private int _totalImages;
+
+        [XmlIgnoreAttribute]
+        public int TotalImages
+        {
+            get { return _totalImages; }
+            set
+            {
+                _totalImages = value;
+                onPropertyChanged("TotalImage");
+            }
+        }
+
         private bool _isSelected;
 
         [XmlIgnoreAttribute]
@@ -335,6 +348,7 @@ namespace NijieDownloader.UI.ViewModel
                     case JobType.Tags:
                         _name = String.Format("Search Tags: {0} Limit: {1}{2}StartPage: {3} EndPage: {4}",
                                             SearchTag, Limit, Environment.NewLine, StartPage, EndPage);
+
                         break;
                 }
                 return _name;
@@ -366,7 +380,13 @@ namespace NijieDownloader.UI.ViewModel
             {
                 string _temp = "";
                 if (JobType == JobType.Tags || JobType == JobType.Member)
-                    _temp = String.Format("Current Page: {0} Downloaded Count {1} Skip Count {2}{3}{4}", CurrentPage, DownloadCount, SkipCount, Environment.NewLine, _message);
+                    _temp = String.Format("Current Page: {0} Downloaded: {1} Skipped: {2} Available: {3}{4}{5}",
+                        CurrentPage,
+                        DownloadCount,
+                        SkipCount,
+                        TotalImages,
+                        Environment.NewLine,
+                        _message);
                 else
                     _temp = _message + Environment.NewLine;
 

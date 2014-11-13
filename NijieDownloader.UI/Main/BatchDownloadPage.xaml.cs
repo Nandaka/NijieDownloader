@@ -45,10 +45,6 @@ namespace NijieDownloader.UI
         {
             get
             {
-                //if (_jobRunner == null)
-                //{
-                //    _jobRunner = new JobRunner();
-                //}
                 return _jobRunner;
             }
         }
@@ -61,6 +57,7 @@ namespace NijieDownloader.UI
 
             ViewData = new ObservableCollection<JobDownloadViewModel>();
             dgvJobList.DataContext = this;
+            DataContext = this;
 
             Application.Current.Exit += new ExitEventHandler(Current_Exit);
         }

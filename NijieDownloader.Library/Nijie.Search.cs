@@ -118,7 +118,7 @@ namespace NijieDownloader.Library
         {
             HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(html);
-            var nijieImageCss = "//div[@class='nijie mozamoza']";
+            var nijieImageCss = "//div[contains(@class,'nijie')]";
             var images = doc.DocumentNode.SelectNodes(nijieImageCss);
 
             // parse images

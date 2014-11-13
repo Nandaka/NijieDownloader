@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.7.3
+- Bug Fix: Issue#32, update batch job download by tags.
+
 Nijie Downloader 1.0.7.2
 - Feature: Issue#26, Remember filename format.
 - Bug Fix: Issue#31, update parser for tag search.

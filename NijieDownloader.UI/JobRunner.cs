@@ -190,6 +190,8 @@ namespace NijieDownloader.UI
                     };
                     var searchPage = MainWindow.Bot.Search(option);
 
+                    job.TotalImages = searchPage.TotalImages;
+
                     if (searchPage.Images == null || searchPage.Images.Count == 0)
                     {
                         job.Message = "No more images found!";
@@ -268,6 +270,8 @@ namespace NijieDownloader.UI
                 do
                 {
                     memberPage = MainWindow.Bot.ParseMember(job.MemberId, job.MemberMode, job.CurrentPage);
+
+                    job.TotalImages = memberPage.TotalImages;
 
                     if (Properties.Settings.Default.DownloadAvatar)
                     {
