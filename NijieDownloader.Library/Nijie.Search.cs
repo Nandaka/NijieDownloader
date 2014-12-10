@@ -70,9 +70,10 @@ namespace NijieDownloader.Library
             // check next page availability
             search.IsNextAvailable = false;
 
+            // max image per search page = 48
             // nijie removed the next page button, search based on paging number
             var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//li");
-            if (search.Images.Count > 0 && topNav != null)
+            if (search.Images.Count == 48 && topNav != null)
             {
                 int nextPage = search.Option.Page + 1;
                 foreach (var pageItem in topNav)

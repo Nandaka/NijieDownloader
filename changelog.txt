@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.7.4-beta
+- Bug Fix: Issue#34, Update image parser.
+
 Nijie Downloader 1.0.7.3
 - Bug Fix: Issue#32, update batch job download by tags.
 
