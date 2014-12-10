@@ -20,8 +20,8 @@ namespace NijieDownloader.Test
     [TestClass]
     public class UnitTest1
     {
-        [TestInitialize]
-        public void Init()
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
         {
             UpdateHtmlForm updateForm = new UpdateHtmlForm();
             updateForm.ShowDialog();
@@ -31,6 +31,11 @@ namespace NijieDownloader.Test
                 ctx.Database.Delete();
                 ctx.SaveChanges();
             }
+        }
+
+        [TestInitialize]
+        public void Init()
+        {
         }
 
         [TestMethod]
@@ -47,7 +52,7 @@ namespace NijieDownloader.Test
                 var result = nijie.ParseMember(doc, member, MemberMode.Images);
 
                 Assert.AreEqual(result.UserName, "SADAO");
-                Assert.AreEqual(3, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(4, result.Images.Count, "Image counts differents");
                 foreach (var image in result.Images)
                 {
                     Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
@@ -78,7 +83,7 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
-                Assert.AreEqual(46, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(44, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -97,7 +102,7 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
-                Assert.AreEqual(3, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(5, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -139,7 +144,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(166, result.TotalImages, "Different image count");
+                Assert.AreEqual(171, result.TotalImages, "Different image count");
             }
 
             {
@@ -157,7 +162,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(86, result.TotalImages, "Different image count");
+                Assert.AreEqual(93, result.TotalImages, "Different image count");
             }
 
             {
@@ -165,8 +170,11 @@ namespace NijieDownloader.Test
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
+
+                search.Option.Page = UpdateHtmlForm.search_tag_partial_latest_lastpage_page;
+
                 var result = nijie.ParseSearch(doc, search);
-                Assert.AreEqual(21, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(25, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -175,7 +183,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(166, result.TotalImages, "Different image count");
+                Assert.AreEqual(171, result.TotalImages, "Different image count");
             }
         }
 

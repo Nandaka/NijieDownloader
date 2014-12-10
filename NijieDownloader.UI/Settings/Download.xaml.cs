@@ -105,6 +105,7 @@ namespace NijieDownloader.UI.Settings
                 d.ShowDialog();
             }
             _isChanged = false;
+            Properties.Settings.Default.Reload();
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)

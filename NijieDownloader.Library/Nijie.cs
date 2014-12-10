@@ -107,7 +107,7 @@ namespace NijieDownloader.Library
             ExtendedWebClient client = new ExtendedWebClient();
             client.Referer = referer;
 
-            var tempFilename = deleteTempFile(filename, progressChanged);
+            var tempFilename = DeleteTempFile(filename, progressChanged);
             Util.CreateSubDir(tempFilename);
             int retry = 1;
             while (retry <= Properties.Settings.Default.RetryCount)
@@ -136,7 +136,7 @@ namespace NijieDownloader.Library
                     checkHttpStatusCode(url, ex);
 
                     Log.Warn(string.Format("Error when downloading: {0} to {1} ==> {2}, Retrying {2} of {3}...", url, tempFilename, ex.Message, retry, Properties.Settings.Default.RetryCount));
-                    deleteTempFile(filename, progressChanged);
+                    DeleteTempFile(filename, progressChanged);
 
                     var prefixMsg = message.Clone();
                     for (int i = 0; i < Properties.Settings.Default.RetryDelay; ++i)
@@ -163,7 +163,7 @@ namespace NijieDownloader.Library
             return message;
         }
 
-        private string deleteTempFile(string filename, Action<string> progressChanged)
+        private string DeleteTempFile(string filename, Action<string> progressChanged)
         {
             var tempFilename = filename + ".!nijie";
             if (File.Exists(tempFilename))

@@ -247,11 +247,11 @@ namespace NijieDownloader.Library
 
         private void ParseImageLinks(NijieImage image, HtmlDocument doc)
         {
-            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//img[@id='view_img']");
+            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//img[@id='mozamoza ngtag']");
             if (mediumImageLink != null)
                 image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
 
-            var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery']/p/a");
+            var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery_open']//a");
             if (bigImageLinks != null)
             {
                 image.BigImageUrl = bigImageLinks[0].Attributes["href"].Value;

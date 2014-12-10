@@ -15,7 +15,10 @@ namespace NijieDownloader.Test
 {
     public partial class UpdateHtmlForm : Form
     {
+        public const int search_tag_partial_latest_lastpage_page = 4;
+
         public const string PATH = @"../../../Nijie.Test/testpage/";
+
         private CancellationToken cancelToken;
         private Nijie nijie;
 
@@ -86,7 +89,7 @@ namespace NijieDownloader.Test
                         Query = "無修正",
                         Sort = SortType.Latest,
                         SearchBy = SearchMode.Tag,
-                        Page = 4
+                        Page = search_tag_partial_latest_lastpage_page
                     };
                     downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-partial-latest-lastpage.html");
                 }
