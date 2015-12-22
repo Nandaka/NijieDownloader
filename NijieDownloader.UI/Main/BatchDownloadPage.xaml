@@ -82,6 +82,9 @@
         <CommandBinding Command="{x:Static local:BatchDownloadPage.DeleteCommand}"
                         Executed="ExecuteDeleteCommand"
                         CanExecute="CanExecuteDeleteCommand" />
+        <CommandBinding Command="{x:Static local:BatchDownloadPage.DeleteCompleteCommand}"
+                        Executed="ExecuteDeleteCompleteCommand"
+                        CanExecute="CanExecuteDeleteCompleteCommand" />
     </Page.CommandBindings>
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
@@ -104,8 +107,10 @@
                             Command="{x:Static local:BatchDownloadPage.StopCommand}" />
                     <Button Name="btnSave" Margin="10,0,0,10" Content="Save" Click="btnSave_Click" />
                     <Button Name="btnLoad" Margin="10,0,0,10" Content="Load" Click="btnLoad_Click" />
-                    <Button Name="btnClearAll" Margin="10,0,0,10" Content="Clear All"
+                    <Button Name="btnClearAll" Margin="10,0,0,10" Content="Delete All"
                             Command="{x:Static local:BatchDownloadPage.ClearAllCommand}" />
+                    <Button Name="btnDeleteComplete" Margin="10,0,0,10" Content="Del Completed"
+                            Command="{x:Static local:BatchDownloadPage.DeleteCompleteCommand}" />
                     <Button Name="btnResetSort" Margin="10,0,0,10" Content="Reset Sort" Click="btnResetSort_Click" />
                     <TextBlock Margin="10,5,0,10" Text="{Binding Path=JobRunner.BatchStatus}" />
                 </StackPanel>

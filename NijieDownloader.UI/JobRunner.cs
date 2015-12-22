@@ -615,6 +615,27 @@ namespace NijieDownloader.UI
             }
         }
 
+        public bool ClearCompleted()
+        {
+            try
+            {
+                for (int i = 0; i < tasks.Count; i++)
+                {
+                    if (tasks[i].Status == TaskStatus.RanToCompletion)
+                    {
+                        tasks.RemoveAt(i);
+                        i--;
+                    }
+                }
+                return true;
+            }
+            catch (Exception exception)
+            {
+                MainWindow.Log.Error("Failed to clear all jobs", exception);
+                return false;
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

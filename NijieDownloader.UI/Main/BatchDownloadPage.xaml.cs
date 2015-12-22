@@ -369,6 +369,7 @@ namespace NijieDownloader.UI
         public static RoutedCommand AddJobCommand = new RoutedCommand();
         public static RoutedCommand EditJobCommand = new RoutedCommand();
         public static RoutedCommand ClearAllCommand = new RoutedCommand();
+        public static RoutedCommand DeleteCompleteCommand = new RoutedCommand();
         public static RoutedCommand DeleteCommand = new RoutedCommand();
 
         private void ExecuteStartCommand(object sender, ExecutedRoutedEventArgs e)
@@ -560,6 +561,33 @@ namespace NijieDownloader.UI
             }
         }
 
+        private void ExecuteDeleteCompleteCommand(object sender, ExecutedRoutedEventArgs e)
+        {
+            ExecuteStopCommand(sender, e);
+            _jobRunner.ClearCompleted();
+
+            for (int i = 0; i < ViewData.Count; i++)
+            {
+                if (ViewData[i].Status == JobStatus.Completed)
+                {
+                    ViewData.RemoveAt(i);
+                    --i;
+                }
+            }
+
+            _jobRunner.BatchStatus = JobStatus.Ready;
+            SaveList(DEFAULT_BATCH_JOB_LIST_FILENAME);
+        }
+
+        private void CanExecuteDeleteCompleteCommand(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
+            if (_jobRunner.BatchStatus == JobStatus.Running)
+            {
+                e.CanExecute = false;
+            }
+        }
+
         private void ExecuteDeleteCommand(object sender, ExecutedRoutedEventArgs e)
         {
             for (int i = 0; i < ViewData.Count; ++i)
@@ -586,5 +614,7 @@ namespace NijieDownloader.UI
         }
 
         #endregion Command
+
+        
     }
 }
