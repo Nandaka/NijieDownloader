@@ -1,5 +1,9 @@
-Nijie Downloader 1.0.7.4-beta
+Nijie Downloader 1.0.7.5
 - Bug Fix: Issue#34, Update image parser.
+- Bug Fix: Issue#35, Update bookmark parser.
+- Enhancement: Issue#22, Add Delete Completed button.
+- Update UI.
+- Update unit test.
 
 Nijie Downloader 1.0.7.3
 - Bug Fix: Issue#32, update batch job download by tags.
