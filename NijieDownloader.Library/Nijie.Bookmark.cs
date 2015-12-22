@@ -27,26 +27,33 @@ namespace NijieDownloader.Library
                 doc = result.Item1;
 
                 var membersDiv = doc.DocumentNode.SelectNodes("//div[@class='nijie-okini']");
-                foreach (var memberDiv in membersDiv)
+                if (membersDiv != null)
                 {
-                    var memberUrl = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//a").Attributes["href"].Value;
-                    var res = re_member.Match(memberUrl);
-                    if (res.Success)
+                    foreach (var memberDiv in membersDiv)
                     {
-                        var member = new NijieMember(Int32.Parse(res.Groups[1].Value), 0);
-                        member.UserName = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//p[@class='sougo']").InnerText;
-                        member.AvatarUrl = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//a//img").Attributes["src"].Value;
-                        members.Add(member);
+                        var memberUrl = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//a").Attributes["href"].Value;
+                        var res = re_member.Match(memberUrl);
+                        if (res.Success)
+                        {
+                            var member = new NijieMember(Int32.Parse(res.Groups[1].Value), 0);
+                            member.UserName = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//p[@class='sougo']").InnerText;
+                            member.AvatarUrl = memberDiv.SelectSingleNode("//div[@class='nijie-okini']//a//img").Attributes["src"].Value;
+                            members.Add(member);
+                        }
+                        memberDiv.Remove();
                     }
-                    memberDiv.Remove();
                 }
+
                 var nextPageButton = doc.DocumentNode.SelectNodes("//p[@class='page_button']//a");
-                foreach (var item in nextPageButton)
+                if (nextPageButton != null)
                 {
-                    if (item.InnerText.StartsWith("次へ"))
+                    foreach (var item in nextPageButton)
                     {
-                        isNextPageAvailable = true;
-                        break;
+                        if (item.InnerText.StartsWith("次へ"))
+                        {
+                            isNextPageAvailable = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -78,66 +85,72 @@ namespace NijieDownloader.Library
                 var result = getPage(url);
                 doc = result.Item1;
 
-                var imagesDiv = doc.DocumentNode.SelectNodes("//div[@class='nijie-bookmark nijie']");
-                foreach (var imageDivx in imagesDiv)
+                var imagesDiv = doc.DocumentNode.SelectNodes("//div[@class='nijie-bookmark']");
+                if (imagesDiv != null)
                 {
-                    var tmp = imageDivx.InnerHtml;
-                    HtmlDocument imageDiv = new HtmlDocument();
-                    imageDiv.LoadHtml(tmp);
-
-                    var imageUrl = imageDiv.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value;
-                    var res = re_image.Match(imageUrl);
-                    if (res.Success)
+                    foreach (var imageDivx in imagesDiv)
                     {
-                        var image = new NijieImage(Int32.Parse(res.Groups[1].Value));
-                        image.Title = imageDiv.DocumentNode.SelectSingleNode("//p[@class='title']").InnerText;
-                        image.ThumbImageUrl = imageDiv.DocumentNode.SelectSingleNode("//p[@class='nijiedao']//img").Attributes["src"].Value;
+                        var tmp = imageDivx.InnerHtml;
+                        HtmlDocument imageDiv = new HtmlDocument();
+                        imageDiv.LoadHtml(tmp);
 
-                        // check if image is friend only
-                        // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
-                        image.IsFriendOnly = false;
-                        if (image.ThumbImageUrl.EndsWith("friends.png"))
+                        var imageUrl = imageDiv.DocumentNode.SelectSingleNode("//a").Attributes["href"].Value;
+                        var res = re_image.Match(imageUrl);
+                        if (res.Success)
                         {
-                            image.IsFriendOnly = true;
-                        }
+                            var image = new NijieImage(Int32.Parse(res.Groups[1].Value));
+                            image.Title = imageDiv.DocumentNode.SelectSingleNode("//p[@class='title']").InnerText;
+                            image.ThumbImageUrl = imageDiv.DocumentNode.SelectSingleNode("//p[@class='nijiedao']//img").Attributes["src"].Value;
 
-                        //"//img.nijie.info/pic/common_icon/illust/golden.png"
-                        image.IsGoldenMember = false;
-                        if (image.ThumbImageUrl.EndsWith("golden.png"))
-                        {
-                            image.IsGoldenMember = true;
-                        }
+                            // check if image is friend only
+                            // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
+                            image.IsFriendOnly = false;
+                            if (image.ThumbImageUrl.EndsWith("friends.png"))
+                            {
+                                image.IsFriendOnly = true;
+                            }
 
-                        // check manga icon
-                        image.IsManga = false;
-                        var icon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
-                        if (icon != null)
-                        {
-                            if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
-                                image.IsManga = true;
-                        }
+                            //"//img.nijie.info/pic/common_icon/illust/golden.png"
+                            image.IsGoldenMember = false;
+                            if (image.ThumbImageUrl.EndsWith("golden.png"))
+                            {
+                                image.IsGoldenMember = true;
+                            }
 
-                        // check animation icon
-                        image.IsAnimated = false;
-                        var animeIcon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
-                        if (animeIcon != null)
-                        {
-                            if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
-                                image.IsAnimated = true;
-                        }
+                            // check manga icon
+                            image.IsManga = false;
+                            var icon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
+                            if (icon != null)
+                            {
+                                if (icon.Attributes["src"].Value.EndsWith("thumbnail_comic.png"))
+                                    image.IsManga = true;
+                            }
 
-                        images.Add(image);
+                            // check animation icon
+                            image.IsAnimated = false;
+                            var animeIcon = imageDiv.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                            if (animeIcon != null)
+                            {
+                                if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
+                                    image.IsAnimated = true;
+                            }
+
+                            images.Add(image);
+                        }
+                        imageDivx.Remove();
                     }
-                    imageDivx.Remove();
                 }
 
                 var nextPageButton = doc.DocumentNode.SelectNodes("//p[@class='page_button']//a");
-                foreach (var item in nextPageButton)
+                if (nextPageButton != null)
                 {
-                    if (item.InnerText.StartsWith("次へ"))
+                    foreach (var item in nextPageButton)
                     {
-                        isNextPageAvailable = true;
-                        break;
+                        if (item.InnerText.StartsWith("次へ"))
+                        {
+                            isNextPageAvailable = true;
+                            break;
+                        }
                     }
                 }
             }

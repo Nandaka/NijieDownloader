@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
+using System.Xml.Serialization;
 
 namespace Nandaka.Common
 {
@@ -225,6 +226,15 @@ namespace Nandaka.Common
             }
         }
 
+        public static string ReadTextFile(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                return File.ReadAllText(filename);
+            }
+            return "";
+        }
+
         public static bool IsRedirected(string url1, string url2, bool ignoreProtocol = false)
         {
             if (ignoreProtocol)
@@ -235,6 +245,25 @@ namespace Nandaka.Common
             }
 
             return !url1.Equals(url2);
+        }
+
+        public static string Serialize<T>(T objext)
+        {
+            var ser = new XmlSerializer(typeof(T));
+            using (var sw = new StringWriter())
+            {
+                ser.Serialize(sw, objext);
+                return sw.ToString();
+            }
+        }
+
+        public static T Deserialize<T>(string data)
+        {
+            var ser = new XmlSerializer(typeof(T));
+            using (var sr = new StringReader(data))
+            {
+                return (T)ser.Deserialize(sr);
+            }
         }
     }
 }
