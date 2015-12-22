@@ -42,42 +42,28 @@ namespace NijieDownloader.Test
         public void TestMemberParserMethod()
         {
             var nijie = Nijie.GetInstance();
-            var member = new NijieMember() { MemberId = 44103 };
+            var member = new NijieMember() { MemberId = UpdateHtmlForm.MEMBER_1 };
             // test member images
             {
+                // https://nijie.info/members_illust.php?id=29353
                 var page = UpdateHtmlForm.PATH + "member-images.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member, MemberMode.Images);
 
-                Assert.AreEqual(result.UserName, "SADAO");
-                Assert.AreEqual(4, result.Images.Count, "Image counts differents");
+                Assert.AreEqual("mumei", result.UserName);
+                Assert.AreEqual(20, result.Images.Count, "Image counts differents");
                 foreach (var image in result.Images)
                 {
                     Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
                     Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
                 }
             }
-
-            // test member doujins
-            // need to be updated with proper member with doujin
-            {
-                var page = UpdateHtmlForm.PATH + "member-doujins.html";
-                Assert.IsTrue(File.Exists(page), "Test file is missing!");
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(File.ReadAllText(page));
-                var result = nijie.ParseMember(doc, member, MemberMode.Doujin);
-                Assert.AreEqual(0, result.Images.Count, "Image counts differents");
-                foreach (var image in result.Images)
-                {
-                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
-                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
-                }
-            }
-
+            
             // test member bookmarked
             {
+                // https://nijie.info/user_like_illust_view.php?id=29353
                 var page = UpdateHtmlForm.PATH + "member-bookmarked-images.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
@@ -92,17 +78,18 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(50, result.TotalImages, "Different image count");
+                Assert.AreEqual(72, result.TotalImages, "Different image count");
             }
 
             // test member bookmarked - last page
             {
+                // https://nijie.info/user_like_illust_view.php?p=2&id=29353
                 var page = UpdateHtmlForm.PATH + "member-bookmarked-images-lastpage.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
-                Assert.AreEqual(5, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(25, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -111,7 +98,26 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(50, result.TotalImages, "Different image count");
+                Assert.AreEqual(72, result.TotalImages, "Different image count");
+            }
+
+
+            // test member doujins
+            // need to be updated with proper member with doujin
+            var member2 = new NijieMember() { MemberId = UpdateHtmlForm.MEMBER_2 };
+            {
+                // https://nijie.info/members_dojin.php?id=251720
+                var page = UpdateHtmlForm.PATH + "member-doujins.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                var result = nijie.ParseMember(doc, member2, MemberMode.Doujin);
+                Assert.AreEqual(0, result.Images.Count, "Image counts differents");
+                foreach (var image in result.Images)
+                {
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
+                }
             }
         }
 
@@ -144,7 +150,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(171, result.TotalImages, "Different image count");
+                Assert.AreEqual(159, result.TotalImages, "Different image count");
             }
 
             {
@@ -162,7 +168,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(93, result.TotalImages, "Different image count");
+                Assert.AreEqual(87, result.TotalImages, "Different image count");
             }
 
             {
@@ -174,7 +180,7 @@ namespace NijieDownloader.Test
                 search.Option.Page = UpdateHtmlForm.search_tag_partial_latest_lastpage_page;
 
                 var result = nijie.ParseSearch(doc, search);
-                Assert.AreEqual(25, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(14, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -183,7 +189,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(171, result.TotalImages, "Different image count");
+                Assert.AreEqual(159, result.TotalImages, "Different image count");
             }
         }
 
