@@ -204,7 +204,7 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
 
-                var image = new NijieImage(92049);
+                var image = new NijieImage(UpdateHtmlForm.IMAGE);
 
                 var result = nijie.ParseImage(image, ref nullMember, doc);
                 Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
@@ -217,12 +217,29 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
 
-                var image = new NijieImage(92508);
+                var image = new NijieImage(UpdateHtmlForm.MANGA);
 
                 var result = nijie.ParseImage(image, ref nullMember, doc);
                 Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
                 Assert.IsTrue(image.IsManga, "Image is not manga");
-                Assert.AreEqual(4, image.MangaPages.Count, "Manga pages count are different!");
+                Assert.AreEqual(5, image.MangaPages.Count, "Manga pages count are different!");
+                foreach (var item in image.MangaPages)
+                {
+                    Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
+                }
+            }
+            {
+                var page = UpdateHtmlForm.PATH + "image-doujin.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+
+                var image = new NijieImage(UpdateHtmlForm.DOUJIN);
+
+                var result = nijie.ParseImage(image, ref nullMember, doc);
+                Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                Assert.IsTrue(image.IsDoujin, "Image is not doujin");
+                Assert.AreEqual(6, image.MangaPages.Count, "Doujin pages count are different!");
                 foreach (var item in image.MangaPages)
                 {
                     Assert.IsNotNull(item.ImageUrl, "Image url is missing!");

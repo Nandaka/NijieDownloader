@@ -26,6 +26,11 @@ namespace NijieDownloader.Test
         public const int MEMBER_1 = 29353;
         public const int MEMBER_2 = 44103;
 
+
+        public const int IMAGE = 92049;
+        public const int MANGA = 150508;
+        public const int DOUJIN = 151004;
+
         public UpdateHtmlForm()
         {
             InitializeComponent();
@@ -120,10 +125,13 @@ namespace NijieDownloader.Test
                 // image page
                 {
                     txtLog.AppendText("Getting image page..." + Environment.NewLine);
-                    downloadHelper("https://nijie.info/view.php?id=92049", "image-normal.html");
+                    downloadHelper("https://nijie.info/view.php?id=" + IMAGE, "image-normal.html");
 
-                    txtLog.AppendText("Getting image page..." + Environment.NewLine);
-                    downloadHelper("https://nijie.info/view.php?id=92508", "image-manga.html");
+                    txtLog.AppendText("Getting manga page..." + Environment.NewLine);
+                    downloadHelper("https://nijie.info/view.php?id=" + MANGA, "image-manga.html");
+
+                    txtLog.AppendText("Getting doujin page..." + Environment.NewLine);
+                    downloadHelper("https://nijie.info/view.php?id=" + DOUJIN, "image-doujin.html");
                 }
             }
             txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
