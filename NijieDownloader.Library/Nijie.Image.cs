@@ -94,11 +94,11 @@ namespace NijieDownloader.Library
             image.IsDoujin = true;
 
             // member id
-            var memberDivs = doc.DocumentNode.SelectNodes("//div[@id='main']/div[@class='main-center']//li/a");
+            var memberDivs = doc.DocumentNode.SelectNodes("//div[@id='dojin_left']//p[@class='text']//a");
             foreach (var item in memberDivs)
             {
                 var href = item.Attributes["href"].Value;
-                if (href.Contains("members_dojin.php?id="))
+                if (href.Contains("/members.php?id="))
                 {
                     var split = href.Split('=');
                     image.Member = new NijieMember(Int32.Parse(split[1]), MemberMode.Doujin);
@@ -115,7 +115,7 @@ namespace NijieDownloader.Library
             image.Description = doujinTitleDiv.InnerText;
 
             // created date
-            var doujinCreated = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//span[@itemprop='uploadDate']");
+            var doujinCreated = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//span");
             image.WorkDate = DateTime.ParseExact(doujinCreated.InnerText, "yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture);
 
             // main image
@@ -127,11 +127,14 @@ namespace NijieDownloader.Library
 
             // tags
             var tags = doc.DocumentNode.SelectNodes("//ul[@id='tag']//span[@class='tag_name']/a");
-            image.Tags = new List<NijieTag>();
-            foreach (var item in tags)
+            if (tags != null)
             {
-                if (!String.IsNullOrWhiteSpace(item.InnerText))
-                    image.Tags.Add(new NijieTag() { Name = item.InnerText });
+                image.Tags = new List<NijieTag>();
+                foreach (var item in tags)
+                {
+                    if (!String.IsNullOrWhiteSpace(item.InnerText))
+                        image.Tags.Add(new NijieTag() { Name = item.InnerText });
+                }
             }
 
             // pages
