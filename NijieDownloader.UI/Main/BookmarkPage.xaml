@@ -32,30 +32,31 @@
                         Executed="ExecuteAddSelectedToBatchCommand"
                         CanExecute="CanExecuteAddSelectedToBatchCommand" />
     </Page.CommandBindings>
-    <Grid Style="{StaticResource ContentRoot}">
-        <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
-            <StackPanel MinWidth="200">
-                <TextBlock Text="Process Member Bookmark" Style="{StaticResource Heading2}" />
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                        <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=BookmarkType}" MinWidth="100"
+    <DockPanel Style="{StaticResource ContentRoot}">
+        <TextBlock Text="Process Member Bookmark" Style="{StaticResource Heading2}" DockPanel.Dock="Top" />
+        <TextBlock Text="{Binding Path=Status, FallbackValue=Status}"  DockPanel.Dock="Bottom"/>
+        <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <ComboBox Margin="5,5,5,5" SelectedValue="{Binding Path=BookmarkType}" MinWidth="100"
                                   ItemsSource="{Binding Source={StaticResource BookmarkType}}" SelectionChanged="ComboBox_SelectionChanged" />
-                        <Button Margin="5,5,5,5" Content="Get My Bookmark"
+                    <Button Margin="5,5,5,5" Content="Get My Bookmark"
                                     Command="{x:Static local:BookmarkPage.GetMyBookmarkCommand}" />
-                        <Button Margin="5,5,5,5" Content="Add Selected to Batch"
+                    <Button Margin="5,5,5,5" Content="Add Selected to Batch"
                                     Command="{x:Static local:BookmarkPage.AddSelectedToBatchCommand}" />
-                        <Button Margin="5,5,5,5" Content="Add All to Batch"
+                    <Button Margin="5,5,5,5" Content="Add All to Batch"
                                     Command="{x:Static local:BookmarkPage.AddAllToBatchCommand}" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                        <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;"
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Name="btnPrev" Margin="5,5,5,5" Content="&lt;"
                                     Command="{x:Static local:BookmarkPage.PrevPageCommand}" />
-                        <TextBox Text="{Binding Path=Page, FallbackValue=1}" Height="25" MinWidth="50" />
-                        <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
+                    <TextBox Text="{Binding Path=Page, FallbackValue=1}" Height="25" MinWidth="50" />
+                    <Button Name="btnNext" Margin="5,5,5,5" Content="&gt;"
                                     Command="{x:Static local:BookmarkPage.NextPageCommand}" />
-                    </StackPanel>
-                    <TextBlock Width="Auto" />
-                </DockPanel>
+                </StackPanel>
+                <TextBlock Width="Auto" />
+            </DockPanel>
+            <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
                 <ListBox x:Name="lbxMembers" MinHeight="460"
                          PreviewMouseDoubleClick="lbxMembers_PreviewMouseDoubleClick"
                          PreviewKeyDown="lbxMembers_PreviewKeyDown">
@@ -77,8 +78,7 @@
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
                 </ListBox>
-                <TextBlock Text="{Binding Path=Status, FallbackValue=Status}" />
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+            </ScrollViewer>
+        </DockPanel>
+    </DockPanel>
 </Page>
