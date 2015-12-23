@@ -60,7 +60,7 @@ namespace NijieDownloader.Test
                     Assert.IsNotNull(image.ThumbImageUrl, "Thumbnail image missing!");
                 }
             }
-            
+
             // test member bookmarked
             {
                 // https://nijie.info/user_like_illust_view.php?id=29353
@@ -100,7 +100,6 @@ namespace NijieDownloader.Test
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
                 Assert.AreEqual(72, result.TotalImages, "Different image count");
             }
-
 
             // test member doujins
             // need to be updated with proper member with doujin
@@ -213,9 +212,13 @@ namespace NijieDownloader.Test
             }
             {
                 var page = UpdateHtmlForm.PATH + "image-manga.html";
+                var ppage = UpdateHtmlForm.PATH + "image-manga-popup.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
+                HtmlDocument pdoc = new HtmlDocument();
+                pdoc.LoadHtml(File.ReadAllText(ppage));
 
                 var image = new NijieImage(UpdateHtmlForm.MANGA);
 
@@ -223,6 +226,10 @@ namespace NijieDownloader.Test
                 Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
                 Assert.IsTrue(image.IsManga, "Image is not manga");
                 Assert.AreEqual(5, image.MangaPages.Count, "Manga pages count are different!");
+
+                Nijie.ParseImagePopUp(image, pdoc);
+                Assert.AreEqual(5, image.ImageUrls.Count, "Manga image urls count are different!");
+
                 foreach (var item in image.MangaPages)
                 {
                     Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
@@ -230,9 +237,13 @@ namespace NijieDownloader.Test
             }
             {
                 var page = UpdateHtmlForm.PATH + "image-doujin.html";
+                var ppage = UpdateHtmlForm.PATH + "image-doujin-popup.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
+                HtmlDocument pdoc = new HtmlDocument();
+                pdoc.LoadHtml(File.ReadAllText(ppage));
 
                 var image = new NijieImage(UpdateHtmlForm.DOUJIN);
 
@@ -240,6 +251,9 @@ namespace NijieDownloader.Test
                 Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
                 Assert.IsTrue(image.IsDoujin, "Image is not doujin");
                 Assert.AreEqual(6, image.MangaPages.Count, "Doujin pages count are different!");
+
+                Nijie.ParseImagePopUp(image, pdoc);
+                Assert.AreEqual(6, image.ImageUrls.Count, "Doujin image urls count are different!");
                 foreach (var item in image.MangaPages)
                 {
                     Assert.IsNotNull(item.ImageUrl, "Image url is missing!");

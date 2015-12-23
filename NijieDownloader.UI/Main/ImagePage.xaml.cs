@@ -100,7 +100,7 @@ namespace NijieDownloader.UI
             ViewData = new NijieImageViewModel() { ImageId = ViewData.ImageId };
             ModernDialog d = new ModernDialog();
             d.Content = "Loading data...";
-            d.Closed += new EventHandler((s, ex) => { ViewData.Message = "Still loading..."; });
+            //d.Closed += new EventHandler((s, ex) => { ViewData.Message = "Still loading..."; });
             System.Threading.ThreadPool.QueueUserWorkItem(
              (x) =>
              {
@@ -110,12 +110,13 @@ namespace NijieDownloader.UI
                           {
                               this.DataContext = ViewData;
                               d.Close();
-                              ViewData.Message = "Image(s) Loaded";
+                              //ViewData.Message = "Image(s) Loaded";
                           }),
                           new object[] { this }
                        );
              }, null
             );
+
             d.ShowDialog();
         }
 

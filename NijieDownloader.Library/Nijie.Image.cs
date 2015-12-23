@@ -323,7 +323,7 @@ namespace NijieDownloader.Library
             }
         }
 
-        public NijieImage ParseImagePopups(NijieImage image)
+        private NijieImage ParseImagePopups(NijieImage image)
         {
             HtmlDocument doc = null;
             try
@@ -333,27 +333,7 @@ namespace NijieDownloader.Library
                 var result = getPage(url);
                 doc = result.Item1;
 
-                var bigImage = doc.DocumentNode.SelectSingleNode("//img");
-                if (bigImage.Attributes.Contains("data-original"))
-                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
-                else
-                    image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["src"].Value);
-
-                if (image.IsManga)
-                {
-                    image.ImageUrls.Clear();
-                    //image.ImageUrls.Add(image.BigImageUrl);
-                    var images = doc.DocumentNode.SelectNodes("//img");
-                    foreach (var item in images)
-                    {
-                        if (item.Attributes.Contains("data-original"))
-                            image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
-                        else
-                            image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["src"].Value));
-                    }
-                }
-
-                return image;
+                return ParseImagePopUp(image, doc);
             }
             catch (Exception ex)
             {
@@ -366,6 +346,31 @@ namespace NijieDownloader.Library
                 Log.Error("Failed to process big image: " + image.ImageId, ex);
                 throw new NijieException(String.Format("Failed to process big image: {0} ==> {1}", image.ImageId, ex.Message), ex, NijieException.IMAGE_BIG_PARSE_ERROR);
             }
+        }
+
+        public static NijieImage ParseImagePopUp(NijieImage image, HtmlDocument doc)
+        {
+            var bigImage = doc.DocumentNode.SelectSingleNode("//img");
+            if (bigImage.Attributes.Contains("data-original"))
+                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
+            else
+                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["src"].Value);
+
+            if (image.IsManga)
+            {
+                image.ImageUrls.Clear();
+                //image.ImageUrls.Add(image.BigImageUrl);
+                var images = doc.DocumentNode.SelectNodes("//div[starts-with(@id,'diff_')]//img");
+                foreach (var item in images)
+                {
+                    if (item.Attributes.Contains("data-original"))
+                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
+                    else
+                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["src"].Value));
+                }
+            }
+
+            return image;
         }
     }
 }

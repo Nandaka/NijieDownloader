@@ -19,13 +19,11 @@ namespace NijieDownloader.Test
 
         public const string PATH = @"../../../Nijie.Test/testpage/";
 
-
         private CancellationToken cancelToken;
         private Nijie nijie;
 
         public const int MEMBER_1 = 29353;
         public const int MEMBER_2 = 44103;
-
 
         public const int IMAGE = 92049;
         public const int MANGA = 150508;
@@ -124,14 +122,19 @@ namespace NijieDownloader.Test
 
                 // image page
                 {
+                    // normal
                     txtLog.AppendText("Getting image page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + IMAGE, "image-normal.html");
 
+                    // manga
                     txtLog.AppendText("Getting manga page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + MANGA, "image-manga.html");
+                    downloadHelper("https://nijie.info/view_popup.php?id=" + MANGA, "image-manga-popup.html");
 
+                    // doujin
                     txtLog.AppendText("Getting doujin page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + DOUJIN, "image-doujin.html");
+                    downloadHelper("https://nijie.info/view_popup.php?id=" + DOUJIN, "image-doujin-popup.html");
                 }
             }
             txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);

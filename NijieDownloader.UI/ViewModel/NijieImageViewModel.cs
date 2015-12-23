@@ -338,7 +338,7 @@ namespace NijieDownloader.UI.ViewModel
             MainWindow.Log.Debug("Loading Image: " + this.ImageId);
 
             NijieImage temp = null;
-            // TODO: need to implement manga
+
             using (var ctx = new NijieContext())
             {
                 temp = (from x in ctx.Images.Include("Member").Include("Tags")
@@ -355,6 +355,7 @@ namespace NijieDownloader.UI.ViewModel
                 {
                     var result = MainWindow.Bot.ParseImage(this.ImageId);
                     temp = result;
+                    this.Message = "Image parsed, loading image...";
                 }
                 catch (NijieException ne)
                 {
@@ -367,7 +368,6 @@ namespace NijieDownloader.UI.ViewModel
 
             this._image = temp;
             this._mangaImageStatus = new List<string>();
-            this.Message = "Image parsed, loading image...";
         }
 
         public int Prev()
@@ -411,7 +411,7 @@ namespace NijieDownloader.UI.ViewModel
                                 this.BigImage = null;
                                 this.BigImage = image;
                                 this.ImageStatus = status;
-                                this.Message = status;
+                                //this.Message = message;
                             }
                         ));
         }
