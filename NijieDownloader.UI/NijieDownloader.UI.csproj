@@ -329,7 +329,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PreBuildEvent>xcopy /Y $(SolutionDir)README.md $(TargetDir)
+    <PreBuildEvent>xcopy /Y $(SolutionDir)README.txt $(TargetDir)
 xcopy /Y $(SolutionDir)changelog.txt $(TargetDir)</PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
