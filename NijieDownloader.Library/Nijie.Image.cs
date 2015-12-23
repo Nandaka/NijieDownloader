@@ -250,7 +250,7 @@ namespace NijieDownloader.Library
 
         private void ParseImageLinks(NijieImage image, HtmlDocument doc)
         {
-            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//img[@id='mozamoza ngtag']");
+            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//div[@id='gallery_open']//img[@class='mozamoza ngtag']");
             if (mediumImageLink != null)
                 image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
 
@@ -350,7 +350,7 @@ namespace NijieDownloader.Library
 
         public static NijieImage ParseImagePopUp(NijieImage image, HtmlDocument doc)
         {
-            var bigImage = doc.DocumentNode.SelectSingleNode("//img");
+            var bigImage = doc.DocumentNode.SelectSingleNode("//div[starts-with(@id,'diff_')]//img");
             if (bigImage.Attributes.Contains("data-original"))
                 image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
             else
