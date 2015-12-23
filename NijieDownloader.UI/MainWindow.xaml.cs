@@ -119,6 +119,10 @@ namespace NijieDownloader.UI
                 var count = ctx.Images.Count();
                 Log.Info(string.Format("Tracking {0} image(s)", count));
             }
+
+            // prevent sleep config
+            NijieDownloader.UI.Settings.Download.SetPreventSleep();
+
             Application.Current.MainWindow = this;
         }
 

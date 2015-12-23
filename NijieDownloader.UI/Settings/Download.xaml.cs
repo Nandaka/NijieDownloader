@@ -104,8 +104,22 @@ namespace NijieDownloader.UI.Settings
                 d.Content = "Restart Required!";
                 d.ShowDialog();
             }
+
+            SetPreventSleep();
             _isChanged = false;
             Properties.Settings.Default.Reload();
+        }
+
+        public static void SetPreventSleep()
+        {
+            if (Properties.Settings.Default.PreventSleep)
+            {
+                Util.NativeMethods.SetThreadExecutionState(Util.NativeMethods.ES_AWAYMODE_REQUIRED | Util.NativeMethods.ES_CONTINUOUS);
+            }
+            else
+            {
+                Util.NativeMethods.SetThreadExecutionState(Util.NativeMethods.ES_AWAYMODE_REQUIRED);
+            }
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
