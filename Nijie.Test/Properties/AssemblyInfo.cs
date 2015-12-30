@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NijieDownloader.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Infineon Technologies")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("NijieDownloader.Test")]
-[assembly: AssemblyCopyright("Copyright © Infineon Technologies 2014")]
+[assembly: AssemblyCopyright("Copyright © Nandaka 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

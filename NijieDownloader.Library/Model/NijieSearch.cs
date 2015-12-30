@@ -48,7 +48,7 @@ namespace NijieDownloader.Library.Model
                     , (int)option.SearchBy
                     , ""
                     , (int)option.Sort);
-            return Util.FixUrl(url, Properties.Settings.Default.UseHttps);
+            return Util.FixUrl(url, Nijie.ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
         }
 
         public int TotalImages { get; set; }

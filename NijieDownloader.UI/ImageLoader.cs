@@ -5,6 +5,7 @@ using System.Runtime.Caching;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Nandaka.Common;
+using NijieDownloader.Library;
 using NijieDownloader.UI.ViewModel;
 
 namespace NijieDownloader.UI
@@ -48,8 +49,8 @@ namespace NijieDownloader.UI
         public static void LoadImage(string url, string referer, Action<BitmapImage, string> action)
         {
             if (String.IsNullOrWhiteSpace(url)) return;
-            url = Util.FixUrl(url);
-            referer = Util.FixUrl(referer);
+            url = Util.FixUrl(url, Nijie.ROOT_DOMAIN);
+            referer = Util.FixUrl(referer, Nijie.ROOT_DOMAIN);
 
             if (!cache.Contains(url))
             {

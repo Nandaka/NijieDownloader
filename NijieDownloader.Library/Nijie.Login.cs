@@ -73,7 +73,7 @@ namespace NijieDownloader.Library
         private void PrintCookie(string header)
         {
             Debug.WriteLine(header);
-            var uri = new Uri(Util.FixUrl("//nijie.info", Properties.Settings.Default.UseHttps));
+            var uri = new Uri(Util.FixUrl("//nijie.info", ROOT_DOMAIN, Properties.Settings.Default.UseHttps));
             foreach (Cookie item in ExtendedWebClient.CookieJar.GetCookies(uri))
             {
                 Debug.WriteLine("\tSite: {0} ==> {1}: {2}", item.Domain, item.Name, item.Value);
@@ -85,14 +85,14 @@ namespace NijieDownloader.Library
             ExtendedWebClient client = new ExtendedWebClient();
 
             // not really used
-            var uri = new Uri(Util.FixUrl("//nijie.info", Properties.Settings.Default.UseHttps));
+            var uri = new Uri(Util.FixUrl("//nijie.info", ROOT_DOMAIN, Properties.Settings.Default.UseHttps));
             var tick = ((int)Util.DateTimeToUnixTimestamp(DateTime.Now)).ToString();
             ExtendedWebClient.CookieJar.Add(uri, new Cookie("nijie_token_secret", tick));
             ExtendedWebClient.CookieJar.Add(uri, new Cookie("nijie_token", tick));
 
             NijieLoginInfo info = new NijieLoginInfo() { UserName = userName, Password = password, ReturnUrl = "", Ticket = "", RememberLogin = true };
 
-            HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, Properties.Settings.Default.UseHttps)).Item1;
+            HtmlDocument doc = getPage(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL, ROOT_DOMAIN, Properties.Settings.Default.UseHttps)).Item1;
 
             var tickets = doc.DocumentNode.SelectNodes("//input[@name='ticket']");
             if (tickets != null && tickets.Count > 0)
@@ -119,7 +119,7 @@ namespace NijieDownloader.Library
             loginInfo.Add("ticket", info.Ticket);
             loginInfo.Add("url", info.ReturnUrl);
 
-            var result = client.UploadValues(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL2, Properties.Settings.Default.UseHttps), "POST", loginInfo);
+            var result = client.UploadValues(Util.FixUrl(NijieConstants.NIJIE_LOGIN_URL2, ROOT_DOMAIN, Properties.Settings.Default.UseHttps), "POST", loginInfo);
             //String data = Encoding.UTF8.GetString(result);
 
             var location = client.Response.ResponseUri.ToString();
@@ -131,7 +131,7 @@ namespace NijieDownloader.Library
                     IsLoggedIn = true;
             }
 
-            var uri = new Uri(Util.FixUrl("//nijie.info", Properties.Settings.Default.UseHttps));
+            var uri = new Uri(Util.FixUrl("//nijie.info", ROOT_DOMAIN, Properties.Settings.Default.UseHttps));
             ExtendedWebClient.CookieJar.Add(uri, new Cookie("R18", "1"));
             var cookies = ExtendedWebClient.CookieJar.GetCookies(uri);
             foreach (Cookie item in cookies)

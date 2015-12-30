@@ -98,7 +98,7 @@ namespace NijieDownloader.Library.Model
         {
             get
             {
-                return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, Properties.Settings.Default.UseHttps);
+                return Util.FixUrl("//nijie.info/view.php?id=" + ImageId, Nijie.ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
             }
             private set { }
         }

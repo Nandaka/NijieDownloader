@@ -12,6 +12,7 @@ namespace NijieDownloader.Library
     public partial class Nijie
     {
         private Regex re_member = new Regex(@"id=(\d+)");
+        public const string ROOT_DOMAIN = "nijie.info";
 
         public Tuple<List<NijieMember>, bool> ParseMyMemberBookmark(int page)
         {
@@ -22,7 +23,7 @@ namespace NijieDownloader.Library
             bool isNextPageAvailable = false;
             try
             {
-                var url = Util.FixUrl(String.Format("//nijie.info/like_my.php?p={0}", page), Properties.Settings.Default.UseHttps);
+                var url = Util.FixUrl(String.Format("//nijie.info/like_my.php?p={0}", page), ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
                 var result = getPage(url);
                 doc = result.Item1;
 
@@ -81,7 +82,7 @@ namespace NijieDownloader.Library
             bool isNextPageAvailable = false;
             try
             {
-                var url = Util.FixUrl(String.Format("//nijie.info/okiniiri.php?p={0}", page), Properties.Settings.Default.UseHttps);
+                var url = Util.FixUrl(String.Format("//nijie.info/okiniiri.php?p={0}", page), ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
                 var result = getPage(url);
                 doc = result.Item1;
 

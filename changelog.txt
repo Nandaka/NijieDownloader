@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.7.7
+- Fix Issue #37: Update image parser.
+
 Nijie Downloader 1.0.7.6
 - Fix Issue #36: Update image parser.
 - Add option to prevent sleep.

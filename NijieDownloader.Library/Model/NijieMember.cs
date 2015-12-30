@@ -77,7 +77,7 @@ namespace NijieDownloader.Library.Model
                     break;
             }
 
-            return Util.FixUrl(prefix + memberId, Properties.Settings.Default.UseHttps);
+            return Util.FixUrl(prefix + memberId, Nijie.ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
         }
 
         [NotMapped]

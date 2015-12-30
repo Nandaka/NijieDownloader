@@ -88,15 +88,29 @@ namespace Nandaka.Common
             return url;
         }
 
-        public static string FixUrl(string url, bool useHttps = false)
+        /// <summary>
+        /// Try to fix the url
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="domain">used for relative url, use without protocol, e.g. www.example.com</param>
+        /// <param name="useHttps"></param>
+        /// <returns></returns>
+        public static string FixUrl(string url, string domain, bool useHttps = false)
         {
             if (String.IsNullOrWhiteSpace(url)) return url;
-            if (!url.StartsWith("http"))
+            if (url.StartsWith("//"))
             {
                 if (useHttps)
                     url = "https:" + url;
                 else
                     url = "http:" + url;
+            }
+            if (url.StartsWith("/"))
+            {
+                if (useHttps)
+                    url = "https://" + domain + url;
+                else
+                    url = "http://" + domain + url;
             }
 
             return url;

@@ -526,7 +526,7 @@ namespace NijieDownloader.UI
         private int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
             filename = Util.SanitizeFilename(filename);
-            url = Util.FixUrl(url);
+            url = Util.FixUrl(url, Nijie.ROOT_DOMAIN);
 
             MainWindow.Log.Debug(String.Format("Downloading url: {0} ==> {1}", url, filename));
             if (isJobCancelled(job))

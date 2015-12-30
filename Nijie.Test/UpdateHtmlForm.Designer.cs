@@ -34,6 +34,7 @@
             this.txtPass = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.Pass = new System.Windows.Forms.Label();
+            this.btnLogin = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnUpdate
@@ -56,17 +57,21 @@
             // 
             // txtUser
             // 
+            this.txtUser.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::NijieDownloader.Test.Properties.Settings.Default, "Username", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.txtUser.Location = new System.Drawing.Point(56, 12);
             this.txtUser.Name = "txtUser";
-            this.txtUser.Size = new System.Drawing.Size(100, 22);
+            this.txtUser.Size = new System.Drawing.Size(136, 22);
             this.txtUser.TabIndex = 2;
+            this.txtUser.Text = global::NijieDownloader.Test.Properties.Settings.Default.Username;
             // 
             // txtPass
             // 
-            this.txtPass.Location = new System.Drawing.Point(198, 12);
+            this.txtPass.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::NijieDownloader.Test.Properties.Settings.Default, "Password", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.txtPass.Location = new System.Drawing.Point(233, 12);
             this.txtPass.Name = "txtPass";
-            this.txtPass.Size = new System.Drawing.Size(100, 22);
+            this.txtPass.Size = new System.Drawing.Size(163, 22);
             this.txtPass.TabIndex = 3;
+            this.txtPass.Text = global::NijieDownloader.Test.Properties.Settings.Default.Password;
             // 
             // label1
             // 
@@ -80,17 +85,28 @@
             // Pass
             // 
             this.Pass.AutoSize = true;
-            this.Pass.Location = new System.Drawing.Point(162, 15);
+            this.Pass.Location = new System.Drawing.Point(198, 17);
             this.Pass.Name = "Pass";
-            this.Pass.Size = new System.Drawing.Size(30, 13);
+            this.Pass.Size = new System.Drawing.Size(29, 13);
             this.Pass.TabIndex = 5;
-            this.Pass.Text = "User";
+            this.Pass.Text = "Pass";
+            // 
+            // btnLogin
+            // 
+            this.btnLogin.Location = new System.Drawing.Point(402, 12);
+            this.btnLogin.Name = "btnLogin";
+            this.btnLogin.Size = new System.Drawing.Size(57, 23);
+            this.btnLogin.TabIndex = 6;
+            this.btnLogin.Text = "Login";
+            this.btnLogin.UseVisualStyleBackColor = true;
+            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
             // 
             // UpdateHtmlForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(552, 262);
+            this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.Pass);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtPass);
@@ -112,5 +128,6 @@
         private System.Windows.Forms.TextBox txtPass;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label Pass;
+        private System.Windows.Forms.Button btnLogin;
     }
 }

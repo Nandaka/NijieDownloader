@@ -16,7 +16,7 @@ namespace NijieDownloader.Library
         {
             if (string.IsNullOrWhiteSpace(referer))
             {
-                referer = Util.FixUrl(NijieConstants.NIJIE_INDEXx, Properties.Settings.Default.UseHttps);
+                referer = Util.FixUrl(NijieConstants.NIJIE_INDEXx, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
             }
 
             canOperate();
@@ -352,9 +352,9 @@ namespace NijieDownloader.Library
         {
             var bigImage = doc.DocumentNode.SelectSingleNode("//div[starts-with(@id,'diff_')]//img");
             if (bigImage.Attributes.Contains("data-original"))
-                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value);
+                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value, ROOT_DOMAIN);
             else
-                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["src"].Value);
+                image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["src"].Value, ROOT_DOMAIN);
 
             if (image.IsManga)
             {
@@ -363,10 +363,12 @@ namespace NijieDownloader.Library
                 var images = doc.DocumentNode.SelectNodes("//div[starts-with(@id,'diff_')]//img");
                 foreach (var item in images)
                 {
+                    if (item.Attributes["class"].Value == "filter") continue;
+
                     if (item.Attributes.Contains("data-original"))
-                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value));
+                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["data-original"].Value, ROOT_DOMAIN));
                     else
-                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["src"].Value));
+                        image.ImageUrls.Add(Nandaka.Common.Util.FixUrl(item.Attributes["src"].Value, ROOT_DOMAIN));
                 }
             }
 

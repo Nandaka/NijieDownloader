@@ -5,6 +5,7 @@ using System.Data.Entity.Migrations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -149,7 +150,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(159, result.TotalImages, "Different image count");
+                Assert.AreEqual(160, result.TotalImages, "Different image count");
             }
 
             {
@@ -167,7 +168,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(87, result.TotalImages, "Different image count");
+                Assert.AreEqual(88, result.TotalImages, "Different image count");
             }
 
             {
@@ -179,7 +180,7 @@ namespace NijieDownloader.Test
                 search.Option.Page = UpdateHtmlForm.search_tag_partial_latest_lastpage_page;
 
                 var result = nijie.ParseSearch(doc, search);
-                Assert.AreEqual(14, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(15, result.Images.Count, "Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -188,7 +189,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(159, result.TotalImages, "Different image count");
+                Assert.AreEqual(160, result.TotalImages, "Different image count");
             }
         }
 
@@ -229,6 +230,32 @@ namespace NijieDownloader.Test
 
                 Nijie.ParseImagePopUp(image, pdoc);
                 Assert.AreEqual(5, image.ImageUrls.Count, "Manga image urls count are different!");
+
+                foreach (var item in image.MangaPages)
+                {
+                    Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
+                }
+            }
+            {
+                var page = UpdateHtmlForm.PATH + "image-manga-filter.html";
+                var ppage = UpdateHtmlForm.PATH + "image-manga-popup-filter.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
+
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                HtmlDocument pdoc = new HtmlDocument();
+                pdoc.LoadHtml(File.ReadAllText(ppage));
+
+                var image = new NijieImage(UpdateHtmlForm.MANGA2);
+
+                var result = nijie.ParseImage(image, ref nullMember, doc);
+                Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                Assert.IsTrue(image.IsManga, "Image is not manga");
+                Assert.AreEqual(4, image.MangaPages.Count, "Manga pages count are different!");
+
+                Nijie.ParseImagePopUp(image, pdoc);
+                Assert.AreEqual(4, image.ImageUrls.Count, "Manga image urls count are different!");
 
                 foreach (var item in image.MangaPages)
                 {

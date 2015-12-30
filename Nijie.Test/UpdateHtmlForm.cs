@@ -27,6 +27,7 @@ namespace NijieDownloader.Test
 
         public const int IMAGE = 92049;
         public const int MANGA = 150508;
+        public const int MANGA2 = 151422;
         public const int DOUJIN = 151004;
 
         public UpdateHtmlForm()
@@ -130,17 +131,20 @@ namespace NijieDownloader.Test
                     txtLog.AppendText("Getting manga page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + MANGA, "image-manga.html");
                     downloadHelper("https://nijie.info/view_popup.php?id=" + MANGA, "image-manga-popup.html");
+                    downloadHelper("https://nijie.info/view.php?id=" + MANGA2, "image-manga-filter.html");
+                    downloadHelper("https://nijie.info/view_popup.php?id=" + MANGA2, "image-manga-popup-filter.html");
 
                     // doujin
                     txtLog.AppendText("Getting doujin page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + DOUJIN, "image-doujin.html");
                     downloadHelper("https://nijie.info/view_popup.php?id=" + DOUJIN, "image-doujin-popup.html");
                 }
+
+                this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                Properties.Settings.Default.Save();
+                this.Close();
             }
             txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
-
-            this.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Close();
         }
 
         private string downloadHelper(string url, string filename, string referer = "https://nijie.info")
@@ -155,6 +159,18 @@ namespace NijieDownloader.Test
             var msg = nijie.Download(url, referer, filename, null, cancelToken);
             txtLog.AppendText(msg + Environment.NewLine);
             return msg;
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            txtLog.AppendText("Logging in..." + Environment.NewLine);
+            var result = nijie.Login(txtUser.Text, txtPass.Text);
+            if (result)
+            {
+                Properties.Settings.Default.Save();
+                this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                this.Close();
+            }
         }
     }
 }
