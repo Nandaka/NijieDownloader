@@ -149,12 +149,17 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        private string _username;
         public string UserName
         {
-            get
+            get 
+            { 
+                return _username;
+            }
+            set
             {
-                if (_member != null) return _member.UserName;
-                return null;
+                _username = value;
+                onPropertyChanged("UserName");
             }
         }
 
@@ -201,6 +206,17 @@ namespace NijieDownloader.UI.ViewModel
             try
             {
                 _member = MainWindow.Bot.ParseMember(this.MemberId, this.Mode, this.Page);
+                this.UserName = _member.UserName;
+
+                ImageLoader.LoadImage(_member.AvatarUrl, _member.MemberUrl,
+                            new Action<BitmapImage, string>((image, status) =>
+                            {
+                                this.AvatarImage = null;
+                                this.AvatarImage = image;
+                                _avatarImageStatus = status;
+                            }
+                        ));
+
                 if (_member.Images != null)
                 {
                     Images = new ObservableCollection<NijieImageViewModel>();
@@ -221,17 +237,18 @@ namespace NijieDownloader.UI.ViewModel
             catch (NijieException ne)
             {
                 MainWindow.Log.Error(ne.Message, ne);
-                if (this.MemberId != ne.MemberId)
-                {
-                    context.Send((x) =>
+
+                this.UserName = null;
+                this.AvatarImage = ViewModelHelper.NoAvatar;
+                context.Send((x) =>
+                    {
+                        if (Images != null)
                         {
-                            if (Images != null)
-                            {
-                                Images.Clear();
-                                Images = null;
-                            }
-                        }, null);
-                }
+                            Images.Clear();
+                            Images = null;
+                        }
+                    }, null);
+
                 this.HasError = true;
                 this.Status = "[Error] " + ne.Message;
             }

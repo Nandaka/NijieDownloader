@@ -97,7 +97,7 @@
                        Source="{Binding Path=AvatarImage}" />
                 <TextBlock Grid.Row="1" Text="Member Name"   HorizontalAlignment="Center" />
                 <TextBlock Grid.Row="2" Name="txtMemberName" Height="25" HorizontalAlignment="Center"
-                           Text="{Binding Path=UserName, Mode=OneWay}" />
+                           Text="{Binding Path=UserName}" />
                 <TextBlock Grid.Row="3" Text="Member Url" HorizontalAlignment="Center" />
                 <TextBlock Grid.Row="4" Name="txtUrl" MinHeight="25" HorizontalAlignment="Center" TextWrapping="Wrap">
                         <Hyperlink NavigateUri="{Binding Path=MemberUrl}" RequestNavigate="Hyperlink_RequestNavigate">
