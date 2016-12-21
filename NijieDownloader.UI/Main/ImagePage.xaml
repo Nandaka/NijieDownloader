@@ -140,7 +140,7 @@
                     </ListBox>
                     <zb:ZoomBorder x:Name="border" ClipToBounds="True" Background="Transparent" BorderBrush="Black" BorderThickness="1" Height="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=DockPanel, AncestorLevel=1}, Path=ActualHeight}">
                         <Image Name="imgBigImage" Source="{Binding Path=BigImage, IsAsync=true}" />
-                    </zb:ZoomBorder>
+                </zb:ZoomBorder>
                 </DockPanel>
             </DockPanel>
     </DockPanel>

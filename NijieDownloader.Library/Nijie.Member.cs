@@ -137,7 +137,7 @@ namespace NijieDownloader.Library
 
                         // check animation icon
                         image.IsAnimated = false;
-                        var animeIcon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-anime-icon']/img");
+                        var animeIcon = div.DocumentNode.SelectSingleNode("//div[@class='thumbnail-icon']/img");
                         if (animeIcon != null)
                         {
                             if (animeIcon.Attributes["src"].Value.EndsWith("thumbnail_anime.png"))
