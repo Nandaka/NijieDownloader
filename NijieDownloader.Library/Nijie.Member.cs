@@ -253,7 +253,16 @@ namespace NijieDownloader.Library
 
         private void ParseMemberImages(HtmlDocument doc, NijieMember member)
         {
-            var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-none']/div").InnerHtml;
+            var imagesDivs = doc.DocumentNode.SelectNodes("//div[@id='main-left-none']/div");
+            var imagesDiv = "";
+            foreach (var item in imagesDivs)
+	        {
+		        if(item.InnerHtml.Contains("class=\"nijie\""))
+                {
+                    imagesDiv = item.InnerHtml;
+                    break;
+                }
+	        }
             member.Images = ParseImageList(imagesDiv, member.MemberUrl);
             foreach (var image in member.Images)
             {
