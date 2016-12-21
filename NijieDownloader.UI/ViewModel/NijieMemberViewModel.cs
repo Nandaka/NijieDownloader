@@ -215,11 +215,25 @@ namespace NijieDownloader.UI.ViewModel
 
                     this.Status = String.Format("Loaded: {0} images.", _member.Images.Count);
                     onPropertyChanged("TotalImages");
+                    this.HasError = false;
                 }
             }
             catch (NijieException ne)
             {
-                this.Status = "Error: " + ne.Message;
+                MainWindow.Log.Error(ne.Message, ne);
+                if (this.MemberId != ne.MemberId)
+                {
+                    context.Send((x) =>
+                        {
+                            if (Images != null)
+                            {
+                                Images.Clear();
+                                Images = null;
+                            }
+                        }, null);
+                }
+                this.HasError = true;
+                this.Status = "[Error] " + ne.Message;
             }
         }
     }

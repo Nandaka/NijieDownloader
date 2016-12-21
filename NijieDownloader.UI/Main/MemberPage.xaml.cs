@@ -132,7 +132,10 @@ namespace NijieDownloader.UI
             //ViewData = new NijieMemberViewModel() { MemberId = ViewData.MemberId };
             ModernDialog d = new ModernDialog();
             d.Content = "Loading data...";
-            d.Closed += new EventHandler((s, ex) => { ViewData.Status = "Still loading..."; });
+            d.Closed += new EventHandler((s, ex) => { 
+                if(!ViewData.HasError)
+                    ViewData.Status = "Still loading..."; 
+            });
 
             var ctx = SynchronizationContext.Current;
             System.Threading.ThreadPool.QueueUserWorkItem(
@@ -145,9 +148,16 @@ namespace NijieDownloader.UI
                          this.DataContext = ViewData;
                          d.Close();
                          if (ViewData.Images != null)
+                         {
                              ViewData.Status = String.Format("Loaded: {0} images.", ViewData.Images.Count);
-                         else
+                             ViewData.HasError = false;
+                         }
+                         else if (!ViewData.HasError)
+                         {
+                             // unknown error
                              ViewData.Status = "Failed to parse images.";
+                             ViewData.HasError = true;
+                         }
                      }),
                      new object[] { this }
                   );

@@ -85,5 +85,6 @@ namespace NijieDownloader.Library.Model
 
         [NotMapped]
         public int TotalImages { get; set; }
+
     }
 }

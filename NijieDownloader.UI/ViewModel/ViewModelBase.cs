@@ -17,5 +17,20 @@ namespace NijieDownloader.UI.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(name));
             }
         }
+
+        private bool _hasError;
+
+        public bool HasError
+        {
+            get
+            {
+                return _hasError;
+            }
+            set
+            {
+                _hasError = value;
+                onPropertyChanged("HasError");
+            }
+        }
     }
 }

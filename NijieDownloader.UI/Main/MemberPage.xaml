@@ -107,15 +107,23 @@
             </Grid>
 
             <ScrollViewer SizeChanged="ScrollViewer_SizeChanged">
-                <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}"
+                <DockPanel>
+                    <TextBlock Text="{Binding Path=Status}" 
+                               HorizontalAlignment="Center" 
+                               VerticalAlignment="Center" 
+                               FontSize="20"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding Path=HasError, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <ListBox Name="lbxImages" ItemsSource="{Binding Path=Images}"
                          PreviewMouseDoubleClick="lbxImages_PreviewMouseDoubleClick" PreviewKeyDown="lbxImages_PreviewKeyDown">
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid IsItemsHost="True"
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid IsItemsHost="True"
                                          Columns="{Binding ElementName=memberPage, Path=TileColumns}" />
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                </ListBox>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>
+                </DockPanel>
             </ScrollViewer>
         </DockPanel>
     </Grid>
