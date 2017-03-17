@@ -525,6 +525,7 @@ namespace NijieDownloader.UI
         /// <param name="filename"></param>
         private int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
         {
+
             filename = Util.SanitizeFilename(filename);
             url = Util.FixUrl(url, Nijie.ROOT_DOMAIN);
 
@@ -535,10 +536,7 @@ namespace NijieDownloader.UI
             try
             {
                 job.Message = "Saving to: " + filename;
-                MainWindow.Bot.Download(url, referer, filename, x =>
-                                        {
-                                            job.Message = x;
-                                        }, job.CancelToken);
+                MainWindow.Bot.Download(url, referer, filename, x => { job.Message = x; }, job.CancelToken);
             }
             catch (NijieException nex)
             {

@@ -65,7 +65,7 @@ namespace NijieDownloader.Library.Model
             switch (mode)
             {
                 case MemberMode.Images:
-                    prefix = "//nijie.info/members_illust.php?id=";
+                    prefix = "//nijie.info/members_illust.php?p=" + page + "&id=";
                     break;
 
                 case MemberMode.Doujin:

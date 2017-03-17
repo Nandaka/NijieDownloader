@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.7.9
+- Fix Issue#40: update member parser.
+
 Nijie Downloader 1.0.7.8
 - Update member parser.
 - Implement #38 and #39: update 404 handler.

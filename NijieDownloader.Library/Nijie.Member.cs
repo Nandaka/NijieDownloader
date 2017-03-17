@@ -231,6 +231,14 @@ namespace NijieDownloader.Library
 
                 item.Remove();
             }
+            CheckNextPageAvailable(doc, member);
+
+            var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
+            member.TotalImages = ParseTotalImageCount(imageCountElements);
+        }
+
+        private static void CheckNextPageAvailable(HtmlDocument doc, NijieMember member)
+        {
 
             // check next page
             member.IsNextAvailable = false;
@@ -246,9 +254,6 @@ namespace NijieDownloader.Library
                     }
                 }
             }
-
-            var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
-            member.TotalImages = ParseTotalImageCount(imageCountElements);
         }
 
         private void ParseMemberImages(HtmlDocument doc, NijieMember member)
@@ -268,6 +273,8 @@ namespace NijieDownloader.Library
             {
                 image.Member = member;
             }
+
+            CheckNextPageAvailable(doc, member);
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
             member.TotalImages = ParseTotalImageCount(imageCountElements);
