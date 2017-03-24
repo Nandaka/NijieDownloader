@@ -21,7 +21,7 @@ Required Library for building
 2. log4net (https://www.nuget.org/packages/log4net/)
 3. EntityFramework.SqlServerCompact 6.0.2 (https://www.nuget.org/packages/EntityFramework.SqlServerCompact/)
 
-Compiled on Visual Studio 2010
+Compiled on Visual Studio 2013
 
 Supported OS
 ===============
