@@ -160,7 +160,7 @@ namespace NijieDownloader.UI
         {
             OpenFileDialog open = new OpenFileDialog();
             open.Multiselect = false;
-            open.Filter = "xml|*.xml";
+            open.Filter = "List files|*.xml;*.txt";
             var result = open.ShowDialog();
             if (result.HasValue && result.Value)
             {
@@ -331,27 +331,77 @@ namespace NijieDownloader.UI
         private void LoadList(string filename, bool suppressError = false)
         {
             int i = 0;
+            ObservableCollection<JobDownloadViewModel> batchJob = null;
+
+            if (filename.ToLower().EndsWith("txt"))
+            {
+                batchJob = new ObservableCollection<JobDownloadViewModel>();
+                LoadTxt(filename, batchJob);
+            }
+            else if (filename.ToLower().EndsWith("xml"))
+            {
+                batchJob = LoadXml(filename, batchJob);
+            }
+
+            if (batchJob != null)
+            {
+                foreach (var item in batchJob)
+                {
+                    if (!ViewData.Contains(item, new JobDownloadViewModelComparer()))
+                    {
+                        ViewData.Add(item);
+                        ++i;
+                    }
+                }
+            }
+            if (i == 0 && !suppressError)
+            {
+                ModernDialog.ShowMessage(string.Format("No job loaded from {0}{1}Either the jobs already loaded or no job in the file.", filename, Environment.NewLine), "Batch Job Loading", MessageBoxButton.OK);
+            }
+        }
+
+        private static void LoadTxt(string filename, ObservableCollection<JobDownloadViewModel> batchJob)
+        {
+            using (var reader = File.OpenText(filename))
+            {
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    if (line.StartsWith("#")) continue;
+                    else
+                    {
+                        int memberId = 0;
+                        Int32.TryParse(line, out memberId);
+                        if (memberId > 0)
+                        {
+                            var job = new JobDownloadViewModel()
+                            {
+                                MemberId = memberId,
+                                JobType = JobType.Member,
+                                MemberMode = MemberMode.Images,
+                                Limit = 0,
+                                StartPage = 1,
+                                EndPage = 0,
+                                SaveFilenameFormat = NijieDownloader.UI.Properties.Settings.Default.FilenameFormat,
+                                SaveMangaFilenameFormat = NijieDownloader.UI.Properties.Settings.Default.MangaFilenameFormat,
+                                SaveAvatarFilenameFormat = NijieDownloader.UI.Properties.Settings.Default.AvatarFilenameFormat
+                            };
+                            batchJob.Add(job);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        private static ObservableCollection<JobDownloadViewModel> LoadXml(string filename, ObservableCollection<JobDownloadViewModel> batchJob)
+        {
             try
             {
                 XmlSerializer ser = new XmlSerializer(typeof(ObservableCollection<JobDownloadViewModel>));
                 using (StreamReader reader = new StreamReader(filename))
                 {
-                    var batchJob = ser.Deserialize(reader) as ObservableCollection<JobDownloadViewModel>;
-                    if (batchJob != null)
-                    {
-                        foreach (var item in batchJob)
-                        {
-                            if (!ViewData.Contains(item, new JobDownloadViewModelComparer()))
-                            {
-                                ViewData.Add(item);
-                                ++i;
-                            }
-                        }
-                    }
-                }
-                if (i == 0 && !suppressError)
-                {
-                    ModernDialog.ShowMessage(string.Format("No job loaded from {0}{1}Either the jobs already loaded or no job in the file.", filename, Environment.NewLine), "Batch Job Loading", MessageBoxButton.OK);
+                    batchJob = ser.Deserialize(reader) as ObservableCollection<JobDownloadViewModel>;
                 }
             }
             catch (Exception ex)
@@ -359,6 +409,7 @@ namespace NijieDownloader.UI
                 MainWindow.Log.Error(ex.Message, ex);
                 ModernDialog.ShowMessage(ex.Message, "Error Loading", MessageBoxButton.OK);
             }
+            return batchJob;
         }
 
         #region Command
