@@ -288,7 +288,9 @@ namespace NijieDownloader.UI
                     if (_jobRunner.BatchStatus == JobStatus.Running)
                     {
                         _jobRunner.DoJob(newJob, cancelToken);
+                        newJob.PauseEvent.Set();
                         MainWindow.Log.Debug(String.Format("Add job {0} in running state.", newJob.Name));
+
                     }
                     else if (_jobRunner.BatchStatus == JobStatus.Paused)
                     {
@@ -436,6 +438,13 @@ namespace NijieDownloader.UI
                 }
             }
             // notify when all done
+            HandleAllCompleted();
+
+            //txtStatus.Text = _jobRunner.BatchStatus.ToString();
+        }
+
+        private void HandleAllCompleted()
+        {
             _jobRunner.NotifyAllCompleted(() =>
             {
                 ModernDialog d = new ModernDialog();
@@ -461,8 +470,6 @@ namespace NijieDownloader.UI
                 _jobRunner.BatchStatus = JobStatus.Completed;
                 //txtStatus.Text = _jobRunner.BatchStatus.ToString();
             });
-
-            //txtStatus.Text = _jobRunner.BatchStatus.ToString();
         }
 
         private void CanExecuteStartCommand(object sender, CanExecuteRoutedEventArgs e)

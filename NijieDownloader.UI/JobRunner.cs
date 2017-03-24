@@ -21,6 +21,7 @@ namespace NijieDownloader.UI
         private Object _lock = new Object();
         private object _dbLock = new object();
         private List<Task> tasks = new List<Task>();
+        private Action finalAction = null;
 
         private JobStatus _batchStatus;
 
@@ -112,6 +113,9 @@ namespace NijieDownloader.UI
                         job.Status = JobStatus.Completed;
                         job.Message = String.Format("Job completed in {0}s", totalSecond);
                     }
+
+                    CheckAllJobCompleted(job);
+
                 }
                 MainWindow.Log.Debug(String.Format("Job completed: {0} in {1}s", job.Name, totalSecond));
             }, cancelSource.Token
@@ -122,17 +126,36 @@ namespace NijieDownloader.UI
             tasks.Add(taskRef);
         }
 
+        private void CheckAllJobCompleted(JobDownloadViewModel job)
+        {
+            // check if all other jobs are completed
+            var isAllCompleted = true;
+            foreach (var task in tasks)
+            {
+                if (task == job.TaskRef) continue;
+                if (task.IsCompleted == false)
+                {
+                    if (task.IsCanceled == true) continue;
+                    if (task.IsFaulted == true) continue;
+                    isAllCompleted = false;
+                    break;                    
+                }
+            }
+            if (isAllCompleted)
+            {
+                BatchStatus = JobStatus.Completed;
+                if (finalAction != null)
+                    Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, finalAction);
+            }
+        }
+
         /// <summary>
         /// Notify all task completed callback
         /// </summary>
         /// <param name="action"></param>
         public void NotifyAllCompleted(Action action)
         {
-            var finalTask = _jobFactory.ContinueWhenAll(tasks.ToArray(), x =>
-            {
-                BatchStatus = JobStatus.Completed;
-                Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, action);
-            });
+            finalAction = action;
         }
 
         /// <summary>
