@@ -24,6 +24,7 @@ namespace NijieDownloader.Test
 
         public const int MEMBER_1 = 29353;
         public const int MEMBER_2 = 44103;
+        public const int MEMBER_3 = 251720;
 
         public const int IMAGE = 92049;
         public const int MANGA = 150508;
@@ -41,6 +42,7 @@ namespace NijieDownloader.Test
                 this.WindowState = FormWindowState.Normal;
             }
 
+            this.Focus();
             this.Activate();
         }
 
@@ -57,20 +59,24 @@ namespace NijieDownloader.Test
                 downloadHelper("https://nijie.info", "index.html");
 
                 // get member bookmark page
+                var url = "https://nijie.info/members_illust.php?id=" + MEMBER_1;
                 txtLog.AppendText("Getting member images page..." + Environment.NewLine);
-                downloadHelper("https://nijie.info/members_illust.php?id=" + MEMBER_1, "member-images.html");
+                downloadHelper(url, "member-images.html");
 
                 // get member doujin page
+                url = "https://nijie.info/members_dojin.php?id=" + MEMBER_3;
                 txtLog.AppendText("Getting member images page..." + Environment.NewLine);
-                downloadHelper("https://nijie.info/members_dojin.php?id=" + MEMBER_2, "member-doujins.html");
+                downloadHelper(url , "member-doujins.html");
 
                 // get member bookmark page
+                url = "https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1;
                 txtLog.AppendText("Getting member's bookmarked images page..." + Environment.NewLine);
-                downloadHelper("https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1, "member-bookmarked-images.html");
+                downloadHelper(url , "member-bookmarked-images.html");
 
                 // get member bookmark last page
+                url = "https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1 + "&p=2";
                 txtLog.AppendText("Getting member's bookmarked images last page..." + Environment.NewLine);
-                downloadHelper("https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1 + "&p=2", "member-bookmarked-images-lastpage.html");
+                downloadHelper(url , "member-bookmarked-images-lastpage.html");
 
                 // get search page
                 {
@@ -82,7 +88,8 @@ namespace NijieDownloader.Test
                         Sort = SortType.Latest,
                         SearchBy = SearchMode.Tag
                     };
-                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-partial-latest.html");
+                    url = NijieSearch.GenerateQueryUrl(option);
+                    downloadHelper(url, "search-tag-partial-latest.html");
                 }
                 {
                     txtLog.AppendText("Getting search2 page Tag ExactMatch..." + Environment.NewLine);
@@ -93,7 +100,8 @@ namespace NijieDownloader.Test
                         Sort = SortType.Latest,
                         SearchBy = SearchMode.Tag
                     };
-                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-exact-latest.html");
+                    url = NijieSearch.GenerateQueryUrl(option);
+                    downloadHelper(url, "search-tag-exact-latest.html");
                 }
 
                 {
@@ -106,7 +114,8 @@ namespace NijieDownloader.Test
                         SearchBy = SearchMode.Tag,
                         Page = search_tag_partial_latest_lastpage_page
                     };
-                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-partial-latest-lastpage.html");
+                    url = NijieSearch.GenerateQueryUrl(option);
+                    downloadHelper(url, "search-tag-partial-latest-lastpage.html");
                 }
                 {
                     txtLog.AppendText("Getting search2 last page Tag ExactMatch..." + Environment.NewLine);
@@ -118,7 +127,8 @@ namespace NijieDownloader.Test
                         SearchBy = SearchMode.Tag,
                         Page = 2
                     };
-                    downloadHelper(NijieSearch.GenerateQueryUrl(option), "search-tag-exact-latest-lastpage.html");
+                    url = NijieSearch.GenerateQueryUrl(option);
+                    downloadHelper(url, "search-tag-exact-latest-lastpage.html");
                 }
 
                 // image page
@@ -140,11 +150,13 @@ namespace NijieDownloader.Test
                     downloadHelper("https://nijie.info/view_popup.php?id=" + DOUJIN, "image-doujin-popup.html");
                 }
 
+
+                txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
+
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 Properties.Settings.Default.Save();
                 this.Close();
             }
-            txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
         }
 
         private string downloadHelper(string url, string filename, string referer = "https://nijie.info")
@@ -157,6 +169,7 @@ namespace NijieDownloader.Test
             }
 
             var msg = nijie.Download(url, referer, filename, null, cancelToken);
+            txtLog.AppendText("==> " + url + Environment.NewLine);
             txtLog.AppendText(msg + Environment.NewLine);
             return msg;
         }

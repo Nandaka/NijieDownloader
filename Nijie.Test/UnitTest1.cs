@@ -55,6 +55,7 @@ namespace NijieDownloader.Test
 
                 Assert.AreEqual("mumei", result.UserName);
                 Assert.AreEqual(20, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(20, result.TotalImages, "Image counts differents");
                 foreach (var image in result.Images)
                 {
                     Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
@@ -70,7 +71,8 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member, MemberMode.Bookmark);
-                Assert.AreEqual(44, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(43, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(72, result.TotalImages, "Total Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -104,15 +106,16 @@ namespace NijieDownloader.Test
 
             // test member doujins
             // need to be updated with proper member with doujin
-            var member2 = new NijieMember() { MemberId = UpdateHtmlForm.MEMBER_2 };
+            var member3 = new NijieMember() { MemberId = UpdateHtmlForm.MEMBER_3 };
             {
                 // https://nijie.info/members_dojin.php?id=251720
                 var page = UpdateHtmlForm.PATH + "member-doujins.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
-                var result = nijie.ParseMember(doc, member2, MemberMode.Doujin);
-                Assert.AreEqual(0, result.Images.Count, "Image counts differents");
+                var result = nijie.ParseMember(doc, member3, MemberMode.Doujin);
+                Assert.AreEqual(28, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(28, result.TotalImages, "Total Image counts differents");
                 foreach (var image in result.Images)
                 {
                     Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
@@ -150,7 +153,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(160, result.TotalImages, "Different image count");
+                Assert.AreEqual(166, result.TotalImages, "Different image count");
             }
 
             {
@@ -168,7 +171,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(88, result.TotalImages, "Different image count");
+                Assert.AreEqual(103, result.TotalImages, "Different image count");
             }
 
             {
@@ -180,7 +183,8 @@ namespace NijieDownloader.Test
                 search.Option.Page = UpdateHtmlForm.search_tag_partial_latest_lastpage_page;
 
                 var result = nijie.ParseSearch(doc, search);
-                Assert.AreEqual(15, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(21, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(166, result.TotalImages, "Total Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -189,7 +193,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(160, result.TotalImages, "Different image count");
+                Assert.AreEqual(166, result.TotalImages, "Different image count");
             }
         }
 
