@@ -437,7 +437,7 @@ namespace NijieDownloader.UI
             filename = filename + "." + Util.ParseExtension(image.BigImageUrl);
             filename = Properties.Settings.Default.RootDirectory + Path.DirectorySeparatorChar + Util.SanitizeFilename(filename);
 
-            var result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename);
+            var result = downloadUrl(job, image.BigImageUrl, image.ViewUrl, filename, image.WorkDate);
             image.SavedFilename = filename;
             image.ServerFilename = Util.ExtractFilenameFromUrl(image.BigImageUrl);
 
@@ -484,7 +484,7 @@ namespace NijieDownloader.UI
 
                 var pages = image.MangaPages as List<NijieMangaInfo>;
 
-                downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename);
+                downloaded = downloadUrl(job, image.ImageUrls[i], image.Referer, pagefilename, image.WorkDate);
                 pages[i].SavedFilename = pagefilename;
                 pages[i].ServerFilename = Util.ExtractFilenameFromUrl(image.ImageUrls[i]);
 
@@ -547,7 +547,7 @@ namespace NijieDownloader.UI
         /// <param name="url"></param>
         /// <param name="referer"></param>
         /// <param name="filename"></param>
-        private int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename)
+        private int downloadUrl(JobDownloadViewModel job, string url, string referer, string filename, DateTime? workdate=null)
         {
 
             filename = Util.SanitizeFilename(filename);
@@ -561,6 +561,11 @@ namespace NijieDownloader.UI
             {
                 job.Message = "Saving to: " + filename;
                 MainWindow.Bot.Download(url, referer, filename, x => { job.Message = x; }, job.CancelToken);
+
+                if (!NijieDownloader.UI.Properties.Settings.Default.UseServerDate)
+                {
+                    File.SetLastWriteTime(filename, DateTime.Now);
+                }
             }
             catch (NijieException nex)
             {

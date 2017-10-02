@@ -124,6 +124,7 @@ namespace NijieDownloader.Library
                         }
 
                         downloadPostCheck(filename, tempFilename, bytes_total, progressChanged, ref message);
+
                     }
                     break;
                 }
@@ -158,6 +159,19 @@ namespace NijieDownloader.Library
             Thread.Sleep(100); // delay before renaming
             File.Move(tempFilename, filename);
             message = "Saved to: " + filename;
+
+            // set server time, based utc time
+            if (client.ResponseHeaders.HasKeys())
+            {
+                var dateTime = client.ResponseHeaders["Last-Modified"];
+                if (!String.IsNullOrWhiteSpace(dateTime))
+                {
+                    var date = DateTime.Parse(dateTime);
+                    File.SetCreationTimeUtc(filename, date.ToUniversalTime());
+                    File.SetLastWriteTimeUtc(filename, date.ToUniversalTime());
+                }
+            }
+
             if (progressChanged != null)
                 progressChanged(message);
             return message;

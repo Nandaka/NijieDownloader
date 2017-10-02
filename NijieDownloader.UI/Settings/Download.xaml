@@ -60,6 +60,8 @@
                         </StackPanel>
                         <CheckBox Margin="120,0,0,0" Content="Download Avatar" HorizontalAlignment="Left"
                                   IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=DownloadAvatar, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
+                        <CheckBox Margin="120,0,0,0" Content="Use Server Date for File Timestamp" HorizontalAlignment="Left"
+                                  IsChecked="{Binding Source={x:Static np:Settings.Default}, Path=UseServerDate, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
                         <StackPanel Orientation="Horizontal" Margin="120,0,0,0">
                             <CheckBox Margin="0,0,5,0" Content="Overwrite" HorizontalAlignment="Left" Name="cbxOverwrite"
                                       IsChecked="{Binding Source={x:Static nl:Settings.Default}, Path=Overwrite, Mode=TwoWay, NotifyOnSourceUpdated=True}" />
