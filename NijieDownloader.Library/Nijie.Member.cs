@@ -258,7 +258,12 @@ namespace NijieDownloader.Library
 
         private void ParseMemberImages(HtmlDocument doc, NijieMember member)
         {
-            var imagesDivs = doc.DocumentNode.SelectNodes("//div[@id='main-left-none']/div");
+            var imagesDivs = doc.DocumentNode.SelectNodes("//div[@id='members_dlsite_left']/div");
+            if (imagesDivs == null)
+            {
+                // doujin page
+                imagesDivs = doc.DocumentNode.SelectNodes("//div[@class='mem-index clearboth']");
+            }
             var imagesDiv = "";
             foreach (var item in imagesDivs)
 	        {

@@ -1,3 +1,6 @@
+Nijie Downloader 1.0.9.0
+- Fix Issue #50: Update parser.
+
 Nijie Downloader 1.0.8.0
 - Implement #10: Allow to use list.txt for loading member id for batch jobs.
 - Implement #41: Continue with newly added job when the jobs still running.

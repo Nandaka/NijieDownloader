@@ -215,57 +215,7 @@ namespace NijieDownloader.Test
                 Assert.IsFalse(image.IsManga, "Image is not big image");
                 Assert.IsNotNull(image.BigImageUrl, "Big image url is missing!");
             }
-            {
-                var page = UpdateHtmlForm.PATH + "image-manga.html";
-                var ppage = UpdateHtmlForm.PATH + "image-manga-popup.html";
-                Assert.IsTrue(File.Exists(page), "Test file is missing!");
-                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(File.ReadAllText(page));
-                HtmlDocument pdoc = new HtmlDocument();
-                pdoc.LoadHtml(File.ReadAllText(ppage));
-
-                var image = new NijieImage(UpdateHtmlForm.MANGA);
-
-                var result = nijie.ParseImage(image, ref nullMember, doc);
-                Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
-                Assert.IsTrue(image.IsManga, "Image is not manga");
-                Assert.AreEqual(5, image.MangaPages.Count, "Manga pages count are different!");
-
-                Nijie.ParseImagePopUp(image, pdoc);
-                Assert.AreEqual(5, image.ImageUrls.Count, "Manga image urls count are different!");
-
-                foreach (var item in image.MangaPages)
-                {
-                    Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
-                }
-            }
-            {
-                var page = UpdateHtmlForm.PATH + "image-manga-filter.html";
-                var ppage = UpdateHtmlForm.PATH + "image-manga-popup-filter.html";
-                Assert.IsTrue(File.Exists(page), "Test file is missing!");
-                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
-
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(File.ReadAllText(page));
-                HtmlDocument pdoc = new HtmlDocument();
-                pdoc.LoadHtml(File.ReadAllText(ppage));
-
-                var image = new NijieImage(UpdateHtmlForm.MANGA2);
-
-                var result = nijie.ParseImage(image, ref nullMember, doc);
-                Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
-                Assert.IsTrue(image.IsManga, "Image is not manga");
-                Assert.AreEqual(4, image.MangaPages.Count, "Manga pages count are different!");
-
-                Nijie.ParseImagePopUp(image, pdoc);
-                Assert.AreEqual(4, image.ImageUrls.Count, "Manga image urls count are different!");
-
-                foreach (var item in image.MangaPages)
-                {
-                    Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
-                }
-            }
+            
             {
                 var page = UpdateHtmlForm.PATH + "image-doujin.html";
                 var ppage = UpdateHtmlForm.PATH + "image-doujin-popup.html";
@@ -288,6 +238,68 @@ namespace NijieDownloader.Test
                 foreach (var item in image.MangaPages)
                 {
                     Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
+                }
+            }
+        }
+
+        [TestMethod]
+        public void TestMangaParserMethod()
+        {
+            NijieMember nullMember = null;
+            var nijie = Nijie.GetInstance();
+            {
+                {
+                    var page = UpdateHtmlForm.PATH + "image-manga.html";
+                    var ppage = UpdateHtmlForm.PATH + "image-manga-popup.html";
+                    Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                    Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(File.ReadAllText(page));
+                    HtmlDocument pdoc = new HtmlDocument();
+                    pdoc.LoadHtml(File.ReadAllText(ppage));
+
+                    var image = new NijieImage(UpdateHtmlForm.MANGA);
+
+                    var result = nijie.ParseImage(image, ref nullMember, doc);
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsTrue(image.IsManga, "Image is not manga");
+                    Assert.AreEqual(5, image.MangaPages.Count, "Manga pages count are different!");
+
+                    Nijie.ParseImagePopUp(image, pdoc);
+                    Assert.AreEqual(5, image.ImageUrls.Count, "Manga image urls count are different!");
+
+                    foreach (var item in image.MangaPages)
+                    {
+                        Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
+                    }
+
+                    
+                }
+                {
+                    var page = UpdateHtmlForm.PATH + "image-manga-filter.html";
+                    var ppage = UpdateHtmlForm.PATH + "image-manga-popup-filter.html";
+                    Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                    Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
+
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(File.ReadAllText(page));
+                    HtmlDocument pdoc = new HtmlDocument();
+                    pdoc.LoadHtml(File.ReadAllText(ppage));
+
+                    var image = new NijieImage(UpdateHtmlForm.MANGA2);
+
+                    var result = nijie.ParseImage(image, ref nullMember, doc);
+                    Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                    Assert.IsTrue(image.IsManga, "Image is not manga");
+                    Assert.AreEqual(4, image.MangaPages.Count, "Manga pages count are different!");
+
+                    Nijie.ParseImagePopUp(image, pdoc);
+                    Assert.AreEqual(4, image.ImageUrls.Count, "Manga image urls count are different!");
+
+                    foreach (var item in image.MangaPages)
+                    {
+                        Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
+                    }
                 }
             }
         }
