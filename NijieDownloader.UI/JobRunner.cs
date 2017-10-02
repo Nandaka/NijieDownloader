@@ -474,7 +474,8 @@ namespace NijieDownloader.UI
                 var filename = MainWindow.makeFilename(job, image, i, MainWindow.FilenameFormatType.Manga);
                 job.Message = "Downloading: " + image.ImageUrls[i];
                 var pagefilename = filename;
-                if (!(job.SaveFilenameFormat.Contains(MainWindow.FILENAME_FORMAT_PAGE) || job.SaveFilenameFormat.Contains(MainWindow.FILENAME_FORMAT_PAGE_ZERO)))
+                if (!(job.SaveMangaFilenameFormat.Contains(MainWindow.FILENAME_FORMAT_PAGE) ||
+                    job.SaveMangaFilenameFormat.Contains(MainWindow.FILENAME_FORMAT_PAGE_ZERO)))
                 {
                     pagefilename += "_p" + i;
                 }

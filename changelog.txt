@@ -1,4 +1,5 @@
 Nijie Downloader 1.0.9.0
+- Fix Issue #43: Remove duplicated page identifier in filename for manga.
 - Fix Issue #50: Update parser.
 
 Nijie Downloader 1.0.8.0
