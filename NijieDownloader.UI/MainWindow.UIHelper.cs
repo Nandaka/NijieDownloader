@@ -114,7 +114,7 @@ namespace NijieDownloader.UI
                     {
                         filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_PAGE, "_p" + (currPage + 1).ToString());
                         filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_PAGE_ZERO, "_p" + currPage.ToString());
-                        filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MAX_PAGE, " of " + image.ImageUrls.Count);
+                        filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_MAX_PAGE, image.ImageUrls.Count.ToString());
                         filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_SERVER_FILENAME, Util.ExtractFilenameFromUrl(image.ImageUrls[currPage]));
                     }
                     else
