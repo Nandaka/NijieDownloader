@@ -20,6 +20,7 @@ using NijieDownloader.Library;
 using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
 using NijieDownloader.UI.ViewModel;
+using System.Text.RegularExpressions;
 
 namespace NijieDownloader.UI
 {
@@ -39,6 +40,7 @@ namespace NijieDownloader.UI
         public const string FILENAME_FORMAT_SERVER_FILENAME = "{serverFilename}";
         public const string FILENAME_FORMAT_BOOKMARKED_MEMBER_ID = "{bookmarkedMemberId}";
         public const string FILENAME_FORMAT_BOOKMARKED_MEMBER_NAME = "{bookmarkedMemberName}";
+        public static readonly Regex FILENAME_FORMAT_WORKDATE = new Regex("{workdate.?(.*)}");
 
         public static string FILENAME_FORMAT_TOOLTIP = "{memberId}\t= Member ID" + Environment.NewLine +
                                                     "{memberName}\t= Member Name, might changed." + Environment.NewLine +
@@ -51,7 +53,9 @@ namespace NijieDownloader.UI
                                                     "{searchTags}\t= Search Tags used for query " + Environment.NewLine +
                                                     "{serverFilename}\t= Original numeric filename as the image is kept on server." + Environment.NewLine +
                                                     "{bookmarkedMemberId}\t= Only available on Member's Bookmarks mode." + Environment.NewLine +
-                                                    "{bookmarkedMemberName}\t= Only available on Member's Bookmarks mode.";
+                                                    "{bookmarkedMemberName}\t= Only available on Member's Bookmarks mode."+ Environment.NewLine +
+                                                    "{workdate}\t= Work date in yyyyMMdd format." + Environment.NewLine +
+                                                    "{workdate:datetimeformat}\t= Work date with custom format, replace datetimeformat with standard C# format. E.g. {workdate:yyyyMMdd HHmmss}";
 
         public enum FilenameFormatType
         {
@@ -150,6 +154,17 @@ namespace NijieDownloader.UI
                     filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_ID, "");
                     filenameFormat = filenameFormat.Replace(FILENAME_FORMAT_BOOKMARKED_MEMBER_NAME, "");
                 }
+
+                // workdate
+                if (FILENAME_FORMAT_WORKDATE.IsMatch(filenameFormat))
+                {
+                    var match = FILENAME_FORMAT_WORKDATE.Match(filenameFormat);
+                    var fmtDate = "yyyyMMdd";
+                    if (!String.IsNullOrEmpty(match.Groups[1].Value)) fmtDate = match.Groups[1].Value;
+                    var strDate = image.WorkDate.ToString(fmtDate);
+                    filenameFormat = filenameFormat.Replace(match.Value, strDate);
+                }
+
                 return filenameFormat;
             }
             catch (Exception ex)
