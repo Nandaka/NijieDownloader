@@ -15,6 +15,7 @@ namespace NijieDownloader.Library
 {
     public partial class Nijie
     {
+        public const int IMAGES_PER_PAGE = 48;
         /// <summary>
         /// Get and parse the search page
         /// </summary>
@@ -67,27 +68,30 @@ namespace NijieDownloader.Library
             var imagesDiv = doc.DocumentNode.SelectSingleNode("//div[@id='main-left-main']/div[@class='clearfix']").InnerHtml;
             search.Images = ParseSearchImageList(imagesDiv, search.QueryUrl);
 
-            // check next page availability
-            search.IsNextAvailable = false;
+            //// check next page availability
+            //search.IsNextAvailable = false;
 
-            // max image per search page = 48
-            // nijie removed the next page button, search based on paging number
-            var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//li");
-            if (search.Images.Count == 48 && topNav != null)
-            {
-                int nextPage = search.Option.Page + 1;
-                foreach (var pageItem in topNav)
-                {
-                    if (pageItem.InnerText.Contains(nextPage.ToString()))
-                    {
-                        search.IsNextAvailable = true;
-                        break;
-                    }
-                }
-            }
+            //// max image per search page = 48
+            //// nijie removed the next page button, search based on paging number
+            //var topNav = doc.DocumentNode.SelectNodes("//div[@class='kabu-top']//li");
+            //if (search.Images.Count == 48 && topNav != null)
+            //{
+            //    int nextPage = search.Option.Page + 1;
+            //    foreach (var pageItem in topNav)
+            //    {
+            //        if (pageItem.InnerText.Contains(nextPage.ToString()))
+            //        {
+            //            search.IsNextAvailable = true;
+            //            break;
+            //        }
+            //    }
+            //}
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//h4/em");
             search.TotalImages = ParseTotalImageCount(imageCountElements);
+
+            // Issue#51 assume the max page based on (total images / 48) + 1
+            search.IsNextAvailable = ((search.TotalImages / IMAGES_PER_PAGE) + 1 > search.Option.Page);
 
             // set next page to false if no images anymore.
             if (search.Images.Count <= 0)

@@ -203,6 +203,7 @@ namespace NijieDownloader.UI
                     if (isJobCancelled(job)) return;
 
                     job.Message = "Parsing search page: " + job.CurrentPage;
+                    MainWindow.Log.Info("Processing page: " + job.CurrentPage);
                     var option = new NijieSearchOption()
                     {
                         Query = job.SearchTag,
@@ -233,13 +234,19 @@ namespace NijieDownloader.UI
 
                         try
                         {
+#if DEBUG
+                            job.Message = "Image " + image.ImageId;
+                            job.DownloadCount++;
+#else
                             processImage(job, null, image);
+#endif
                         }
                         catch (NijieException ne)
                         {
                             if (ne.ErrorCode == NijieException.DOWNLOAD_ERROR)
                             {
                                 job.Exceptions.Add(ne);
+                                MainWindow.Log.Error(String.Format("Error when processing Image: {0}", image.ImageId), ne);
                                 continue;
                             }
                             else
@@ -249,23 +256,29 @@ namespace NijieDownloader.UI
                         if (job.DownloadCount > limit && limit != 0)
                         {
                             job.Message = "Image limit reached: " + limit;
+                            MainWindow.Log.Info(job.Message + " for Job: " + job.SearchTag);
                             return;
                         }
                     }
 
                     ++job.CurrentPage;
-                    MainWindow.Log.Info("Moving to next page: " + job.CurrentPage);
                     if (job.CurrentPage > endPage && endPage != 0)
                     {
                         job.Message = "Page limit reached: " + endPage;
+                        MainWindow.Log.Info(job.Message + " for Job: " + job.SearchTag);
                         return;
                     }
                     else if (job.DownloadCount > limit && limit != 0)
                     {
                         job.Message = "Download count reached: " + limit;
+                        MainWindow.Log.Info(job.Message + " for Job: " + job.SearchTag);
                         return;
                     }
                     flag = searchPage.IsNextAvailable;
+                    if (!flag)
+                    {
+                        MainWindow.Log.Info("No more image for Job: " + job.SearchTag);
+                    }
                 }
             }
             catch (NijieException ne)
