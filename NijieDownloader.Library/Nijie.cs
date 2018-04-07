@@ -53,7 +53,7 @@ namespace NijieDownloader.Library
             Log.Debug("UseHttps= " + Properties.Settings.Default.UseHttps);
         }
 
-        private void canOperate()
+        public void canOperate()
         {
             if (!IsLoggedIn)
             {
@@ -124,7 +124,6 @@ namespace NijieDownloader.Library
                         }
 
                         downloadPostCheck(filename, tempFilename, bytes_total, progressChanged, ref message);
-
                     }
                     break;
                 }

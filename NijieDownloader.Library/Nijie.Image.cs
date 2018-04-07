@@ -71,6 +71,12 @@ namespace NijieDownloader.Library
             }
             else
             {
+                var videoDiv = doc.DocumentNode.SelectSingleNode("//div[@id='gallery']//video");
+                if (videoDiv != null)
+                {
+                    image.IsVideo = true;
+                }
+
                 if (member == null)
                 {
                     member = ParseMemberFromImage(doc);
@@ -250,7 +256,13 @@ namespace NijieDownloader.Library
 
         private void ParseImageLinks(NijieImage image, HtmlDocument doc)
         {
-            var mediumImageLink = doc.DocumentNode.SelectSingleNode("//div[@id='gallery_open']//img[@class='mozamoza ngtag']");
+            var selector = "//div[@id='gallery_open']//img[@class='mozamoza ngtag']";
+            if (image.IsVideo)
+            {
+                selector = "//div[@id='gallery_open']//video";
+            }
+
+            var mediumImageLink = doc.DocumentNode.SelectSingleNode(selector);
             if (mediumImageLink != null)
                 image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
 
@@ -350,7 +362,13 @@ namespace NijieDownloader.Library
 
         public static NijieImage ParseImagePopUp(NijieImage image, HtmlDocument doc)
         {
-            var bigImage = doc.DocumentNode.SelectSingleNode("//div[starts-with(@id,'diff_')]//img");
+            var selector = "//div[starts-with(@id,'diff_')]//img";
+            if (image.IsVideo)
+            {
+                selector = "//div[starts-with(@id,'diff_')]//video";
+            }
+
+            var bigImage = doc.DocumentNode.SelectSingleNode(selector);
             if (bigImage.Attributes.Contains("data-original"))
                 image.BigImageUrl = Nandaka.Common.Util.FixUrl(bigImage.Attributes["data-original"].Value, ROOT_DOMAIN);
             else
@@ -359,8 +377,8 @@ namespace NijieDownloader.Library
             if (image.IsManga)
             {
                 image.ImageUrls.Clear();
-                //image.ImageUrls.Add(image.BigImageUrl);
-                var images = doc.DocumentNode.SelectNodes("//div[starts-with(@id,'diff_')]//img");
+
+                var images = doc.DocumentNode.SelectNodes(selector);
                 foreach (var item in images)
                 {
                     if (item.Attributes["class"].Value == "filter") continue;

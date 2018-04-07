@@ -180,5 +180,6 @@ namespace NijieDownloader.Library.Model
         }
 
         public bool IsDoujin { get; set; }
+        public bool IsVideo { get; set; }
     }
 }
