@@ -30,6 +30,7 @@ namespace NijieDownloader.Test
         public const int MANGA = 150508;
         public const int MANGA2 = 151422;
         public const int DOUJIN = 151004;
+        public const int VIDEO = 256283;
 
         public UpdateHtmlForm()
         {
@@ -66,17 +67,17 @@ namespace NijieDownloader.Test
                 // get member doujin page
                 url = "https://nijie.info/members_dojin.php?id=" + MEMBER_3;
                 txtLog.AppendText("Getting member images page..." + Environment.NewLine);
-                downloadHelper(url , "member-doujins.html");
+                downloadHelper(url, "member-doujins.html");
 
                 // get member bookmark page
                 url = "https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1;
                 txtLog.AppendText("Getting member's bookmarked images page..." + Environment.NewLine);
-                downloadHelper(url , "member-bookmarked-images.html");
+                downloadHelper(url, "member-bookmarked-images.html");
 
                 // get member bookmark last page
                 url = "https://nijie.info/user_like_illust_view.php?id=" + MEMBER_1 + "&p=2";
                 txtLog.AppendText("Getting member's bookmarked images last page..." + Environment.NewLine);
-                downloadHelper(url , "member-bookmarked-images-lastpage.html");
+                downloadHelper(url, "member-bookmarked-images-lastpage.html");
 
                 // get search page
                 {
@@ -148,8 +149,12 @@ namespace NijieDownloader.Test
                     txtLog.AppendText("Getting doujin page..." + Environment.NewLine);
                     downloadHelper("https://nijie.info/view.php?id=" + DOUJIN, "image-doujin.html");
                     downloadHelper("https://nijie.info/view_popup.php?id=" + DOUJIN, "image-doujin-popup.html");
-                }
 
+                    // video
+                    txtLog.AppendText("Getting doujin page..." + Environment.NewLine);
+                    downloadHelper("https://nijie.info/view.php?id=" + VIDEO, "image-video.html");
+                    downloadHelper("https://nijie.info/view_popup.php?id=" + VIDEO, "image-video-popup.html");
+                }
 
                 txtLog.AppendText("---====ALL DONE====---" + Environment.NewLine);
 

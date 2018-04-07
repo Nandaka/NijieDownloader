@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using HtmlAgilityPack;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -34,15 +29,18 @@ namespace NijieDownloader.Test
             }
         }
 
+        private Nijie nijie;
+
         [TestInitialize]
         public void Init()
         {
+            nijie = Nijie.GetInstance();
         }
 
         [TestMethod]
         public void TestMemberParserMethod()
         {
-            var nijie = Nijie.GetInstance();
+            //var nijie = Nijie.GetInstance();
             var member = new NijieMember() { MemberId = UpdateHtmlForm.MEMBER_1 };
             // test member images
             {
@@ -114,8 +112,8 @@ namespace NijieDownloader.Test
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(File.ReadAllText(page));
                 var result = nijie.ParseMember(doc, member3, MemberMode.Doujin);
-                Assert.AreEqual(28, result.Images.Count, "Image counts differents");
-                Assert.AreEqual(28, result.TotalImages, "Total Image counts differents");
+                Assert.AreEqual(30, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(30, result.TotalImages, "Total Image counts differents");
                 foreach (var image in result.Images)
                 {
                     Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
@@ -127,15 +125,15 @@ namespace NijieDownloader.Test
         [TestMethod]
         public void TestSearchParserMethod()
         {
-            var nijie = Nijie.GetInstance();
+            //var nijie = Nijie.GetInstance();
             var option = new NijieSearchOption()
-                    {
-                        Matching = SearchType.PartialMatch,
-                        Query = "無修正",
-                        Sort = SortType.Latest,
-                        SearchBy = SearchMode.Tag,
-                        Page = 1
-                    };
+            {
+                Matching = SearchType.PartialMatch,
+                Query = "無修正",
+                Sort = SortType.Latest,
+                SearchBy = SearchMode.Tag,
+                Page = 1
+            };
             var search = new NijieSearch(option);
 
             {
@@ -153,7 +151,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(166, result.TotalImages, "Different image count");
+                Assert.AreEqual(163, result.TotalImages, "Different image count");
             }
 
             {
@@ -171,7 +169,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsTrue(result.IsNextAvailable, "Next Page should be available");
-                Assert.AreEqual(103, result.TotalImages, "Different image count");
+                Assert.AreEqual(104, result.TotalImages, "Different image count");
             }
 
             {
@@ -183,8 +181,8 @@ namespace NijieDownloader.Test
                 search.Option.Page = UpdateHtmlForm.search_tag_partial_latest_lastpage_page;
 
                 var result = nijie.ParseSearch(doc, search);
-                Assert.AreEqual(21, result.Images.Count, "Image counts differents");
-                Assert.AreEqual(166, result.TotalImages, "Total Image counts differents");
+                Assert.AreEqual(18, result.Images.Count, "Image counts differents");
+                Assert.AreEqual(163, result.TotalImages, "Total Image counts differents");
 
                 foreach (var image in result.Images)
                 {
@@ -193,7 +191,7 @@ namespace NijieDownloader.Test
                 }
 
                 Assert.IsFalse(result.IsNextAvailable, "Next Page should not be available");
-                Assert.AreEqual(166, result.TotalImages, "Different image count");
+                Assert.AreEqual(163, result.TotalImages, "Different image count");
             }
         }
 
@@ -201,7 +199,7 @@ namespace NijieDownloader.Test
         public void TestImageParserMethod()
         {
             NijieMember nullMember = null;
-            var nijie = Nijie.GetInstance();
+            //var nijie = Nijie.GetInstance();
             {
                 var page = UpdateHtmlForm.PATH + "image-normal.html";
                 Assert.IsTrue(File.Exists(page), "Test file is missing!");
@@ -215,7 +213,7 @@ namespace NijieDownloader.Test
                 Assert.IsFalse(image.IsManga, "Image is not big image");
                 Assert.IsNotNull(image.BigImageUrl, "Big image url is missing!");
             }
-            
+
             {
                 var page = UpdateHtmlForm.PATH + "image-doujin.html";
                 var ppage = UpdateHtmlForm.PATH + "image-doujin-popup.html";
@@ -246,7 +244,7 @@ namespace NijieDownloader.Test
         public void TestMangaParserMethod()
         {
             NijieMember nullMember = null;
-            var nijie = Nijie.GetInstance();
+            //var nijie = Nijie.GetInstance();
             {
                 {
                     var page = UpdateHtmlForm.PATH + "image-manga.html";
@@ -272,8 +270,6 @@ namespace NijieDownloader.Test
                     {
                         Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
                     }
-
-                    
                 }
                 {
                     var page = UpdateHtmlForm.PATH + "image-manga-filter.html";
@@ -301,6 +297,34 @@ namespace NijieDownloader.Test
                         Assert.IsNotNull(item.ImageUrl, "Image url is missing!");
                     }
                 }
+            }
+        }
+
+        [TestMethod]
+        public void TestVideoParserMethod()
+        {
+            NijieMember nullMember = null;
+            //var nijie = Nijie.GetInstance();
+            {
+                // http://nijie.info/view.php?id=256283
+                var page = UpdateHtmlForm.PATH + "image-video.html";
+                // http://nijie.info/view_popup.php?id=256283
+                var ppage = UpdateHtmlForm.PATH + "image-video-popup.html";
+                Assert.IsTrue(File.Exists(page), "Test file is missing!");
+                Assert.IsTrue(File.Exists(ppage), "Test file is missing!");
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(File.ReadAllText(page));
+                HtmlDocument pdoc = new HtmlDocument();
+                pdoc.LoadHtml(File.ReadAllText(ppage));
+
+                var image = new NijieImage(UpdateHtmlForm.VIDEO);
+
+                var result = nijie.ParseImage(image, ref nullMember, doc);
+                Assert.IsTrue(image.ImageId > 0, "Image Id not valid");
+                Assert.IsTrue(image.IsVideo, "Image is not video");
+                Assert.IsNotNull(image.BigImageUrl, "Big image url is missing!");
+
+                Nijie.ParseImagePopUp(image, pdoc);
             }
         }
 
