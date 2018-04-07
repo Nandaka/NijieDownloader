@@ -147,7 +147,7 @@ namespace Nandaka.Common
 
         public static string ExtractFilenameFromUrl(string url, bool stripExtension = true)
         {
-            var uri = new Uri(url, true);
+            var uri = new Uri(url);
             var result = uri.Segments.Last();
 
             result = result.Split('?')[0];

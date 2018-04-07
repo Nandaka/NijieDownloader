@@ -53,7 +53,7 @@ namespace NijieDownloader.Library
             Log.Debug("UseHttps= " + Properties.Settings.Default.UseHttps);
         }
 
-        public void canOperate()
+        private void canOperate()
         {
             if (!IsLoggedIn)
             {
