@@ -311,7 +311,7 @@ namespace NijieDownloader.UI.ViewModel
         }
 
         [XmlIgnoreAttribute]
-        public bool HasError
+        public new bool HasError
         {
             get
             {

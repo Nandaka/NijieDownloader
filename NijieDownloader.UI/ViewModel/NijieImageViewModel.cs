@@ -66,6 +66,62 @@ namespace NijieDownloader.UI.ViewModel
             }
         }
 
+        public Visibility IsVideo
+        {
+            get
+            {
+                if (_image != null && _image.IsVideo)
+                    return Visibility.Visible;
+                if (_image != null && _image.BigImageUrl.EndsWith(".gif"))
+                    return Visibility.Visible;
+                return Visibility.Collapsed;
+            }
+        }
+
+        public Visibility IsImage
+        {
+            get
+            {
+                if (_image != null && !_image.IsVideo && !_image.BigImageUrl.EndsWith(".gif"))
+                    return Visibility.Visible;
+                return Visibility.Collapsed;
+            }
+        }
+
+        public Visibility IsLoading
+        {
+            get
+            {
+                if (_image != null &&
+                    !_image.IsVideo &&
+                    this.ImageStatus != ImageLoader.IMAGE_LOADED)
+                    return Visibility.Visible;
+
+                return Visibility.Collapsed;
+            }
+        }
+
+        public bool ShouldAnimate
+        {
+            get
+            {
+                if (_image != null && this.ImageStatus != ImageLoader.IMAGE_LOADING)
+                    return false;
+
+                return true;
+            }
+        }
+
+        public string VideoSource
+        {
+            get
+            {
+                if (_image != null)
+                    return _image.BigImageUrl;
+                return "";
+            }
+        }
+
         private bool _isSelected;
 
         public bool IsSelected
@@ -99,6 +155,7 @@ namespace NijieDownloader.UI.ViewModel
             {
                 _imageStatus = value;
                 onPropertyChanged("ImageStatus");
+                onPropertyChanged("IsLoading");
             }
         }
 
@@ -402,6 +459,7 @@ namespace NijieDownloader.UI.ViewModel
 
         private void LoadBigImage(string url)
         {
+            if (this._image != null && this._image.IsVideo) return;
             if (String.IsNullOrWhiteSpace(url)) return;
 
             this.ImageStatus = ImageLoader.IMAGE_LOADING;

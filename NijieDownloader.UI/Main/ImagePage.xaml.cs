@@ -18,6 +18,8 @@ using FirstFloor.ModernUI.Windows.Navigation;
 using NijieDownloader.Library;
 using NijieDownloader.Library.DAL;
 using NijieDownloader.UI.ViewModel;
+using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace NijieDownloader.UI
 {
@@ -27,6 +29,8 @@ namespace NijieDownloader.UI
     public partial class ImagePage : Page, IContent
     {
         public NijieImageViewModel ViewData { get; set; }
+
+        private DispatcherTimer timer;
 
         public ImagePage()
         {
@@ -38,6 +42,13 @@ namespace NijieDownloader.UI
             ViewData.ImageId = 67940;
 #endif
             this.DataContext = ViewData;
+
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromSeconds(1);
+            timer.Tick += timer_Tick;
+
+            video.MediaEnded += Video_MediaEnded;
+            video.MediaOpened += Video_MediaOpened;
         }
 
         #region navigation
@@ -154,6 +165,48 @@ namespace NijieDownloader.UI
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ViewData.JumpTo(lbxMangaThumb.SelectedIndex);
+        }
+
+        // video related
+        private void Video_MediaOpened(object sender, RoutedEventArgs e)
+        {
+            video.LoadedBehavior = MediaState.Manual;
+            video.Play();
+            timer.Start();
+        }
+
+        private void Video_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            if (chkRepeat.IsChecked.Value)
+                video.Position = TimeSpan.FromMilliseconds(1);
+        }
+
+        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            video.Play();
+            timer.Start();
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            if (video.Source != null)
+            {
+                if (video.NaturalDuration.HasTimeSpan)
+                    lblStatus.Content = String.Format("{0} / {1}", video.Position.ToString(@"mm\:ss"), video.NaturalDuration.TimeSpan.ToString(@"mm\:ss"));
+            }
+            else
+                lblStatus.Content = "";
+        }
+
+        private void btnPause_Click(object sender, RoutedEventArgs e)
+        {
+            video.Pause();
+        }
+
+        private void btnStop_Click(object sender, RoutedEventArgs e)
+        {
+            video.Stop();
+            timer.Stop();
         }
 
         #endregion Commands
