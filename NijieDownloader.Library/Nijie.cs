@@ -165,9 +165,17 @@ namespace NijieDownloader.Library
                 var dateTime = client.ResponseHeaders["Last-Modified"];
                 if (!String.IsNullOrWhiteSpace(dateTime))
                 {
-                    var date = DateTime.Parse(dateTime);
-                    File.SetCreationTimeUtc(filename, date.ToUniversalTime());
-                    File.SetLastWriteTimeUtc(filename, date.ToUniversalTime());
+                    try
+                    {
+                        var date = DateTime.Parse(dateTime);
+                        File.SetCreationTimeUtc(filename, date.ToUniversalTime());
+                        File.SetLastWriteTimeUtc(filename, date.ToUniversalTime());
+                    }
+                    catch (FormatException ex)
+                    {
+                        Log.Error(String.Format("Failed to parse datetime: {0}", dateTime), ex);
+                        throw;
+                    }
                 }
             }
 
