@@ -1,3 +1,7 @@
+Nijie Downloader 1.0.9.4
+- Fix Issue #59: update doujin parser.
+- Fix Issue #58: update datetime parser.
+
 Nijie Downloader 1.0.9.2
 - Fix Issue #56: Implement video support.
 
