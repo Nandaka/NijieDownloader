@@ -72,17 +72,25 @@ namespace Nandaka.Common
             }
         }
 
-        public static string ParseExtension(string url)
+        public static string ParseExtension(string url, string defaultExtension = "jpg")
         {
             var dots = url.Split('.');
             if (dots.Length > 0)
             {
                 url = dots.Last();
             }
+
+            // remove query parameter
             dots = url.Split('?');
             if (dots.Length > 0)
             {
                 url = dots[0];
+            }
+
+            // assume default extensions if no file extension found.
+            if (String.IsNullOrWhiteSpace(url))
+            {
+                return defaultExtension;
             }
 
             return url;

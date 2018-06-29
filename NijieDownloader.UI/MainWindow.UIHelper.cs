@@ -53,7 +53,7 @@ namespace NijieDownloader.UI
                                                     "{searchTags}\t= Search Tags used for query " + Environment.NewLine +
                                                     "{serverFilename}\t= Original numeric filename as the image is kept on server." + Environment.NewLine +
                                                     "{bookmarkedMemberId}\t= Only available on Member's Bookmarks mode." + Environment.NewLine +
-                                                    "{bookmarkedMemberName}\t= Only available on Member's Bookmarks mode."+ Environment.NewLine +
+                                                    "{bookmarkedMemberName}\t= Only available on Member's Bookmarks mode." + Environment.NewLine +
                                                     "{workdate}\t= Work date in yyyyMMdd format." + Environment.NewLine +
                                                     "{workdate:datetimeformat}\t= Work date with custom format, replace datetimeformat with standard C# format. E.g. {workdate:yyyyMMdd HHmmss}";
 
@@ -76,13 +76,16 @@ namespace NijieDownloader.UI
                 string filenameFormat = null;
                 switch (type)
                 {
-                    case FilenameFormatType.Image: filenameFormat = job.SaveFilenameFormat;
+                    case FilenameFormatType.Image:
+                        filenameFormat = job.SaveFilenameFormat;
                         break;
 
-                    case FilenameFormatType.Manga: filenameFormat = job.SaveMangaFilenameFormat;
+                    case FilenameFormatType.Manga:
+                        filenameFormat = job.SaveMangaFilenameFormat;
                         break;
 
-                    case FilenameFormatType.Avatar: filenameFormat = job.SaveAvatarFilenameFormat;
+                    case FilenameFormatType.Avatar:
+                        filenameFormat = job.SaveAvatarFilenameFormat;
                         break;
                 }
                 if (string.IsNullOrWhiteSpace(filenameFormat))
