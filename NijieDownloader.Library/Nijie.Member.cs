@@ -109,7 +109,7 @@ namespace NijieDownloader.Library
                         image.Title = link.Attributes["title"].Value;
 
                         var thumb = div.DocumentNode.SelectSingleNode("//a/img");
-                        image.ThumbImageUrl = thumb.Attributes["src"].Value;
+                        image.ThumbImageUrl = Util.FixUrl(thumb.Attributes["src"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
 
                         // check if image is friend only
                         // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
@@ -189,7 +189,7 @@ namespace NijieDownloader.Library
                     image.Title = link.Attributes["title"].Value;
 
                     var thumb = div.DocumentNode.SelectSingleNode("//a/img");
-                    image.ThumbImageUrl = thumb.Attributes["src"].Value;
+                    image.ThumbImageUrl = Util.FixUrl(thumb.Attributes["src"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
 
                     // check if image is friend only
                     // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
@@ -239,7 +239,6 @@ namespace NijieDownloader.Library
 
         private static void CheckNextPageAvailable(HtmlDocument doc, NijieMember member)
         {
-
             // check next page
             member.IsNextAvailable = false;
             var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
@@ -266,13 +265,13 @@ namespace NijieDownloader.Library
             }
             var imagesDiv = "";
             foreach (var item in imagesDivs)
-	        {
-		        if(item.InnerHtml.Contains("class=\"nijie\""))
+            {
+                if (item.InnerHtml.Contains("class=\"nijie\""))
                 {
                     imagesDiv = item.InnerHtml;
                     break;
                 }
-	        }
+            }
             member.Images = ParseImageList(imagesDiv, member.MemberUrl);
             foreach (var image in member.Images)
             {

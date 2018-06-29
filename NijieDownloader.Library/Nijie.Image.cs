@@ -98,6 +98,7 @@ namespace NijieDownloader.Library
         private void ProcessDoujin(NijieImage image, HtmlDocument doc)
         {
             image.IsDoujin = true;
+            image.IsVideo = false;
 
             // member id
             var memberDivs = doc.DocumentNode.SelectNodes("//div[@id='dojin_left']//p[@class='text']//a");
@@ -126,10 +127,10 @@ namespace NijieDownloader.Library
 
             // main image
             var mainImage = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//p[@class='image']/a/img");
-            image.MediumImageUrl = mainImage.Attributes["src"].Value;
+            image.MediumImageUrl = Util.FixUrl(mainImage.Attributes["src"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
 
             var bigImage = doc.DocumentNode.SelectSingleNode("//div[@id='dojin_left']//p[@class='image']/a");
-            image.BigImageUrl = bigImage.Attributes["href"].Value;
+            image.BigImageUrl = Util.FixUrl(bigImage.Attributes["href"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
 
             // tags
             var tags = doc.DocumentNode.SelectNodes("//ul[@id='tag']//span[@class='tag_name']/a");
@@ -148,6 +149,7 @@ namespace NijieDownloader.Library
             image.ImageUrls = new List<string>();
             image.MangaPages = new List<NijieMangaInfo>();
             int p = 1;
+            //image.BigImageUrl = Util.FixUrl(image.BigImageUrl, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
             image.ImageUrls.Add(image.BigImageUrl);
             var page = new NijieMangaInfo();
             page.Image = image;
@@ -161,7 +163,8 @@ namespace NijieDownloader.Library
             {
                 foreach (var item in subImages)
                 {
-                    image.ImageUrls.Add(item.Attributes["href"].Value);
+                    var tempUrl = Util.FixUrl(item.Attributes["href"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
+                    image.ImageUrls.Add(tempUrl);
 
                     page = new NijieMangaInfo();
                     page.Image = image;
@@ -171,6 +174,9 @@ namespace NijieDownloader.Library
                     image.MangaPages.Add(page);
                 }
             }
+
+            // parse actual image urls
+            image = ParseImagePopups(image);
         }
 
         private void ParseImageExtras(NijieImage image, HtmlDocument doc)
@@ -264,12 +270,12 @@ namespace NijieDownloader.Library
 
             var mediumImageLink = doc.DocumentNode.SelectSingleNode(selector);
             if (mediumImageLink != null)
-                image.MediumImageUrl = mediumImageLink.Attributes["src"].Value;
+                image.MediumImageUrl = Util.FixUrl(mediumImageLink.Attributes["src"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps); ;
 
             var bigImageLinks = doc.DocumentNode.SelectNodes("//div[@id='gallery_open']//a");
             if (bigImageLinks != null)
             {
-                image.BigImageUrl = bigImageLinks[0].Attributes["href"].Value;
+                image.BigImageUrl = Util.FixUrl(bigImageLinks[0].Attributes["href"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
                 if (bigImageLinks.Count > 1)
                 {
                     image.IsManga = true;
@@ -278,7 +284,7 @@ namespace NijieDownloader.Library
                     int p = 1;
                     foreach (var bigImage in bigImageLinks)
                     {
-                        image.ImageUrls.Add(bigImage.Attributes["href"].Value);
+                        image.ImageUrls.Add(Util.FixUrl(bigImage.Attributes["href"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps));
 
                         var page = new NijieMangaInfo();
                         page.Image = image;

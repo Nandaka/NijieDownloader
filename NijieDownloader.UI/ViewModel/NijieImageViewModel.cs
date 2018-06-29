@@ -117,7 +117,7 @@ namespace NijieDownloader.UI.ViewModel
             get
             {
                 if (_image != null)
-                    return _image.BigImageUrl;
+                    return Util.FixUrl(_image.BigImageUrl, Nijie.ROOT_DOMAIN, NijieDownloader.Library.Properties.Settings.Default.UseHttps); ;
                 return "";
             }
         }

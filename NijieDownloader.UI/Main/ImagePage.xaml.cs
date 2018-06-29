@@ -47,8 +47,16 @@ namespace NijieDownloader.UI
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
 
+            //if (ViewData.IsVideo != Visibility.Collapsed)
+            //{
             video.MediaEnded += Video_MediaEnded;
             video.MediaOpened += Video_MediaOpened;
+            //}
+            //else
+            //{
+            //    video.MediaEnded -= Video_MediaEnded;
+            //    video.MediaOpened -= Video_MediaOpened;
+            //}
         }
 
         #region navigation

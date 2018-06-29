@@ -135,6 +135,7 @@ namespace NijieDownloader.UI
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+#if !DEBUG
             if (e.IsTerminating)
             {
                 var ex = e.ExceptionObject as Exception;
@@ -144,6 +145,7 @@ namespace NijieDownloader.UI
                     MessageBox.Show(ex.Message + Environment.NewLine + ex.StackTrace);
                 }
             }
+#endif
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)

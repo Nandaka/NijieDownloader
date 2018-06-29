@@ -101,7 +101,8 @@ namespace NijieDownloader.Library
                         {
                             var image = new NijieImage(Int32.Parse(res.Groups[1].Value));
                             image.Title = imageDiv.DocumentNode.SelectSingleNode("//p[@class='title']").InnerText;
-                            image.ThumbImageUrl = imageDiv.DocumentNode.SelectSingleNode("//p[@class='nijiedao']//img").Attributes["src"].Value;
+                            var tempThumb = imageDiv.DocumentNode.SelectSingleNode("//p[@class='nijiedao']//img").Attributes["src"].Value;
+                            image.ThumbImageUrl = Util.FixUrl(tempThumb, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
 
                             // check if image is friend only
                             // img src="//img.nijie.info/pic/common_icon/illust/friends.png"

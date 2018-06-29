@@ -105,14 +105,14 @@ namespace Nandaka.Common
                 else
                     url = "http:" + url;
             }
-            if (url.StartsWith("/"))
+            else if (url.StartsWith("/"))
             {
                 if (useHttps)
                     url = "https://" + domain + url;
                 else
                     url = "http://" + domain + url;
             }
-            if (url.StartsWith("./"))
+            else if (url.StartsWith("./"))
             {
                 if (useHttps)
                     url = "https://" + domain + url.Substring(1);
