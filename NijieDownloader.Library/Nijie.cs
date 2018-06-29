@@ -167,14 +167,14 @@ namespace NijieDownloader.Library
                 {
                     try
                     {
-                        var date = DateTime.Parse(dateTime);
+                        // var date = DateTime.Parse(dateTime);
+                        var date = DateTime.ParseExact(dateTime, "ddd, dd MMM yyyy HH:mm:ss GMT", System.Globalization.CultureInfo.InvariantCulture);
                         File.SetCreationTimeUtc(filename, date.ToUniversalTime());
                         File.SetLastWriteTimeUtc(filename, date.ToUniversalTime());
                     }
                     catch (FormatException ex)
                     {
                         Log.Error(String.Format("Failed to parse datetime: {0}", dateTime), ex);
-                        throw;
                     }
                 }
             }

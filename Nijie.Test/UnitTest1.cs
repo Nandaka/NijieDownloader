@@ -19,14 +19,14 @@ namespace NijieDownloader.Test
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            UpdateHtmlForm updateForm = new UpdateHtmlForm();
-            updateForm.ShowDialog();
+            //UpdateHtmlForm updateForm = new UpdateHtmlForm();
+            //updateForm.ShowDialog();
 
-            using (var ctx = new NijieContext())
-            {
-                ctx.Database.Delete();
-                ctx.SaveChanges();
-            }
+            //using (var ctx = new NijieContext())
+            //{
+            //    ctx.Database.Delete();
+            //    ctx.SaveChanges();
+            //}
         }
 
         private Nijie nijie;
@@ -444,6 +444,20 @@ namespace NijieDownloader.Test
 
                 Assert.IsTrue(result == expected);
             }
+        }
+
+        [TestMethod]
+        public void TestDateParseMethod()
+        {
+            string dateTime = "Sun, 18 Mar 2018 11:51:23 GMT";
+
+            var date = DateTime.ParseExact(dateTime, "ddd, dd MMM yyyy HH:mm:ss GMT", null);
+            DateTimeOffset dateOff = DateTimeOffset.ParseExact(dateTime, "ddd, dd MMM yyyy HH:mm:ss GMT", null);
+
+            Assert.IsNotNull(date);
+            Assert.IsNotNull(dateOff);
+            Assert.IsTrue(dateOff.Offset == new TimeSpan(0));
+            Assert.IsTrue(date.ToUniversalTime().Ticks == dateOff.Ticks);
         }
     }
 }
