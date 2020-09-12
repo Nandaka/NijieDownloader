@@ -16,7 +16,6 @@ namespace NijieDownloader.Library
     public partial class Nijie
     {
         public const int IMAGES_PER_PAGE = 48;
-
         /// <summary>
         /// Get and parse the search page
         /// </summary>
@@ -146,8 +145,8 @@ namespace NijieDownloader.Library
                         var link = div.DocumentNode.SelectSingleNode("//a");
                         image.Title = link.Attributes["title"].Value;
 
-                        var thumb = div.DocumentNode.SelectSingleNode("//a/img");
-                        image.ThumbImageUrl = Util.FixUrl(thumb.Attributes["src"].Value, ROOT_DOMAIN, Properties.Settings.Default.UseHttps);
+                        var thumb = div.DocumentNode.SelectSingleNode("//a//p/img");
+                        image.ThumbImageUrl = thumb.Attributes["src"].Value;
 
                         // check if image is friend only
                         // img src="//img.nijie.info/pic/common_icon/illust/friends.png"
