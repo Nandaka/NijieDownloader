@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Nandaka.Common;
 using NijieDownloader.Library.DAL;
 using NijieDownloader.Library.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace NijieDownloader.Library
 {
@@ -231,28 +230,32 @@ namespace NijieDownloader.Library
 
                 item.Remove();
             }
-            CheckNextPageAvailable(doc, member);
 
             var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
             member.TotalImages = ParseTotalImageCount(imageCountElements);
+
+            CheckNextPageAvailable(doc, member);
         }
 
         private static void CheckNextPageAvailable(HtmlDocument doc, NijieMember member)
         {
             // check next page
             member.IsNextAvailable = false;
-            var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
-            if (navButtons != null)
-            {
-                foreach (var item in navButtons)
-                {
-                    if (item.InnerText.StartsWith("次へ"))
-                    {
-                        member.IsNextAvailable = true;
-                        break;
-                    }
-                }
-            }
+            //var navButtons = doc.DocumentNode.SelectNodes("//p[@class='page_button']/a");
+            //if (navButtons != null)
+            //{
+            //    foreach (var item in navButtons)
+            //    {
+            //        if (item.InnerText.StartsWith("次へ") || item.InnerText.StartsWith("Next"))
+            //        {
+            //            member.IsNextAvailable = true;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            // Issue #64 assume the max page based on (total images / 48) + 1 for member page
+            member.IsNextAvailable = ((member.TotalImages / IMAGES_PER_PAGE) + 1 > member.Page);
         }
 
         private void ParseMemberImages(HtmlDocument doc, NijieMember member)
@@ -278,10 +281,10 @@ namespace NijieDownloader.Library
                 image.Member = member;
             }
 
-            CheckNextPageAvailable(doc, member);
-
             var imageCountElements = doc.DocumentNode.SelectNodes("//p[@class='mem-indent float-left']/em");
             member.TotalImages = ParseTotalImageCount(imageCountElements);
+
+            CheckNextPageAvailable(doc, member);
         }
 
         private void ParseMemberProfile(HtmlDocument doc, NijieMember member)

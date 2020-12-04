@@ -1,3 +1,8 @@
+Nijie Downloader 1.0.9.5
+- Fix Issue #63: update parser for workdate and description.
+- Fix Issue #64: fix next page detection.
+- Fix Issue #65: update login check, you might need to perform age verification in browser.
+
 Nijie Downloader 1.0.9.4
 - Fix Issue #59: update doujin parser.
 - Fix Issue #58: update datetime parser.

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Nandaka.Common;
 using NijieDownloader.Library.Model;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace NijieDownloader.Library
 {
@@ -220,7 +220,9 @@ namespace NijieDownloader.Library
             // title
             var titleDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/p");
             if (titleDiv != null)
+            {
                 image.Title = titleDiv.InnerText;
+            }
             if (String.IsNullOrWhiteSpace(image.Title))
             {
                 var titleDiv2 = doc.DocumentNode.SelectSingleNode("//div[@id='view-left']/h2");
@@ -228,12 +230,13 @@ namespace NijieDownloader.Library
                     image.Title = titleDiv2.InnerText;
             }
 
-            // description and date
+            // date
             var descDiv = doc.DocumentNode.SelectSingleNode("//div[@id='view-honbun']");
+
             if (descDiv != null)
             {
                 var ps = descDiv.SelectNodes("//div[@id='view-honbun']/p");
-                if (ps != null && ps.Count > 1)
+                if (ps != null && ps.Count > 0)
                 {
                     var dateStr = ps[0].InnerText;
                     var dateCheck = re_date.Match(dateStr);
@@ -250,13 +253,23 @@ namespace NijieDownloader.Library
                     {
                         Log.Warn("Failed to parse Date: " + ps[0].InnerText);
                     }
-
-                    image.Description = ps[1].InnerText;
                 }
             }
             else
             {
-                Log.Warn("Failed to get image description and works date.");
+                Log.Warn("Failed to get image date.");
+            }
+
+            // description
+            var desc2 = doc.DocumentNode.SelectSingleNode("//div[@id='illust_text']");
+            if (desc2 != null)
+            {
+                // Issue #63
+                image.Description = desc2.InnerText;
+            }
+            else
+            {
+                Log.Warn("Failed to get image description.");
             }
         }
 

@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+﻿using HtmlAgilityPack;
 using Nandaka.Common;
 using NijieDownloader.Library.Model;
+using System;
+using System.Collections.Specialized;
+using System.Diagnostics;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace NijieDownloader.Library
 {
@@ -39,10 +35,10 @@ namespace NijieDownloader.Library
             }
         }
 
-        public bool Login(string userName, string password)
+        public bool Login(string userName, string password, bool retryLoop = false)
         {
             var info = PrepareLoginInfo(userName, password);
-            return DoLogin(info);
+            return DoLogin(info, retryLoop);
         }
 
         public void Logout()
@@ -61,7 +57,7 @@ namespace NijieDownloader.Library
                     if (x.Result)
                         callback(x.Result, "Login Success.");
                     else
-                        callback(x.Result, "Invalid username or password.");
+                        callback(x.Result, "Invalid username or password or require age verification.");
                 }
                 catch (AggregateException ex)
                 {
@@ -107,7 +103,7 @@ namespace NijieDownloader.Library
             return info;
         }
 
-        private bool DoLogin(NijieLoginInfo info)
+        private bool DoLogin(NijieLoginInfo info, bool retryLoop = false)
         {
             IsLoggedIn = false;
             ExtendedWebClient client = new ExtendedWebClient();
@@ -126,9 +122,22 @@ namespace NijieDownloader.Library
             if (!String.IsNullOrWhiteSpace(location))
             {
                 if (location.Contains(@"//nijie.info/login.php?"))
+                {
                     IsLoggedIn = false;
+                }
+                else if (location.Contains(@"//nijie.info/age_ver.php?"))
+                {
+                    Debug.WriteLine("Please perform age verification");
+                    IsLoggedIn = false;
+                    if (!retryLoop)
+                    {
+                        Login(info.UserName, info.Password, true);
+                    }
+                }
                 else
+                {
                     IsLoggedIn = true;
+                }
             }
 
             var uri = new Uri(Util.FixUrl("//nijie.info", ROOT_DOMAIN, Properties.Settings.Default.UseHttps));
