@@ -1,3 +1,7 @@
+Nijie Downloader 1.0.9.6
+- Upgrade to .Net45
+- Fix Issue #73: need to force to use Tls1.2 (older OS might not supported anymore).
+
 Nijie Downloader 1.0.9.5
 - Fix Issue #63: update parser for workdate and description.
 - Fix Issue #64: fix next page detection.

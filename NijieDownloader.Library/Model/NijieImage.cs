@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Nandaka.Common;
+using NijieDownloader.Library.DAL;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Diagnostics;
 using System.Linq;
-using Nandaka.Common;
-using NijieDownloader.Library.DAL;
 
 namespace NijieDownloader.Library.Model
 {
